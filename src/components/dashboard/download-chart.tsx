@@ -52,7 +52,7 @@ export function DownloadChart() {
   );
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-2">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Downloads"
@@ -65,18 +65,6 @@ export function DownloadChart() {
           value="10,283"
           change={"+5.2%"}
           trend="up"
-        />
-        <StatCard
-          title="Revenue"
-          value="$42,890"
-          change={"+18.7%"}
-          trend="up"
-        />
-        <StatCard
-          title="Conversion Rate"
-          value="3.24%"
-          change={"-0.4%"}
-          trend="down"
         />
       </div>
       <motion.div
