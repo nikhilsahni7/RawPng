@@ -26,7 +26,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { StatCard } from "@/components/dashboard/stat-card";
-import { motion } from "framer-motion";
 
 const data = [
   { month: "Jan", downloads: 4000, trend: 3800 },
@@ -52,8 +51,8 @@ export function DownloadChart() {
   );
 
   return (
-    <div className="grid gap-2">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="space-y-6">
+      <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-2">
         <StatCard
           title="Total Downloads"
           value="25,450"
@@ -67,13 +66,8 @@ export function DownloadChart() {
           trend="up"
         />
       </div>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-      ></motion.div>
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-6">
           <div>
             <CardTitle className="text-base font-normal text-muted-foreground">
               Download Analytics
@@ -97,7 +91,7 @@ export function DownloadChart() {
           </Select>
         </CardHeader>
         <CardContent className="pb-4">
-          <div className="h-[300px]">
+          <div className="h-[300px] sm:h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={filteredData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />

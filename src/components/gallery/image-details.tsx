@@ -1,12 +1,10 @@
-"use client";
-
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Download } from "lucide-react";
-import Image from "next/image";
+import { Card, CardContent } from "@/components/ui/card";
+import { Trash2, Download, ChevronLeft, ChevronRight } from "lucide-react";
 
-interface ImageModalProps {
+interface ImageDetailsProps {
   image: {
     id: string;
     src: string;
@@ -18,13 +16,22 @@ interface ImageModalProps {
     uploadDate: string;
     description: string;
     tags: string[];
-  } | null;
+  };
   onClose: () => void;
+  onPrevious: () => void;
+  onNext: () => void;
+  hasPrevious: boolean;
+  hasNext: boolean;
 }
 
-export function ImageModal({ image, onClose }: ImageModalProps) {
-  if (!image) return null;
-
+export function ImageDetails({
+  image,
+  onClose,
+  onPrevious,
+  onNext,
+  hasPrevious,
+  hasNext,
+}: ImageDetailsProps) {
   const handleDelete = async () => {
     // Implement delete functionality
     console.log("Deleting image:", image.id);
@@ -37,8 +44,8 @@ export function ImageModal({ image, onClose }: ImageModalProps) {
   };
 
   return (
-    <Dialog open={!!image} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl">
+    <Card>
+      <CardContent className="p-6">
         <div className="grid md:grid-cols-2 gap-6">
           <div className="relative aspect-square">
             <Image
@@ -101,7 +108,19 @@ export function ImageModal({ image, onClose }: ImageModalProps) {
             </div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+        <div className="flex justify-between mt-6">
+          <Button
+            onClick={onPrevious}
+            disabled={!hasPrevious}
+            variant="outline"
+          >
+            <ChevronLeft className="mr-2 h-4 w-4" /> Previous
+          </Button>
+          <Button onClick={onNext} disabled={!hasNext} variant="outline">
+            Next <ChevronRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
