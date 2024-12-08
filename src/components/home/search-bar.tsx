@@ -11,7 +11,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Mock data for search suggestions
 const suggestions = [
   "Christmas Backgrounds",
   "New Year Party Images",
@@ -36,8 +35,18 @@ export function SearchBar() {
 
   return (
     <div className="relative flex w-full max-w-4xl items-center rounded-full bg-white shadow-2xl">
-      <div className="relative flex flex-1 items-center pl-8">
-        <Search className="absolute left-0 h-8 w-8 text-gray-400" />
+      <Select defaultValue="all">
+        <SelectTrigger className="w-32 rounded-l-full border-r bg-white px-4 py-3 text-sm text-gray-700">
+          <SelectValue placeholder="File type" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Files</SelectItem>
+          <SelectItem value="png">PNG</SelectItem>
+          <SelectItem value="vector">Vector</SelectItem>
+          <SelectItem value="image">Images</SelectItem>
+        </SelectContent>
+      </Select>
+      <div className="relative flex flex-1 items-center">
         <Input
           ref={inputRef}
           value={inputValue}
@@ -49,18 +58,18 @@ export function SearchBar() {
             if (inputValue.length > 0) setShowSuggestions(true);
           }}
           onBlur={() => {
-            // Delay to allow click on suggestion
             setTimeout(() => setShowSuggestions(false), 100);
           }}
           placeholder="Search millions of royalty-free images..."
-          className="w-full border-none pl-12 pr-4 py-4 text-xl focus:outline-none focus:ring-0 focus:border-transparent"
+          className="w-full border-none pl-4 pr-12 py-3 text-lg focus:outline-none focus:ring-0 focus:border-transparent"
         />
+        <Search className="absolute right-4 h-6 w-6 text-gray-400" />
         {showSuggestions && filteredSuggestions.length > 0 && (
           <ul className="absolute left-0 top-full mt-2 w-full max-h-60 overflow-y-auto rounded-b-lg border bg-white shadow-md z-10">
             {filteredSuggestions.map((suggestion, index) => (
               <li
                 key={index}
-                className="cursor-pointer px-4 py-3 hover:bg-gray-100"
+                className="cursor-pointer px-4 py-2 hover:bg-gray-100"
                 onMouseDown={() => {
                   setInputValue(suggestion);
                   setShowSuggestions(false);
@@ -73,18 +82,7 @@ export function SearchBar() {
           </ul>
         )}
       </div>
-      <Select defaultValue="all">
-        <SelectTrigger className="w-40 rounded-full bg-white px-6 py-4 text-lg text-gray-700">
-          <SelectValue placeholder="File type" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Files</SelectItem>
-          <SelectItem value="png">PNG</SelectItem>
-          <SelectItem value="vector">Vector</SelectItem>
-          <SelectItem value="image">Images</SelectItem>
-        </SelectContent>
-      </Select>
-      <button className="ml-4 mr-4 rounded-full bg-blue-600 px-10 py-4 text-xl text-white hover:bg-blue-700">
+      <button className="rounded-r-full bg-blue-600 px-8 py-3 text-lg text-white hover:bg-blue-700 transition-colors duration-200">
         Search
       </button>
     </div>

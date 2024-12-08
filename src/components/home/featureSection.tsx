@@ -1,6 +1,6 @@
 import { FaRegImages, FaRegSmileBeam, FaRegClock } from "react-icons/fa";
 
-export const Features = [
+const Features = [
   {
     title: "High-Quality Images",
     description: "Access a curated library of high-resolution images.",
@@ -21,7 +21,7 @@ export const Features = [
 
 export function FeatureSection() {
   return (
-    <section className="bg-gray-50 py-12">
+    <section className="bg-gray-50 py-12 rounded-xl">
       <div className="container mx-auto px-6">
         <h2 className="mb-10 text-4xl font-bold text-center text-black">
           Why Choose Us

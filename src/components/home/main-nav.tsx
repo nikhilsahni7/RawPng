@@ -1,5 +1,4 @@
 import * as React from "react";
-// import Link from "next/link";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -13,64 +12,28 @@ import { Image, VideoIcon as Vector, FileImage } from "lucide-react";
 
 const categories = {
   png: [
-    {
-      title: "Science & Technology",
-      description: "Laboratory, research, and tech-related PNGs",
-    },
-    {
-      title: "New Year Celebration",
-      description: "Festive decorations and celebration graphics",
-    },
-    {
-      title: "Nature & Wildlife",
-      description: "Plants, animals, and natural elements",
-    },
-    {
-      title: "Business & Finance",
-      description: "Corporate and financial imagery",
-    },
-    {
-      title: "Education & Learning",
-      description: "Academic and educational resources",
-    },
-    {
-      title: "Food & Cuisine",
-      description: "Culinary and food-related graphics",
-    },
+    { title: "Christmas" },
+    { title: "New Year" },
+    { title: "Nature & Wildlife" },
+    { title: "Business & Finance" },
+    { title: "Education & Learning" },
+    { title: "Food & Cuisine" },
   ],
   vector: [
-    {
-      title: "Abstract Shapes",
-      description: "Modern geometric and fluid shapes",
-    },
-    {
-      title: "Icons & Symbols",
-      description: "Versatile icon sets and symbols",
-    },
-    {
-      title: "Illustrations",
-      description: "Hand-drawn and digital illustrations",
-    },
-    { title: "Backgrounds", description: "Vector patterns and backgrounds" },
-    { title: "Characters", description: "People and character illustrations" },
-    {
-      title: "Infographics",
-      description: "Data visualization and infographic elements",
-    },
+    { title: "Abstract Shapes" },
+    { title: "Icons & Symbols" },
+    { title: "Illustrations" },
+    { title: "Backgrounds" },
+    { title: "Characters" },
+    { title: "Infographics" },
   ],
   images: [
-    {
-      title: "Stock Photos",
-      description: "Professional photography collection",
-    },
-    { title: "Textures", description: "High-resolution texture images" },
-    { title: "Mockups", description: "Product and brand mockups" },
-    { title: "Landscapes", description: "Natural and urban landscapes" },
-    {
-      title: "Architecture",
-      description: "Buildings and architectural photos",
-    },
-    { title: "Lifestyle", description: "Contemporary lifestyle photography" },
+    { title: "Stock Photos" },
+    { title: "Textures" },
+    { title: "Mockups" },
+    { title: "Landscapes" },
+    { title: "Architecture" },
+    { title: "Lifestyle" },
   ],
 };
 
@@ -78,69 +41,29 @@ export function MainNav() {
   return (
     <NavigationMenu>
       <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger className="flex items-center gap-2">
-            <FileImage className="w-4 h-4" />
-            PNG
-          </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {categories.png.map((category) => (
-                <ListItem
-                  key={category.title}
-                  title={category.title}
-                  href={`/png/${category.title
-                    .toLowerCase()
-                    .replace(/ /g, "-")}`}
-                >
-                  {category.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger className="flex items-center gap-2">
-            <Vector className="w-4 h-4" />
-            Vector
-          </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {categories.vector.map((category) => (
-                <ListItem
-                  key={category.title}
-                  title={category.title}
-                  href={`/vector/${category.title
-                    .toLowerCase()
-                    .replace(/ /g, "-")}`}
-                >
-                  {category.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger className="flex items-center gap-2">
-            <Image className="w-4 h-4" />
-            Images
-          </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {categories.images.map((category) => (
-                <ListItem
-                  key={category.title}
-                  title={category.title}
-                  href={`/images/${category.title
-                    .toLowerCase()
-                    .replace(/ /g, "-")}`}
-                >
-                  {category.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
+        {Object.entries(categories).map(([key, items]) => (
+          <NavigationMenuItem key={key}>
+            <NavigationMenuTrigger className="flex items-center gap-2">
+              {key === "png" && <FileImage className="w-4 h-4" />}
+              {key === "vector" && <Vector className="w-4 h-4" />}
+              {key === "images" && <Image className="w-4 h-4" />}
+              {key.charAt(0).toUpperCase() + key.slice(1)}
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                {items.map((category) => (
+                  <ListItem
+                    key={category.title}
+                    title={category.title}
+                    href={`/${key}/${category.title
+                      .toLowerCase()
+                      .replace(/ /g, "-")}`}
+                  />
+                ))}
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        ))}
       </NavigationMenuList>
     </NavigationMenu>
   );
@@ -149,7 +72,7 @@ export function MainNav() {
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
   React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
+>(({ className, title, ...props }, ref) => {
   return (
     <li>
       <NavigationMenuLink asChild>
@@ -162,9 +85,6 @@ const ListItem = React.forwardRef<
           {...props}
         >
           <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
         </a>
       </NavigationMenuLink>
     </li>

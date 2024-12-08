@@ -16,13 +16,14 @@ const popularTags = [
 
 export function CategoryTags() {
   return (
-    <div className="flex flex-wrap gap-4 justify-center">
+    <div className="flex flex-wrap gap-2 justify-center">
       {popularTags.map((tag) => (
         <Badge
           key={tag}
-          className="flex items-center gap-2 cursor-pointer rounded-full bg-blue-600 px-4 py-2 text-lg text-white shadow-lg hover:bg-blue-700 transition-colors duration-200"
+          variant="secondary"
+          className="flex items-center gap-1 cursor-pointer rounded-full px-3 py-1 text-sm hover:bg-blue-100 transition-colors duration-200"
         >
-          <FaTag className="h-5 w-5" />
+          <FaTag className="h-3 w-3" />
           {tag}
         </Badge>
       ))}
