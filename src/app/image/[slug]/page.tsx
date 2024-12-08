@@ -13,7 +13,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-// This would come from your database in the future
 const images = [
   {
     id: "9059969",
@@ -173,45 +172,8 @@ const getImageDetails = (slug: string) => {
   return images.find((img) => img.id === id);
 };
 
-interface PageProps {
-  params: {
-    slug: string;
-  };
-}
-
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
-  const imageDetails = getImageDetails(params.slug);
-
-  if (!imageDetails) {
-    return {
-      title: "Image Not Found",
-      description: "The requested image could not be found.",
-    };
-  }
-
-  return {
-    title: `${imageDetails.title} - Pngly`,
-    description: imageDetails.description,
-    keywords: imageDetails.keywords,
-    openGraph: {
-      title: `${imageDetails.title} - Pngly`,
-      description: imageDetails.description,
-      type: "article",
-      publishedTime: imageDetails.dateUploaded,
-      authors: [imageDetails.author],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${imageDetails.title} - Pngly`,
-      description: imageDetails.description,
-    },
-  };
-}
-
-export default function ImagePage({ params }: PageProps) {
-  const imageDetails = getImageDetails(params.slug);
+function ImageContent({ slug }: { slug: string }) {
+  const imageDetails = getImageDetails(slug);
 
   if (!imageDetails) {
     notFound();
@@ -340,4 +302,47 @@ export default function ImagePage({ params }: PageProps) {
       </div>
     </div>
   );
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const imageDetails = getImageDetails(slug);
+
+  if (!imageDetails) {
+    return {
+      title: "Image Not Found",
+      description: "The requested image could not be found.",
+    };
+  }
+
+  return {
+    title: `${imageDetails.title} - Pngly`,
+    description: imageDetails.description,
+    keywords: imageDetails.keywords,
+    openGraph: {
+      title: `${imageDetails.title} - Pngly`,
+      description: imageDetails.description,
+      type: "article",
+      publishedTime: imageDetails.dateUploaded,
+      authors: [imageDetails.author],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${imageDetails.title} - Pngly`,
+      description: imageDetails.description,
+    },
+  };
+}
+
+export default async function ImagePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  return <ImageContent slug={slug} />;
 }
