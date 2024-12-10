@@ -1,102 +1,117 @@
-"use client";
-
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Card } from "@/components/ui/card";
+// csv-upload.tsx
+import * as React from "react";
+import { FileSpreadsheet } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Download, Upload, CheckCircle } from "lucide-react";
+import Papa from "papaparse";
 
-export function CsvUpload() {
-  const [file, setFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isUploaded, setIsUploaded] = useState(false);
+interface UploadedFile {
+  id: string;
+  name: string;
+  title?: string;
+  description?: string;
+  category?: string;
+  keywords: string[];
+  uploadDate: Date;
+  preview: string;
+  fileType: string;
+}
 
-  const handleUpload = () => {
+interface CSVUploadProps {
+  onUpload: (files: UploadedFile[]) => void;
+}
+
+export function CSVUpload({ onUpload }: CSVUploadProps) {
+  const [file, setFile] = React.useState<File | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setFile(event.target.files[0]);
+    }
+  };
+
+  const handleUpload = async () => {
     if (!file) return;
-    setIsUploading(true);
-    // Simulate upload process
-    setTimeout(() => {
-      setIsUploading(false);
-      setIsUploaded(true);
-    }, 3000);
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: function (results) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data = results.data as any[];
+        const uploadedFiles = data.map((row) => {
+          const keywords = row.keywords
+            ? row.keywords.split(",").map((k: string) => k.trim())
+            : [];
+          return {
+            id: generateUniqueId(),
+            name: row.fileName,
+            title: row.title,
+            description: row.description,
+            category: row.category,
+            keywords: keywords,
+            uploadDate: new Date(),
+            preview: "", // No preview available for CSV imports
+            fileType: getFileTypeFromName(row.fileName),
+          } as UploadedFile;
+        });
+        onUpload(uploadedFiles);
+        setIsDialogOpen(false);
+        setFile(null);
+      },
+    });
+  };
+
+  const getFileTypeFromName = (fileName: string): string => {
+    const extension = fileName.split(".").pop()?.toLowerCase();
+    if (extension === "png") return "png";
+    if (extension === "jpg" || extension === "jpeg") return "jpeg";
+    if (extension === "svg") return "vector";
+    return extension || "unknown";
+  };
+
+  const generateUniqueId = (): string => {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <Card className="p-6 space-y-6">
-        <div className="space-y-2">
-          <h3 className="text-2xl font-semibold">CSV Upload</h3>
-          <p className="text-muted-foreground">
-            Upload multiple files at once using a CSV file. Maximum 5000 entries
-            per file.
-          </p>
-        </div>
-
-        <Alert>
-          <AlertDescription>
-            Please make sure your CSV follows the required format. Download the
-            template below.
-          </AlertDescription>
-        </Alert>
-
-        <Button variant="outline" className="w-full sm:w-auto">
-          <Download className="mr-2 h-4 w-4" />
-          Download CSV Template
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline">
+          <FileSpreadsheet className="mr-2 h-4 w-4" />
+          Upload CSV
         </Button>
-
-        <div className="space-y-4">
-          <Label htmlFor="csv-file" className="text-lg font-medium">
-            Upload CSV File
-          </Label>
-          <div className="flex items-center space-x-4">
-            <Input
-              id="csv-file"
-              type="file"
-              accept=".csv"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="flex-grow"
-            />
-            <Button
-              onClick={handleUpload}
-              disabled={!file || isUploading || isUploaded}
-              className="min-w-[100px]"
-            >
-              {isUploading ? (
-                <Upload className="mr-2 h-4 w-4 animate-bounce" />
-              ) : isUploaded ? (
-                <CheckCircle className="mr-2 h-4 w-4" />
-              ) : (
-                <Upload className="mr-2 h-4 w-4" />
-              )}
-              {isUploading
-                ? "Uploading..."
-                : isUploaded
-                ? "Uploaded"
-                : "Upload"}
-            </Button>
-          </div>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Upload CSV File</DialogTitle>
+          <DialogDescription>
+            Upload a CSV file to import multiple entries at once.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="csv-file">CSV File</Label>
+          <Input
+            id="csv-file"
+            type="file"
+            accept=".csv"
+            onChange={handleFileChange}
+          />
         </div>
-
-        {file && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-muted p-4 rounded-md"
-          >
-            <p className="text-sm font-medium">Selected file: {file.name}</p>
-            <p className="text-xs text-muted-foreground">
-              Size: {(file.size / 1024 / 1024).toFixed(2)} MB
-            </p>
-          </motion.div>
-        )}
-      </Card>
-    </motion.div>
+        <Button onClick={handleUpload} disabled={!file}>
+          Upload
+        </Button>
+      </DialogContent>
+    </Dialog>
   );
 }

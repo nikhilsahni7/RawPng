@@ -1,3 +1,7 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import axios from "axios";
 import { MainNav } from "@/components/home/main-nav";
 import { SearchBar } from "@/components/home/search-bar";
 import { CategoryTags } from "@/components/home/category-tags";
@@ -5,9 +9,58 @@ import { ImageGrid } from "@/components/home/image-grid";
 import { FeatureSection } from "@/components/home/featureSection";
 import { Button } from "@/components/ui/button";
 import { MobileNav } from "@/components/home/mobile-nav";
+import Pagination from "@/components/home/pagination";
 import Image from "next/image";
 
 export default function Home() {
+  const [images, setImages] = useState([]);
+  const [fileType, setFileType] = useState("all");
+  const [query, setQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [categories, setCategories] = useState([]);
+
+  const fetchImages = useCallback(async () => {
+    try {
+      const response = await axios.get("/api/images", {
+        params: {
+          fileType,
+          query,
+          page: currentPage,
+        },
+      });
+      setImages(response.data.images);
+      setTotalPages(response.data.totalPages);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [fileType, query, currentPage]);
+
+  useEffect(() => {
+    fetchImages();
+    fetchCategories();
+  }, [fetchImages]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("/api/categories");
+      setCategories(response.data.categories);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSearch = (searchQuery: string, selectedFileType: string) => {
+    setQuery(searchQuery);
+    setFileType(selectedFileType);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryClick = (category: string) => {
+    setQuery(category);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <header className="sticky top-0 z-50 w-full border-b bg-white/90 backdrop-blur">
@@ -43,34 +96,30 @@ export default function Home() {
             project
           </p>
           <div className="flex justify-center">
-            <SearchBar />
+            <SearchBar onSearch={handleSearch} />
           </div>
         </section>
         <section className="space-y-4">
           <h2 className="text-2xl font-semibold text-black text-center">
             Popular Tags
           </h2>
-          <CategoryTags />
+          <CategoryTags
+            categories={categories}
+            onCategoryClick={handleCategoryClick}
+          />
         </section>
         <section className="space-y-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <h2 className="text-3xl md:text-4xl font-bold text-black">
               Trending Resources
             </h2>
-            <div className="flex flex-wrap justify-center gap-2">
-              {["All", "PNG", "Vector", "Images"].map((category) => (
-                <Button
-                  key={category}
-                  variant="outline"
-                  size="sm"
-                  className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
           </div>
-          <ImageGrid />
+          <ImageGrid images={images} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </section>
         <FeatureSection />
       </main>
