@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { MobileNav } from "@/components/home/mobile-nav";
 import Pagination from "@/components/home/pagination";
 import Image from "next/image";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
   const [images, setImages] = useState([]);
@@ -19,8 +20,10 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchImages = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await axios.get("/api/images", {
         params: {
@@ -34,6 +37,7 @@ export default function Home() {
     } catch (error) {
       console.error(error);
     }
+    setLoading(false);
   }, [fileType, query, currentPage]);
 
   useEffect(() => {
@@ -114,7 +118,19 @@ export default function Home() {
               Trending Resources
             </h2>
           </div>
-          <ImageGrid images={images} />
+          {loading ? (
+            // Skeleton loader
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, index) => (
+                <Skeleton key={index} className="h-48 w-full" />
+              ))}
+            </div>
+          ) : images.length > 0 ? (
+            <ImageGrid images={images} />
+          ) : (
+            // No images message
+            <p className="text-center text-gray-500">No images found.</p>
+          )}
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

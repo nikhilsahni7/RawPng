@@ -8,26 +8,13 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const query = searchParams.get("query") || "";
 
-  if (!query) {
-    return NextResponse.json({ suggestions: [] });
-  }
+  const suggestions = await File.find({
+    title: { $regex: query, $options: "i" },
+  })
+    .limit(5)
+    .select("title -_id");
 
-  const suggestions = await File.aggregate([
-    {
-      $search: {
-        index: "default",
-        autocomplete: {
-          query: query,
-          path: "title",
-          fuzzy: {
-            maxEdits: 2,
-          },
-        },
-      },
-    },
-    { $limit: 10 },
-    { $project: { _id: 0, title: 1 } },
-  ]);
+  const suggestionTitles = suggestions.map((file) => file.title);
 
-  return NextResponse.json({ suggestions: suggestions.map((s) => s.title) });
+  return NextResponse.json({ suggestions: suggestionTitles });
 }

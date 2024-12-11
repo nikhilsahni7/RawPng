@@ -1,3 +1,4 @@
+// components/download-timer.tsx
 "use client";
 
 import * as React from "react";
@@ -10,12 +11,14 @@ import { cn } from "@/lib/utils";
 interface DownloadTimerProps {
   imageUrl: string;
   filename: string;
+  imageId: string;
   className?: string;
 }
 
 export function DownloadTimer({
   imageUrl,
   filename,
+  imageId,
   className,
 }: DownloadTimerProps) {
   const [timeLeft, setTimeLeft] = React.useState(10);
@@ -24,19 +27,23 @@ export function DownloadTimer({
   const progress = ((10 - timeLeft) / 10) * 100;
 
   React.useEffect(() => {
+    let timer: NodeJS.Timeout;
     if (downloadStarted && timeLeft > 0) {
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         setTimeLeft(timeLeft - 1);
       }, 1000);
-      return () => clearTimeout(timer);
     } else if (downloadStarted && timeLeft === 0) {
       handleDownload();
     }
+    return () => clearTimeout(timer);
   }, [timeLeft, downloadStarted]);
 
   const handleDownload = async () => {
     setIsDownloading(true);
     await downloadImage(imageUrl, filename);
+    await fetch(`/api/images/${imageId}/increment-downloads`, {
+      method: "POST",
+    });
     setIsDownloading(false);
     setDownloadStarted(false);
     setTimeLeft(10);

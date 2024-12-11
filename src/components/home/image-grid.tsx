@@ -17,11 +17,7 @@ export function ImageGrid({ images }: ImageGridProps) {
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {images.map((image) => (
         <Card key={image._id} className="group overflow-hidden">
-          <Link
-            href={`/image/${image.title.toLowerCase().replace(/ /g, "-")}-${
-              image._id
-            }`}
-          >
+          <Link href={`/image/${image._id}`}>
             <CardContent className="p-0">
               <div className="relative aspect-square">
                 <Image

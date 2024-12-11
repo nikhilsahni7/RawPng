@@ -1,18 +1,23 @@
+// app/image/[id]/opengraph-image.tsx
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Stock Assets Image Preview";
+export const contentType = "image/png";
 export const size = {
   width: 1200,
   height: 630,
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default async function Image({ params }: { params: { slug: string } }) {
-  const imageDetails = {
-    title: "Happy Birthday Golden Balloon",
-    type: "PNG",
-  };
+export default async function OpenGraphImage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  // Fetch image details
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/images/${params.id}`
+  );
+  const imageDetails = await res.json();
 
   return new ImageResponse(
     (
@@ -25,6 +30,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          padding: "48px",
         }}
       >
         <div
@@ -32,12 +38,12 @@ export default async function Image({ params }: { params: { slug: string } }) {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: "1rem",
+            gap: "24px",
           }}
         >
           <h1 style={{ fontSize: 60, margin: 0 }}>{imageDetails.title}</h1>
           <p style={{ fontSize: 30, margin: 0, color: "#666" }}>
-            Available as {imageDetails.type} on StockAssets
+            Available as {imageDetails.fileType} on Pingly
           </p>
         </div>
       </div>

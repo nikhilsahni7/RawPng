@@ -1,4 +1,6 @@
 // lib/models/file.ts
+import mongoose, { Document, Schema } from "mongoose";
+
 export const CATEGORIES = [
   "Animals",
   "Buildings and Architecture",
@@ -24,7 +26,6 @@ export const CATEGORIES = [
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];
-import mongoose, { Document, Schema } from "mongoose";
 
 export interface IFile extends Document {
   fileName: string;
@@ -42,6 +43,7 @@ export interface IFile extends Document {
     width: number;
     height: number;
   };
+  downloads: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -66,6 +68,7 @@ const FileSchema = new Schema<IFile>(
       width: Number,
       height: Number,
     },
+    downloads: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
