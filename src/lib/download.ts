@@ -1,6 +1,14 @@
+// lib/download.ts
 export async function downloadImage(url: string, filename: string) {
   try {
-    const response = await fetch(url);
+    // Use proxy endpoint
+    const proxyUrl = `/api/download?url=${encodeURIComponent(url)}`;
+
+    const response = await fetch(proxyUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const blob = await response.blob();
     const blobUrl = URL.createObjectURL(blob);
 
@@ -9,12 +17,15 @@ export async function downloadImage(url: string, filename: string) {
     link.download = filename;
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(blobUrl);
+
+    setTimeout(() => {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    }, 100);
 
     return true;
   } catch (error) {
     console.error("Download failed:", error);
-    return false;
+    throw error;
   }
 }

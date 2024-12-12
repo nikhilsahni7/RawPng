@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { File } from "@/lib/models/file";
-
+//api/suggestions - to fetch suggestions based on search query
 export async function GET(req: NextRequest) {
   await connectDB();
 

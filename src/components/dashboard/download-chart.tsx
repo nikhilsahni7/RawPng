@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Bar,
   ResponsiveContainer,
@@ -27,59 +27,57 @@ import {
 } from "@/components/ui/select";
 import { StatCard } from "@/components/dashboard/stat-card";
 
-const data = [
-  { month: "Jan", downloads: 4000, trend: 3800 },
-  { month: "Feb", downloads: 3000, trend: 3300 },
-  { month: "Mar", downloads: 3500, trend: 3400 },
-  { month: "Apr", downloads: 2800, trend: 3000 },
-  { month: "May", downloads: 3800, trend: 3600 },
-  { month: "Jun", downloads: 3600, trend: 3500 },
-  { month: "Jul", downloads: 3200, trend: 3300 },
-  { month: "Aug", downloads: 3400, trend: 3400 },
-  { month: "Sep", downloads: 3300, trend: 3450 },
-  { month: "Oct", downloads: 4200, trend: 3800 },
-  { month: "Nov", downloads: 3600, trend: 3600 },
-  { month: "Dec", downloads: 3400, trend: 3400 },
-];
-
 export function DownloadChart() {
   const [timeRange, setTimeRange] = useState("year");
+  const [data, setData] = useState([]);
+  const [totalDownloads, setTotalDownloads] = useState(0);
 
-  const filteredData = data.slice(
-    0,
-    timeRange === "year" ? 12 : timeRange === "6months" ? 6 : 3
-  );
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch(`/api/downloads?timeRange=${timeRange}`);
+        const result = await res.json();
+        setData(result.data);
+        setTotalDownloads(
+          result.data.reduce(
+            (sum: number, item: { downloads: number }) => sum + item.downloads,
+            0
+          )
+        );
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+    fetchData();
+  }, [timeRange]);
 
   return (
-    <div className="space-y-6">
-      <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-2">
+    <div className="space-y-4">
+      <div className="grid gap-1 md:grid-cols-2 lg:grid-cols-2">
         <StatCard
           title="Total Downloads"
-          value="25,450"
-          change={"+12.5%"}
+          value={totalDownloads.toLocaleString()}
+          change=""
           trend="up"
         />
         <StatCard
           title="Active Users"
           value="10,283"
-          change={"+5.2%"}
+          change="+5.2%"
           trend="up"
         />
       </div>
       <Card>
-        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-6">
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-1 sm:space-y-0 pb-4">
           <div>
             <CardTitle className="text-base font-normal text-muted-foreground">
               Download Analytics
             </CardTitle>
-            <CardDescription className="text-2xl font-bold">
-              {filteredData
-                .reduce((sum, item) => sum + item.downloads, 0)
-                .toLocaleString()}{" "}
-              Downloads
+            <CardDescription className="text-xl font-bold">
+              {totalDownloads.toLocaleString()} Downloads
             </CardDescription>
           </div>
-          <Select defaultValue={timeRange} onValueChange={setTimeRange}>
+          <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger className="w-[120px]">
               <SelectValue placeholder="Select range" />
             </SelectTrigger>
@@ -90,10 +88,10 @@ export function DownloadChart() {
             </SelectContent>
           </Select>
         </CardHeader>
-        <CardContent className="pb-4">
-          <div className="h-[300px] sm:h-[400px]">
+        <CardContent className="pb-2">
+          <div className="h-[200px] sm:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={filteredData}>
+              <ComposedChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis
                   dataKey="month"

@@ -30,9 +30,7 @@ import { UploadModal } from "./upload-modal";
 import { CSVUpload } from "./csv-upload";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
-// import { useRouter } from "next/navigation";
 
-// These should match exactly with the schema enum values
 const categories = [
   "Animals",
   "Buildings and Architecture",
@@ -81,33 +79,11 @@ export function UploadContent() {
     null
   );
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
-  const [timeFilter, setTimeFilter] = React.useState<
-    "all" | "today" | "week" | "month" | "year"
-  >("all");
+  const [newKeyword, setNewKeyword] = React.useState("");
 
-  const fetchFiles = async () => {
-    try {
-      const response = await fetch("/api/upload");
-      const data = await response.json();
-      setFiles(data);
-      if (data.length > 0 && !selectedFile) {
-        setSelectedFile(data[0]);
-      }
-    } catch (error) {
-      console.error("Failed to fetch files:", error);
-    }
-  };
-
-  React.useEffect(() => {
-    fetchFiles();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // In your upload handler
   const handleFileUpload = async (uploadedFiles: File[]) => {
     const formData = new FormData();
 
-    // Validate files before upload
     for (const file of uploadedFiles) {
       if (!file.type.startsWith("image/")) {
         toast.error("Only image files are allowed");
@@ -142,6 +118,7 @@ export function UploadContent() {
       );
     }
   };
+
   const handleSave = async () => {
     if (!selectedFile) return;
     try {
@@ -196,29 +173,6 @@ export function UploadContent() {
     }
   };
 
-  const filteredFiles = React.useMemo(() => {
-    const now = new Date();
-    return files.filter((file) => {
-      const uploadDate = new Date(file.uploadDate);
-      switch (timeFilter) {
-        case "today":
-          return uploadDate.toDateString() === now.toDateString();
-        case "week":
-          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-          return uploadDate > weekAgo;
-        case "month":
-          return (
-            uploadDate.getMonth() === now.getMonth() &&
-            uploadDate.getFullYear() === now.getFullYear()
-          );
-        case "year":
-          return uploadDate.getFullYear() === now.getFullYear();
-        default:
-          return true;
-      }
-    });
-  }, [files, timeFilter]);
-
   const handleKeywordRemove = (keyword: string) => {
     if (selectedFile) {
       setSelectedFile({
@@ -228,17 +182,25 @@ export function UploadContent() {
     }
   };
 
+  const handleAddKeyword = () => {
+    if (selectedFile && newKeyword.trim() !== "") {
+      setSelectedFile({
+        ...selectedFile,
+        keywords: [...selectedFile.keywords, newKeyword.trim()],
+      });
+      setNewKeyword("");
+    }
+  };
+
   const generateKeywords = (filename: string): string[] => {
     if (!filename) return [];
 
-    // Remove file extension and split into words
     const baseWords = filename
-      .replace(/\.[^/.]+$/, "") // Remove file extension
-      .split(/[-_\s]+/) // Split on hyphens, underscores, and spaces
-      .filter((word) => word.length > 2) // Filter out short words
+      .replace(/\.[^/.]+$/, "")
+      .split(/[-_\s]+/)
+      .filter((word) => word.length > 2)
       .map((word) => word.toLowerCase());
 
-    // Common relevant keywords based on content categories
     const categoryBasedKeywords = {
       image: ["digital", "photo", "picture", "photography", "image"],
       quality: ["high-resolution", "hd", "professional", "original"],
@@ -246,7 +208,6 @@ export function UploadContent() {
       technical: ["digital-asset", "media", "content"],
     };
 
-    // Combine all category keywords
     const additionalKeywords = [
       ...categoryBasedKeywords.image,
       ...categoryBasedKeywords.quality,
@@ -254,26 +215,21 @@ export function UploadContent() {
       ...categoryBasedKeywords.technical,
     ];
 
-    // Generate related words (you can expand this based on your needs)
     const relatedWords = baseWords.flatMap((word) => {
       const related = [];
-      // Add plural form if word ends with common singular endings
       if (word.match(/[^s]$/)) {
         related.push(`${word}s`);
       }
-      // Add singular form if word ends with 's'
       if (word.endsWith("s")) {
         related.push(word.slice(0, -1));
       }
       return related;
     });
 
-    // Combine all keywords and remove duplicates
     const allKeywords = [
       ...new Set([...baseWords, ...additionalKeywords, ...relatedWords]),
     ];
 
-    // Filter out common stop words and short words
     const stopWords = [
       "the",
       "and",
@@ -289,20 +245,19 @@ export function UploadContent() {
     return allKeywords
       .filter(
         (word) =>
-          word.length > 2 && !stopWords.includes(word) && !word.match(/^\d+$/) // Remove pure numbers
+          word.length > 2 && !stopWords.includes(word) && !word.match(/^\d+$/)
       )
-      .slice(0, 15); // Limit to 15 keywords max
+      .slice(0, 15);
   };
+
   const handleGenerateMoreKeywords = () => {
     if (!selectedFile) return;
 
-    // Generate keywords from both filename and title
     const filenameKeywords = generateKeywords(selectedFile.fileName);
     const titleKeywords = selectedFile.title
       ? generateKeywords(selectedFile.title)
       : [];
 
-    // Combine existing and new keywords, remove duplicates
     const newKeywords = [
       ...new Set([
         ...selectedFile.keywords,
@@ -322,25 +277,6 @@ export function UploadContent() {
       <div className="flex justify-between items-center p-4 border-b">
         <h1 className="text-2xl font-semibold">Upload Dashboard</h1>
         <div className="flex gap-2">
-          <Select
-            value={timeFilter}
-            onValueChange={(value) =>
-              setTimeFilter(
-                value as "all" | "today" | "week" | "month" | "year"
-              )
-            }
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by time" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All time</SelectItem>
-              <SelectItem value="today">Today</SelectItem>
-              <SelectItem value="week">This week</SelectItem>
-              <SelectItem value="month">This month</SelectItem>
-              <SelectItem value="year">This year</SelectItem>
-            </SelectContent>
-          </Select>
           <Dialog open={isUploadModalOpen} onOpenChange={setIsUploadModalOpen}>
             <DialogTrigger asChild>
               <Button>
@@ -371,7 +307,7 @@ export function UploadContent() {
         <div className="w-2/3 p-4 overflow-y-auto">
           <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
             <AnimatePresence>
-              {filteredFiles.map((file) => (
+              {files.map((file) => (
                 <motion.div
                   key={file._id}
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -502,6 +438,20 @@ export function UploadContent() {
                       {keyword} ×
                     </Badge>
                   ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="Add keyword"
+                    value={newKeyword}
+                    onChange={(e) => setNewKeyword(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAddKeyword();
+                      }
+                    }}
+                  />
+                  <Button onClick={handleAddKeyword}>Add</Button>
                 </div>
                 <Button
                   variant="outline"

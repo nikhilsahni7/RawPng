@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import { FaTag } from "react-icons/fa";
 
 interface CategoryTagsProps {
   categories: string[];
@@ -19,7 +18,6 @@ export function CategoryTags({
           onClick={() => onCategoryClick(tag)}
           className="flex items-center gap-1 cursor-pointer rounded-full px-3 py-1 text-sm hover:bg-blue-100 transition-colors duration-200"
         >
-          <FaTag className="h-3 w-3" />
           {tag}
         </Badge>
       ))}

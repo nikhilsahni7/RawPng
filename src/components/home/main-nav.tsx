@@ -43,14 +43,14 @@ export function MainNav() {
       <NavigationMenuList>
         {Object.entries(categories).map(([key, items]) => (
           <NavigationMenuItem key={key}>
-            <NavigationMenuTrigger className="flex items-center gap-2">
+            <NavigationMenuTrigger className="flex items-center gap-2 font-bold text-1xl">
               {key === "png" && <FileImage className="w-4 h-4" />}
               {key === "vector" && <Vector className="w-4 h-4" />}
-              {key === "images" && <Image className="w-4 h-4" />}
+              {key === "images" && <Image className="w-4 h-4  " />}
               {key.charAt(0).toUpperCase() + key.slice(1)}
             </NavigationMenuTrigger>
             <NavigationMenuContent>
-              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+              <ul className="grid w-[300px] gap-3 p-4 md:w-[400px] md:grid-cols-2">
                 {items.map((category) => (
                   <ListItem
                     key={category.title}

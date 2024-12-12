@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { DownloadTimer } from "@/components/download-timer";
 import { ImageActions } from "@/components/ImageActions";
+import { DownloadIcon } from "lucide-react";
 
 export interface ImageDetails {
   _id: string;
@@ -68,17 +69,26 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
     }
   );
 
+  const aspectRatio =
+    imageDetails.dimensions.width / imageDetails.dimensions.height;
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="grid gap-8 lg:grid-cols-[2fr,1fr]">
         <div className="space-y-4">
           <Card>
             <CardContent className="p-2">
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-gray-100">
+              <div
+                className="relative w-full overflow-hidden rounded-lg bg-gray-100"
+                style={{
+                  paddingBottom: `${(1 / aspectRatio) * 100}%`,
+                }}
+              >
                 <Image
                   src={imageDetails.cloudFrontUrl}
                   alt={imageDetails.title}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-contain"
                   priority
                 />
@@ -88,11 +98,13 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
           <div className="flex items-center justify-between">
             <ImageActions />
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>{imageDetails.downloads} Downloads</span>
+              <DownloadIcon className="w-5 h-5" />
+              <span className="font-semibold">{imageDetails.downloads}</span>
             </div>
           </div>
         </div>
 
+        {/* Rest of the component remains the same */}
         <div className="space-y-6">
           <div>
             <h1 className="text-2xl font-bold">{imageDetails.title}</h1>

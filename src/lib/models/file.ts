@@ -73,7 +73,11 @@ const FileSchema = new Schema<IFile>(
   { timestamps: true }
 );
 
-FileSchema.index({ title: "text" });
+// Indexes
+FileSchema.index({ title: "text", description: "text", keywords: "text" });
+FileSchema.index({ createdAt: -1 });
+FileSchema.index({ downloads: -1 });
+FileSchema.index({ fileType: 1 });
 
 export const File =
   mongoose.models?.File || mongoose.model<IFile>("File", FileSchema);

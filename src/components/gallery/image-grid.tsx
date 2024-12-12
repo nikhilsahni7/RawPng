@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,47 +9,21 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { ImageDetails } from "./image-details";
+import { toast } from "react-hot-toast";
 
 interface ImageItem {
-  id: string;
-  src: string;
+  _id: string;
+  cloudFrontUrl: string;
   title: string;
   downloads: number;
-  category: "PNG" | "VECTOR" | "IMAGE";
-  dimensions: string;
-  format: string;
-  uploadDate: string;
+  fileType: string;
+  dimensions: {
+    width: number;
+    height: number;
+  };
   description: string;
-  tags: string[];
+  keywords: string[];
 }
-
-const sampleImages: ImageItem[] = [
-  {
-    id: "1",
-    src: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-    title: "HD Microscopic Cell Structure",
-    downloads: 32,
-    category: "PNG",
-    dimensions: "5256 x 4584",
-    format: "PNG",
-    uploadDate: "2023-12-01",
-    description: "High resolution microscopic view of cellular structure",
-    tags: ["science", "microscopic", "biology", "medical"],
-  },
-  {
-    id: "2",
-    src: "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-    title: "Vector Business Growth Chart",
-    downloads: 26,
-    category: "VECTOR",
-    dimensions: "3840 x 2160",
-    format: "SVG",
-    uploadDate: "2023-12-01",
-    description: "Professional business growth chart illustration",
-    tags: ["business", "finance", "growth", "chart"],
-  },
-  // Add more sample images...
-];
 
 export function ImageGrid() {
   const [selectedTab, setSelectedTab] = useState("all");
@@ -58,50 +32,49 @@ export function ImageGrid() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
   );
+  const [images, setImages] = useState<ImageItem[]>([]);
 
-  const categories = {
-    all: sampleImages.length,
-    png: sampleImages.filter((img) => img.category === "PNG").length,
-    vector: sampleImages.filter((img) => img.category === "VECTOR").length,
-    image: sampleImages.filter((img) => img.category === "IMAGE").length,
-  };
-
-  const filteredImages = sampleImages
-    .filter((img) => {
-      if (selectedTab !== "all" && img.category.toLowerCase() !== selectedTab) {
-        return false;
-      }
-      return (
-        img.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        img.tags.some((tag) =>
-          tag.toLowerCase().includes(searchQuery.toLowerCase())
-        )
+  useEffect(() => {
+    async function fetchImages() {
+      const res = await fetch(
+        `/api/images?fileType=${selectedTab}&query=${encodeURIComponent(
+          searchQuery
+        )}`
       );
-    })
-    .sort((a, b) => b.downloads - a.downloads);
+      const data = await res.json();
+      setImages(data.images);
+    }
+
+    fetchImages();
+  }, [selectedTab, searchQuery]);
 
   const handleImageClick = (image: ImageItem, index: number) => {
     setSelectedImage(image);
     setSelectedImageIndex(index);
+    toast.success("Image selected");
   };
 
   const handlePrevious = () => {
     if (selectedImageIndex !== null && selectedImageIndex > 0) {
       const newIndex = selectedImageIndex - 1;
-      setSelectedImage(filteredImages[newIndex]);
+      setSelectedImage(images[newIndex]);
       setSelectedImageIndex(newIndex);
     }
   };
 
   const handleNext = () => {
-    if (
-      selectedImageIndex !== null &&
-      selectedImageIndex < filteredImages.length - 1
-    ) {
+    if (selectedImageIndex !== null && selectedImageIndex < images.length - 1) {
       const newIndex = selectedImageIndex + 1;
-      setSelectedImage(filteredImages[newIndex]);
+      setSelectedImage(images[newIndex]);
       setSelectedImageIndex(newIndex);
     }
+  };
+
+  const categories = {
+    all: "All",
+    png: "PNG",
+    vector: "VECTOR",
+    image: "IMAGE",
   };
 
   return (
@@ -115,14 +88,11 @@ export function ImageGrid() {
               onValueChange={setSelectedTab}
             >
               <TabsList className="grid w-full grid-cols-2 sm:w-auto sm:grid-cols-4">
-                <TabsTrigger value="all">All ({categories.all})</TabsTrigger>
-                <TabsTrigger value="png">PNG ({categories.png})</TabsTrigger>
-                <TabsTrigger value="vector">
-                  Vector ({categories.vector})
-                </TabsTrigger>
-                <TabsTrigger value="image">
-                  Image ({categories.image})
-                </TabsTrigger>
+                {Object.entries(categories).map(([key, label]) => (
+                  <TabsTrigger key={key} value={key}>
+                    {label}
+                  </TabsTrigger>
+                ))}
               </TabsList>
             </Tabs>
             <div className="relative w-full sm:w-[300px]">
@@ -145,9 +115,9 @@ export function ImageGrid() {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           >
             <AnimatePresence>
-              {filteredImages.map((image, index) => (
+              {images.map((image, index) => (
                 <motion.div
-                  key={image.id}
+                  key={image._id}
                   layout
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -157,7 +127,7 @@ export function ImageGrid() {
                 >
                   <div className="aspect-square relative">
                     <Image
-                      src={image.src}
+                      src={image.cloudFrontUrl}
                       alt={image.title}
                       fill
                       className="object-cover transition-transform group-hover:scale-105"
@@ -174,7 +144,7 @@ export function ImageGrid() {
                     </h3>
                     <div className="flex items-center justify-between mt-2">
                       <span className="text-xs text-muted-foreground">
-                        {image.category}
+                        {image.fileType.toUpperCase()}
                       </span>
                       <span className="text-xs font-medium">
                         {image.downloads} downloads
@@ -199,7 +169,7 @@ export function ImageGrid() {
               }
               hasNext={
                 selectedImageIndex !== null &&
-                selectedImageIndex < filteredImages.length - 1
+                selectedImageIndex < images.length - 1
               }
             />
           </div>

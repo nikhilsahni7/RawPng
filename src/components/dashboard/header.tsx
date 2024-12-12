@@ -18,9 +18,9 @@ import {
 import Image from "next/image";
 
 const navItems = [
-  { title: "Dashboard", href: "/dashboard", icon: "📊" },
-  { title: "Uploading", href: "/dashboard/upload", icon: "⬆️" },
-  { title: "Category", href: "/dashboard/category", icon: "🗂️" },
+  { title: "Dashboard", href: "/dashboard" },
+  { title: "Uploading", href: "/dashboard/upload" },
+  { title: "Category", href: "/dashboard/category" },
 ];
 
 export function DashboardHeader() {
@@ -51,7 +51,6 @@ export function DashboardHeader() {
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
               >
-                <span className="mr-2">{item.icon}</span>
                 {item.title}
                 {hoveredIndex === index && (
                   <motion.div
@@ -98,7 +97,6 @@ export function DashboardHeader() {
                       pathname === item.href && "text-primary font-bold"
                     )}
                   >
-                    <span>{item.icon}</span>
                     <span>{item.title}</span>
                   </Link>
                 ))}
