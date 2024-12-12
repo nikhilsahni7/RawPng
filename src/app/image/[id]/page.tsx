@@ -7,11 +7,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DownloadTimer } from "@/components/download-timer";
 import { ImageActions } from "@/components/ImageActions";
 import { DownloadIcon } from "lucide-react";
+import RelatedImages from "@/components/related-images";
 
 export interface ImageDetails {
   _id: string;
   title: string;
   description: string;
+  category: string;
   cloudFrontUrl: string;
   fileType: string;
   fileSize: number;
@@ -151,6 +153,13 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
           </div>
 
           <div className="space-y-2">
+            <div className="font-semibold">Category</div>
+            <Badge variant="secondary" className="rounded-full px-3 py-1">
+              {imageDetails.category}
+            </Badge>
+          </div>
+
+          <div className="space-y-2">
             <div className="font-semibold">Keywords</div>
             <div className="flex flex-wrap gap-2">
               {imageDetails.keywords.map((keyword: string) => (
@@ -166,6 +175,7 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
           </div>
         </div>
       </div>
+      <RelatedImages imageId={imageDetails._id} />
     </div>
   );
 }

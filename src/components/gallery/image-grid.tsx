@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { ImageDetails } from "./image-details";
@@ -15,6 +15,7 @@ interface ImageItem {
   _id: string;
   cloudFrontUrl: string;
   title: string;
+  category: string;
   downloads: number;
   fileType: string;
   dimensions: {
@@ -25,6 +26,47 @@ interface ImageItem {
   keywords: string[];
 }
 
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
+
+function Pagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: PaginationProps) {
+  const pages = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pages.push(i);
+  }
+
+  return (
+    <div className="flex items-center space-x-2">
+      {currentPage > 1 && (
+        <Button variant="outline" onClick={() => onPageChange(currentPage - 1)}>
+          Previous
+        </Button>
+      )}
+      {pages.map((page) => (
+        <Button
+          key={page}
+          variant={page === currentPage ? "default" : "outline"}
+          onClick={() => onPageChange(page)}
+        >
+          {page}
+        </Button>
+      ))}
+      {currentPage < totalPages && (
+        <Button variant="outline" onClick={() => onPageChange(currentPage + 1)}>
+          Next
+        </Button>
+      )}
+    </div>
+  );
+}
+
 export function ImageGrid() {
   const [selectedTab, setSelectedTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,25 +75,43 @@ export function ImageGrid() {
     null
   );
   const [images, setImages] = useState<ImageItem[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchImages() {
-      const res = await fetch(
-        `/api/images?fileType=${selectedTab}&query=${encodeURIComponent(
-          searchQuery
-        )}`
-      );
-      const data = await res.json();
-      setImages(data.images);
+      setIsLoading(true);
+      try {
+        const res = await fetch(
+          `/api/images?fileType=${selectedTab}&query=${encodeURIComponent(
+            searchQuery
+          )}&page=${currentPage}`
+        );
+        const data = await res.json();
+        setImages(data.images);
+        setTotalPages(data.totalPages);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
+        toast.error("Failed to load images");
+      } finally {
+        setIsLoading(false);
+      }
     }
 
     fetchImages();
-  }, [selectedTab, searchQuery]);
+  }, [selectedTab, searchQuery, currentPage]);
 
   const handleImageClick = (image: ImageItem, index: number) => {
     setSelectedImage(image);
     setSelectedImageIndex(index);
     toast.success("Image selected");
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setSelectedImage(null);
+    setSelectedImageIndex(null);
   };
 
   const handlePrevious = () => {
@@ -85,7 +145,10 @@ export function ImageGrid() {
             <Tabs
               defaultValue="all"
               className="w-full sm:w-auto"
-              onValueChange={setSelectedTab}
+              onValueChange={(value) => {
+                setSelectedTab(value);
+                setCurrentPage(1);
+              }}
             >
               <TabsList className="grid w-full grid-cols-2 sm:w-auto sm:grid-cols-4">
                 {Object.entries(categories).map(([key, label]) => (
@@ -105,7 +168,10 @@ export function ImageGrid() {
                 placeholder="Search images..."
                 className="pl-8 w-full"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
               />
             </div>
           </div>
@@ -155,6 +221,14 @@ export function ImageGrid() {
               ))}
             </AnimatePresence>
           </motion.div>
+
+          <div className="flex justify-center mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
         </div>
 
         {selectedImage && (
@@ -172,6 +246,12 @@ export function ImageGrid() {
                 selectedImageIndex < images.length - 1
               }
             />
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="flex justify-center my-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-primary"></div>
           </div>
         )}
       </CardContent>

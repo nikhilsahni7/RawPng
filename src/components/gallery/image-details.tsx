@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,11 +15,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-hot-toast";
+import { CATEGORIES } from "@/lib/models/file";
+// Updated ImageDetails component
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 interface ImageDetailsProps {
   image: {
     _id: string;
     cloudFrontUrl: string;
     title: string;
+    category: string;
     downloads: number;
     fileType: string;
     dimensions: {
@@ -50,6 +61,15 @@ export function ImageDetails({
   const [editedKeywords, setEditedKeywords] = useState(
     image.keywords.join(", ")
   );
+  const [editedCategory, setEditedCategory] = useState(image.category);
+
+  useEffect(() => {
+    setEditedTitle(image.title);
+    setEditedDescription(image.description);
+    setEditedKeywords(image.keywords.join(", "));
+    setEditedCategory(image.category);
+    setIsEditing(false); // Reset editing mode when switching images
+  }, [image]);
 
   const handleDelete = async () => {
     await fetch(`/api/upload/${image._id}`, {
@@ -77,13 +97,13 @@ export function ImageDetails({
         title: editedTitle,
         description: editedDescription,
         keywords: editedKeywords.split(",").map((k) => k.trim()),
+        category: editedCategory,
       }),
     });
 
     toast.success("Image details updated successfully");
     setIsEditing(false);
   };
-
   return (
     <Card>
       <CardContent className="p-6">
@@ -139,7 +159,28 @@ export function ImageDetails({
                 </p>
               </div>
             </div>
-
+            <div>
+              <p className="text-sm font-medium">Category</p>
+              {isEditing ? (
+                <Select
+                  value={editedCategory}
+                  onValueChange={setEditedCategory}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CATEGORIES.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Badge variant="default">{image.category}</Badge>
+              )}
+            </div>
             <div>
               <p className="text-sm font-medium mb-2">Keywords</p>
               {isEditing ? (

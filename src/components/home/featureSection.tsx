@@ -1,43 +1,72 @@
-import { FaRegImages, FaRegSmileBeam, FaRegClock } from "react-icons/fa";
-
-const Features = [
-  {
-    title: "High-Quality Images",
-    description: "Access a curated library of high-resolution images.",
-    icon: <FaRegImages className="h-12 w-12 text-blue-600" />,
-  },
-  {
-    title: "User-Friendly",
-    description:
-      "Easily find and download resources with our intuitive interface.",
-    icon: <FaRegSmileBeam className="h-12 w-12 text-blue-600" />,
-  },
-  {
-    title: "24/7 Support",
-    description: "Our team is here to help you anytime.",
-    icon: <FaRegClock className="h-12 w-12 text-blue-600" />,
-  },
-];
+// components/home/featureSection.tsx
+"use client";
+import { LucideCloudLightning } from "lucide-react";
+import { CreditCard, ShieldCheck, Download } from "lucide-react";
 
 export function FeatureSection() {
+  const features = [
+    {
+      icon: CreditCard,
+      title: "No Credit Card Required",
+      description: "Instant access to premium content, no credit card needed",
+      color: "text-blue-600",
+    },
+    {
+      icon: LucideCloudLightning,
+      title: "Blazing Fast Downloads",
+      description: "Download your files at the speed of light",
+      color: "text-blue-600",
+    },
+    {
+      icon: ShieldCheck,
+      title: "Complete Download Security",
+      description: "Trust in 100% secure and safe downloads every time",
+      color: "text-blue-600",
+    },
+    {
+      icon: Download,
+      title: "Unlimited Free Downloads",
+      description:
+        "Unlimited access to high-quality files, with full commercial usage rights",
+      color: "text-blue-600",
+    },
+  ];
+
   return (
-    <section className="bg-gray-50 py-12 rounded-xl">
-      <div className="container mx-auto px-6">
-        <h2 className="mb-10 text-4xl font-bold text-center text-black">
-          Why Choose Us
+    <section className="py-16 bg-gradient-to-b from-blue-50/50 to-transparent">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+          Why Choose <span className="text-blue-600">Pngly</span>?
         </h2>
-        <div className="grid gap-8 md:grid-cols-3">
-          {Features.map((feature) => (
-            <div key={feature.title} className="text-center">
-              <div className="mb-4 flex items-center justify-center">
-                {feature.icon}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
+            return (
+              <div
+                key={index}
+                className="group p-8 bg-white rounded-xl 
+                           shadow-sm hover:shadow-lg transition-all
+                           border border-blue-100 hover:border-blue-200"
+              >
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div
+                    className="p-3 bg-blue-50 rounded-full 
+                                group-hover:bg-blue-100 transition-colors"
+                  >
+                    <Icon
+                      className="w-8 h-8 text-blue-600 
+                               group-hover:scale-110 transition-transform"
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </div>
               </div>
-              <h3 className="mb-2 text-2xl font-semibold text-black">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600">{feature.description}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

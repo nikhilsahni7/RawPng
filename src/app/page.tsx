@@ -21,6 +21,7 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const fetchImages = useCallback(async () => {
     setLoading(true);
@@ -29,6 +30,7 @@ export default function Home() {
         params: {
           fileType,
           query,
+          category: selectedCategory,
           page: currentPage,
         },
       });
@@ -38,7 +40,7 @@ export default function Home() {
       console.error(error);
     }
     setLoading(false);
-  }, [fileType, query, currentPage]);
+  }, [fileType, query, currentPage, selectedCategory]);
 
   useEffect(() => {
     fetchImages();
@@ -57,11 +59,12 @@ export default function Home() {
   const handleSearch = (searchQuery: string, selectedFileType: string) => {
     setQuery(searchQuery);
     setFileType(selectedFileType);
+    setSelectedCategory(""); // Clear category when searching
     setCurrentPage(1);
   };
-
   const handleCategoryClick = (category: string) => {
-    setQuery(category);
+    setSelectedCategory(category);
+    setQuery(""); // Clear search query when selecting category
     setCurrentPage(1);
   };
 
