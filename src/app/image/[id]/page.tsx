@@ -8,6 +8,9 @@ import { DownloadTimer } from "@/components/download-timer";
 import { ImageActions } from "@/components/ImageActions";
 import { DownloadIcon } from "lucide-react";
 import RelatedImages from "@/components/related-images";
+import { MainNav } from "@/components/home/main-nav";
+import { MobileNav } from "@/components/home/mobile-nav";
+import { Button } from "@/components/ui/button";
 
 export interface ImageDetails {
   _id: string;
@@ -76,6 +79,28 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
 
   return (
     <div className="container mx-auto py-8 px-4">
+      <header className="sticky top-0 z-50 w-full border-b bg-white/90 backdrop-blur">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+          <div className="flex items-center gap-2 font-bold text-2xl text-black">
+            <Image
+              src="/logo.svg"
+              alt="Pngly"
+              width={120}
+              height={40}
+              className="rounded-md"
+            />
+          </div>
+          <div className="hidden md:block">
+            <MainNav />
+          </div>
+          <div className="flex items-center gap-4">
+            <Button className="hidden md:inline-flex bg-blue-600 text-white hover:bg-blue-700">
+              Sign In
+            </Button>
+            <MobileNav />
+          </div>
+        </div>
+      </header>
       <div className="grid gap-8 lg:grid-cols-[2fr,1fr]">
         <div className="space-y-4">
           <Card>
@@ -106,7 +131,6 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
           </div>
         </div>
 
-        {/* Rest of the component remains the same */}
         <div className="space-y-6">
           <div>
             <h1 className="text-2xl font-bold">{imageDetails.title}</h1>

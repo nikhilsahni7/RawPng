@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-hot-toast";
-import { CATEGORIES } from "@/lib/models/file";
+
 // Updated ImageDetails component
 import {
   Select,
@@ -47,6 +47,12 @@ interface ImageDetailsProps {
   hasNext: boolean;
 }
 
+interface Category {
+  _id: string;
+  name: string;
+  active: boolean;
+}
+
 export function ImageDetails({
   image,
   onClose,
@@ -62,6 +68,7 @@ export function ImageDetails({
     image.keywords.join(", ")
   );
   const [editedCategory, setEditedCategory] = useState(image.category);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     setEditedTitle(image.title);
@@ -70,6 +77,20 @@ export function ImageDetails({
     setEditedCategory(image.category);
     setIsEditing(false); // Reset editing mode when switching images
   }, [image]);
+
+  useEffect(() => {
+    // Fetch categories when component mounts
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/categories");
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleDelete = async () => {
     await fetch(`/api/upload/${image._id}`, {
@@ -170,9 +191,9 @@ export function ImageDetails({
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {CATEGORIES.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
+                    {categories.map((category) => (
+                      <SelectItem key={category._id} value={category.name}>
+                        {category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

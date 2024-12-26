@@ -30,30 +30,7 @@ import { UploadModal } from "./upload-modal";
 import { CSVUpload } from "./csv-upload";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
-
-const categories = [
-  "Animals",
-  "Buildings and Architecture",
-  "Business",
-  "Drinks",
-  "The Environment",
-  "States of Mind",
-  "Food",
-  "Graphic Resources",
-  "Hobbies and Leisure",
-  "Industry",
-  "Landscapes",
-  "Lifestyle",
-  "People",
-  "Plants and Flowers",
-  "Culture and Religion",
-  "Science",
-  "Social Issues",
-  "Sports",
-  "Technology",
-  "Transport",
-  "Travel",
-];
+import { useEffect, useState } from "react";
 
 interface UploadedFile {
   _id: string;
@@ -73,6 +50,12 @@ interface UploadedFile {
   uploadDate: string;
 }
 
+interface Category {
+  _id: string;
+  name: string;
+  active: boolean;
+}
+
 export function UploadContent() {
   const [files, setFiles] = React.useState<UploadedFile[]>([]);
   const [selectedFile, setSelectedFile] = React.useState<UploadedFile | null>(
@@ -80,6 +63,21 @@ export function UploadContent() {
   );
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
   const [newKeyword, setNewKeyword] = React.useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/categories");
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleFileUpload = async (uploadedFiles: File[]) => {
     const formData = new FormData();
@@ -386,8 +384,8 @@ export function UploadContent() {
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
+                      <SelectItem key={category._id} value={category.name}>
+                        {category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

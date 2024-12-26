@@ -1,40 +1,64 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Search, FileImage, Image } from "lucide-react";
+import { XIcon } from "lucide-react";
+import { FaVectorSquare } from "react-icons/fa";
 import Link from "next/link";
-
-const categories = {
-  png: [
-    "Christmas",
-    "New Year",
-    "Nature & Wildlife",
-    "Business & Finance",
-    "Education & Learning",
-    "Food & Cuisine",
-  ],
-  vector: [
-    "Abstract Shapes",
-    "Icons & Symbols",
-    "Illustrations",
-    "Backgrounds",
-    "Characters",
-    "Infographics",
-  ],
-  images: [
-    "Stock Photos",
-    "Textures",
-    "Mockups",
-    "Landscapes",
-    "Architecture",
-    "Lifestyle",
-  ],
-};
+import axios from "axios";
+import { Input } from "@/components/ui/input";
+import { Category, GroupedCategories } from "@/types/category";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const [categories, setCategories] = useState<GroupedCategories>({
+    png: [],
+    vector: [],
+    image: [],
+  });
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get<Category[]>("/api/categories/navbar");
+        const allCategories = response.data;
+
+        const grouped = allCategories.reduce<GroupedCategories>(
+          (acc, category) => {
+            if (category.active) {
+              if (!acc[category.type]) {
+                acc[category.type] = [];
+              }
+              acc[category.type].push(category);
+            }
+            return acc;
+          },
+          { png: [], vector: [], image: [] }
+        );
+
+        setCategories(grouped);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const filteredCategories = Object.entries(
+    categories
+  ).reduce<GroupedCategories>(
+    (acc, [key, items]) => {
+      acc[key as keyof GroupedCategories] = items.filter((item: Category) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      return acc;
+    },
+    { png: [], vector: [], image: [] }
+  );
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -44,27 +68,76 @@ export function MobileNav() {
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-        <nav className="flex flex-col gap-4">
-          {Object.entries(categories).map(([key, items]) => (
-            <div key={key} className="flex flex-col gap-2">
-              <h2 className="text-lg font-semibold capitalize">{key}</h2>
-              {items.map((item) => (
-                <Link
-                  key={item}
-                  href={`/${key}/${item.toLowerCase().replace(/ /g, "-")}`}
-                  className="text-sm text-gray-600 hover:text-blue-600"
-                  onClick={() => setOpen(false)}
+      <SheetContent
+        side="right"
+        className="w-[300px] sm:w-[400px] p-0 overflow-hidden"
+      >
+        <div className="h-full flex flex-col">
+          <div className="flex justify-end p-4 border-b">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setOpen(false)}
+              className="shrink-0"
+            >
+              <XIcon className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </div>
+
+          <div className="p-4 border-b">
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search resources..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 pr-8"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
-                  {item}
-                </Link>
+                  <XIcon className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+            <div className="p-4 space-y-4">
+              {Object.entries(filteredCategories).map(([key, items]) => (
+                <div key={key} className="space-y-2">
+                  <div className="flex items-center gap-2 sticky top-0 bg-white py-2">
+                    {key === "png" && <FileImage className="w-4 h-4" />}
+                    {key === "vector" && <FaVectorSquare className="w-4 h-4" />}
+                    {key === "image" && <Image className="w-4 h-4" />}
+                    <h2 className="text-lg font-semibold capitalize">{key}</h2>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {(items as Category[]).map((item: Category) => (
+                      <Link
+                        key={item._id}
+                        href={`/${key}/${item.name
+                          .toLowerCase()
+                          .replace(/ /g, "-")}`}
+                        className="text-sm px-3 py-2 rounded-md hover:bg-accent text-muted-foreground hover:text-accent-foreground transition-colors"
+                        onClick={() => setOpen(false)}
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
-          ))}
-          <Button className="mt-4" onClick={() => setOpen(false)}>
-            Sign In
-          </Button>
-        </nav>
+          </div>
+
+          <div className="p-4 border-t mt-auto bg-white">
+            <Button className="w-full">Sign In</Button>
+          </div>
+        </div>
       </SheetContent>
     </Sheet>
   );

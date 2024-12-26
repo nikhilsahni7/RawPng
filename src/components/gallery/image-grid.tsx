@@ -182,42 +182,61 @@ export function ImageGrid() {
           >
             <AnimatePresence>
               {images.map((image, index) => (
-                <motion.div
-                  key={image._id}
-                  layout
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="group relative rounded-lg overflow-hidden border bg-card text-card-foreground shadow-sm"
-                  onClick={() => handleImageClick(image, index)}
-                >
-                  <div className="aspect-square relative">
-                    <Image
-                      src={image.cloudFrontUrl}
-                      alt={image.title}
-                      fill
-                      className="object-cover transition-transform group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <p className="text-white text-sm">
-                        Click to view details
-                      </p>
+                <>
+                  <motion.div
+                    key={image._id}
+                    layout
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="group relative rounded-lg overflow-hidden border bg-card text-card-foreground shadow-sm"
+                    onClick={() => handleImageClick(image, index)}
+                  >
+                    <div className="aspect-square relative">
+                      <Image
+                        src={image.cloudFrontUrl}
+                        alt={image.title}
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <p className="text-white text-sm">
+                          Click to view details
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-sm font-medium truncate">
-                      {image.title}
-                    </h3>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-xs text-muted-foreground">
-                        {image.fileType.toUpperCase()}
-                      </span>
-                      <span className="text-xs font-medium">
-                        {image.downloads} downloads
-                      </span>
+                    <div className="p-4">
+                      <h3 className="text-sm font-medium truncate">
+                        {image.title}
+                      </h3>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-xs text-muted-foreground">
+                          {image.fileType.toUpperCase()}
+                        </span>
+                        <span className="text-xs font-medium">
+                          {image.downloads} downloads
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                  {selectedImageIndex === index && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4"
+                    >
+                      <ImageDetails
+                        image={selectedImage!}
+                        onClose={() => setSelectedImage(null)}
+                        onPrevious={handlePrevious}
+                        onNext={handleNext}
+                        hasPrevious={selectedImageIndex > 0}
+                        hasNext={selectedImageIndex < images.length - 1}
+                      />
+                    </motion.div>
+                  )}
+                </>
               ))}
             </AnimatePresence>
           </motion.div>
@@ -230,24 +249,6 @@ export function ImageGrid() {
             />
           </div>
         </div>
-
-        {selectedImage && (
-          <div className="mt-8">
-            <ImageDetails
-              image={selectedImage}
-              onClose={() => setSelectedImage(null)}
-              onPrevious={handlePrevious}
-              onNext={handleNext}
-              hasPrevious={
-                selectedImageIndex !== null && selectedImageIndex > 0
-              }
-              hasNext={
-                selectedImageIndex !== null &&
-                selectedImageIndex < images.length - 1
-              }
-            />
-          </div>
-        )}
 
         {isLoading && (
           <div className="flex justify-center my-8">

@@ -2,7 +2,6 @@
 "use client";
 
 import * as React from "react";
-import { Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { downloadImage } from "@/lib/download";
@@ -27,7 +26,6 @@ export function DownloadTimer({
   const [downloadStarted, setDownloadStarted] = React.useState(false);
   const progress = ((10 - timeLeft) / 10) * 100;
 
-  // Timer effect remains the same...
   React.useEffect(() => {
     let timer: NodeJS.Timeout;
     if (downloadStarted && timeLeft > 0) {
@@ -43,7 +41,6 @@ export function DownloadTimer({
   const handleDownload = async () => {
     setIsDownloading(true);
     try {
-      // Add URL validation
       const url = new URL(imageUrl);
       if (!url.protocol.startsWith("http")) {
         throw new Error("Invalid URL protocol");
@@ -71,6 +68,7 @@ export function DownloadTimer({
       setTimeLeft(10);
     }
   };
+
   return (
     <div
       className={cn(
@@ -80,7 +78,7 @@ export function DownloadTimer({
     >
       <div className="relative">
         <Button
-          className="rounded-full bg-blue-500 text-white hover:bg-blue-600 h-14 w-14 p-0"
+          className="bg-blue-500 text-white hover:bg-blue-600 px-6 py-3 rounded"
           onClick={() => setDownloadStarted(true)}
           disabled={downloadStarted || isDownloading}
         >
@@ -112,15 +110,16 @@ export function DownloadTimer({
                 {timeLeft}
               </motion.div>
             ) : (
-              <motion.div
-                key="download-icon"
+              <motion.span
+                key="download-text"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}
                 whileHover={{ scale: 1.1 }}
+                className="text-lg font-semibold rounded-lg"
               >
-                <Download className="h-6 w-6" />
-              </motion.div>
+                Download
+              </motion.span>
             )}
           </AnimatePresence>
         </Button>
@@ -130,9 +129,9 @@ export function DownloadTimer({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute -inset-1"
+            className="absolute inset-0 flex items-center justify-center"
           >
-            <svg className="w-16 h-16" viewBox="0 0 100 100">
+            <svg className="w-full h-full" viewBox="0 0 100 100">
               <motion.circle
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: progress / 100 }}
@@ -145,10 +144,6 @@ export function DownloadTimer({
                 strokeWidth="3"
                 strokeLinecap="round"
                 transform="rotate(-90 50 50)"
-                style={{
-                  strokeDasharray: "283",
-                  strokeDashoffset: "283",
-                }}
               />
             </svg>
           </motion.div>

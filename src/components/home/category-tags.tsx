@@ -1,7 +1,13 @@
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
+
+interface Category {
+  _id: string;
+  name: string;
+  active: boolean;
+}
 
 interface CategoryTagsProps {
-  categories: string[];
+  categories: Category[];
   onCategoryClick: (category: string) => void;
 }
 
@@ -11,15 +17,21 @@ export function CategoryTags({
 }: CategoryTagsProps) {
   return (
     <div className="flex flex-wrap gap-2 justify-center">
-      {categories.map((tag) => (
-        <Badge
-          key={tag}
-          variant="secondary"
-          onClick={() => onCategoryClick(tag)}
-          className="flex items-center gap-1 cursor-pointer rounded-full px-3 py-1 text-sm hover:bg-blue-100 transition-colors duration-200"
+      {categories.map((category) => (
+        <button
+          key={category._id}
+          onClick={() => onCategoryClick(category.name)}
+          className={`
+            px-3 py-1 
+            rounded-full 
+            text-sm font-medium 
+            bg-blue-100 hover:bg-blue-200 
+            text-gray-800 
+            transition-colors
+          `}
         >
-          {tag}
-        </Badge>
+          {category.name}
+        </button>
       ))}
     </div>
   );

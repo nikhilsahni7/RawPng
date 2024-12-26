@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { isValidObjectId } from "mongoose";
 import { connectDB } from "@/lib/db";
 import { File as FileModel } from "@/lib/models/file";
+
 // api/images/:id -to fetch specific image details
 export async function GET(
   request: NextRequest,

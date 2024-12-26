@@ -1,32 +1,6 @@
 // lib/models/file.ts
 import mongoose, { Document, Schema } from "mongoose";
 
-export const CATEGORIES = [
-  "Animals",
-  "Buildings and Architecture",
-  "Business",
-  "Drinks",
-  "The Environment",
-  "States of Mind",
-  "Food",
-  "Graphic Resources",
-  "Hobbies and Leisure",
-  "Industry",
-  "Landscapes",
-  "Lifestyle",
-  "People",
-  "Plants and Flowers",
-  "Culture and Religion",
-  "Science",
-  "Social Issues",
-  "Sports",
-  "Technology",
-  "Transport",
-  "Travel",
-] as const;
-
-export type Category = (typeof CATEGORIES)[number];
-
 export interface IFile extends Document {
   fileName: string;
   fileType: string;
@@ -35,7 +9,6 @@ export interface IFile extends Document {
   s3Url: string;
   cloudFrontUrl: string;
   category: string;
-
   title: string;
   description?: string;
   keywords: string[];
@@ -58,7 +31,6 @@ const FileSchema = new Schema<IFile>(
     cloudFrontUrl: { type: String, required: true },
     category: {
       type: String,
-      enum: CATEGORIES,
       required: true,
     },
     title: { type: String, required: true, maxlength: 200 },

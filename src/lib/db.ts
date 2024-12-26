@@ -14,7 +14,9 @@ declare global {
     | undefined;
 }
 
-const MONGODB_URI = process.env.MONGODB_URI!;
+const MONGODB_URI =
+  process.env.MONGODB_URI ||
+  "mongodb+srv://nikhilsahni321:rajni.surender@cluster1.dhdvprj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1&dbName=pinglydb";
 console.log(MONGODB_URI);
 
 if (!MONGODB_URI) {

@@ -1,9 +1,10 @@
 // app/api/upload/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { uploadToS3 } from "@/lib/s3-upload";
-import { File as FileModel, CATEGORIES } from "@/lib/models/file";
+import { File as FileModel } from "@/lib/models/file";
 import { connectDB } from "@/lib/db";
 import sharp from "sharp";
+import { Category } from "@/lib/models/category";
 
 // Add proper typing for uploaded file
 interface UploadedFile {
@@ -11,6 +12,16 @@ interface UploadedFile {
   type: string;
   size: number;
   arrayBuffer(): Promise<ArrayBuffer>;
+}
+
+async function getCategory(): Promise<string> {
+  try {
+    const defaultCategory = await Category.findOne({ active: true });
+    return defaultCategory?.name || "Uncategorized";
+  } catch (error) {
+    console.error("Error fetching default category:", error);
+    return "Uncategorized";
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -61,6 +72,8 @@ export async function POST(req: NextRequest) {
         const s3Result = await uploadToS3(processedBuffer, f.name, f.type);
 
         // Create file document
+        const category = await getCategory();
+
         const fileDoc = await FileModel.create({
           fileName: f.name,
           fileType: getFileType(f),
@@ -70,7 +83,7 @@ export async function POST(req: NextRequest) {
             height: imageInfo?.height || 0,
           },
           ...s3Result,
-          category: getCategory(),
+          category,
           title: generateTitle(f.name),
           description: generateDescription(f.name),
           keywords: generateKeywords(f.name),
@@ -131,10 +144,6 @@ function getFileType(file: UploadedFile): string {
     "image/jpg": "image",
   };
   return typeMap[file.type] || "image";
-}
-
-function getCategory(): string {
-  return CATEGORIES[0];
 }
 
 export async function GET() {

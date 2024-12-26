@@ -101,7 +101,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search images..."
-            className="w-full border-0 px-3 md:px-4 py-2 text-sm md:text-base rounded-none focus:ring-0 focus:ring-offset-0"
+            className="w-full border-0 px-3 md:px-4 py-2 text-sm md:text-base rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
           />
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
         </div>

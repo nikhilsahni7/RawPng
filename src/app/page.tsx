@@ -50,9 +50,10 @@ export default function Home() {
   const fetchCategories = async () => {
     try {
       const response = await axios.get("/api/categories");
-      setCategories(response.data.categories);
+      setCategories(response.data);
     } catch (error) {
       console.error(error);
+      setCategories([]);
     }
   };
 
