@@ -7,7 +7,6 @@ import { SearchBar } from "@/components/home/search-bar";
 import { CategoryTags } from "@/components/home/category-tags";
 import { ImageGrid } from "@/components/home/image-grid";
 import { FeatureSection } from "@/components/home/featureSection";
-import { Button } from "@/components/ui/button";
 import { MobileNav } from "@/components/home/mobile-nav";
 import Pagination from "@/components/home/pagination";
 import Image from "next/image";
@@ -86,9 +85,6 @@ export default function Home() {
             <MainNav />
           </div>
           <div className="flex items-center gap-4">
-            <Button className="hidden md:inline-flex bg-blue-600 text-white hover:bg-blue-700">
-              Sign In
-            </Button>
             <MobileNav />
           </div>
         </div>

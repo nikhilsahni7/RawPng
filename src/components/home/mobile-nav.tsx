@@ -3,16 +3,18 @@
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Search, FileImage, Image } from "lucide-react";
+import { Menu, Search, FileImage, Image, UserCircle } from "lucide-react";
 import { XIcon } from "lucide-react";
 import { FaVectorSquare } from "react-icons/fa";
 import Link from "next/link";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Category, GroupedCategories } from "@/types/category";
+import { useAuth } from "@/lib/auth";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const { user, signout } = useAuth();
   const [categories, setCategories] = useState<GroupedCategories>({
     png: [],
     vector: [],
@@ -60,6 +62,11 @@ export function MobileNav() {
     { png: [], vector: [], image: [] }
   );
 
+  const handleSignOut = async () => {
+    await signout();
+    setOpen(false);
+  };
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -73,7 +80,17 @@ export function MobileNav() {
         className="w-[300px] sm:w-[400px] p-0 overflow-hidden"
       >
         <div className="h-full flex flex-col">
-          <div className="flex justify-end p-4 border-b">
+          <div className="flex justify-between items-center p-4 border-b">
+            {user ? (
+              <div className="flex items-center gap-2">
+                <UserCircle className="w-5 h-5" />
+                <span className="text-sm font-medium truncate">
+                  {user.email}
+                </span>
+              </div>
+            ) : (
+              <div className="text-sm font-medium">Menu</div>
+            )}
             <Button
               variant="ghost"
               size="icon"
@@ -135,7 +152,27 @@ export function MobileNav() {
           </div>
 
           <div className="p-4 border-t mt-auto bg-white">
-            <Button className="w-full">Sign In</Button>
+            {user ? (
+              <Button
+                className="w-full bg-red-500 hover:bg-red-600 text-white"
+                onClick={handleSignOut}
+              >
+                Sign Out
+              </Button>
+            ) : (
+              <div className="space-y-2">
+                <Link href="/signin" onClick={() => setOpen(false)}>
+                  <Button variant="outline" className="w-full">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/signup" onClick={() => setOpen(false)}>
+                  <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </SheetContent>

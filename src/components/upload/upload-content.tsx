@@ -3,7 +3,6 @@
 
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Download, FileIcon, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,6 +30,14 @@ import { CSVUpload } from "./csv-upload";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
+import {
+  IconArrowLeft,
+  IconUpload,
+  IconDownload,
+  IconFile,
+  IconX,
+  IconDeviceFloppy,
+} from "@tabler/icons-react";
 
 interface UploadedFile {
   _id: string;
@@ -273,12 +280,23 @@ export function UploadContent() {
   return (
     <div className="flex flex-col h-screen">
       <div className="flex justify-between items-center p-4 border-b">
-        <h1 className="text-2xl font-semibold">Upload Dashboard</h1>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            onClick={() => window.history.back()}
+            size="icon"
+          >
+            <IconArrowLeft className="h-5 w-5" />
+          </Button>
+        </div>
+        <h1 className="text-2xl font-semibold absolute left-1/2 transform -translate-x-1/2">
+          Upload Dashboard
+        </h1>
         <div className="flex gap-2">
           <Dialog open={isUploadModalOpen} onOpenChange={setIsUploadModalOpen}>
             <DialogTrigger asChild>
               <Button>
-                <Upload className="mr-2 h-4 w-4" />
+                <IconUpload className="mr-2 h-4 w-4" />
                 Upload Files
               </Button>
             </DialogTrigger>
@@ -294,7 +312,7 @@ export function UploadContent() {
           </Dialog>
           <CSVUpload onUpload={() => {}} />
           <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
+            <IconDownload className="mr-2 h-4 w-4" />
             Download Template
           </Button>
         </div>
@@ -327,7 +345,7 @@ export function UploadContent() {
                     />
                   ) : (
                     <div className="w-full h-32 flex items-center justify-center bg-muted rounded-lg">
-                      <FileIcon className="h-12 w-12 text-muted-foreground" />
+                      <IconFile className="h-12 w-12 text-muted-foreground" />
                     </div>
                   )}
                   <div className="absolute top-2 right-2">
@@ -339,7 +357,7 @@ export function UploadContent() {
                         handleDelete(file);
                       }}
                     >
-                      <X className="w-4 h-4" />
+                      <IconX className="w-4 h-4" />
                     </Button>
                   </div>
                 </motion.div>
@@ -467,7 +485,7 @@ export function UploadContent() {
               </Alert>
 
               <Button className="w-full" onClick={handleSave}>
-                <Save className="mr-2 h-4 w-4" />
+                <IconDeviceFloppy className="mr-2 h-4 w-4" />
                 Save Changes
               </Button>
             </div>

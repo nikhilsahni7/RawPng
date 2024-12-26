@@ -5,8 +5,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 import {
   Select,
@@ -35,6 +36,7 @@ interface Category {
 }
 
 export default function CategoryPage() {
+  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeTab, setActiveTab] = useState("active");
   const [newCategoryForm, setNewCategoryForm] = useState({
@@ -182,237 +184,270 @@ export default function CategoryPage() {
   );
 
   return (
-    <div className="container max-w-5xl mx-auto px-4 py-4">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Add New Category</h2>
-        <form onSubmit={handleAddCategory} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Input
-              value={newCategoryForm.name}
-              onChange={(e) =>
-                setNewCategoryForm({ ...newCategoryForm, name: e.target.value })
-              }
-              placeholder="Category name"
-              className="w-full"
-            />
-            <Select
-              value={newCategoryForm.type}
-              onValueChange={(value: "png" | "vector" | "image") =>
-                setNewCategoryForm({ ...newCategoryForm, type: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="png">PNG</SelectItem>
-                <SelectItem value="vector">Vector</SelectItem>
-                <SelectItem value="image">Image</SelectItem>
-              </SelectContent>
-            </Select>
-            <div className="flex items-center space-x-2">
-              <Switch
-                checked={newCategoryForm.showInNavbar}
-                onCheckedChange={(checked) =>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="container max-w-5xl mx-auto px-4 py-4">
+        <Button
+          variant="ghost"
+          onClick={() => router.back()}
+          className="mb-6 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
+
+        <div className="mb-8 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
+            Add New Category
+          </h2>
+          <form onSubmit={handleAddCategory} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Input
+                value={newCategoryForm.name}
+                onChange={(e) =>
                   setNewCategoryForm({
                     ...newCategoryForm,
-                    showInNavbar: checked,
+                    name: e.target.value,
                   })
                 }
+                placeholder="Category name"
+                className="w-full"
               />
-              <span>Show in navbar</span>
-            </div>
-            <Button type="submit">Add Category</Button>
-          </div>
-        </form>
-      </div>
-
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold">Categories</h2>
-
-        <Tabs defaultValue="active" onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="active">Active Categories</TabsTrigger>
-            <TabsTrigger value="inactive">Inactive Categories</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="active">
-            <div className="space-y-4">
-              {filteredCategories.map((category) => (
-                <div
-                  key={category._id}
-                  className="flex items-center justify-between p-4 bg-white rounded-lg shadow"
-                >
-                  <div className="flex items-center space-x-4">
-                    <span className="font-medium">{category.name}</span>
-                    <Badge>{category.type}</Badge>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        checked={category.showInNavbar}
-                        onCheckedChange={async (checked) => {
-                          try {
-                            await handleUpdateCategory(category._id, {
-                              showInNavbar: checked,
-                            });
-                            // Update local state immediately
-                            setCategories(
-                              categories.map((cat) =>
-                                cat._id === category._id
-                                  ? { ...cat, showInNavbar: checked }
-                                  : cat
-                              )
-                            );
-                          } catch (error) {
-                            toast.error("Failed to update navbar visibility");
-                          }
-                        }}
-                      />
-                      <span className="text-sm">Show in navbar</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        checked={category.active}
-                        onCheckedChange={async (checked) => {
-                          try {
-                            await handleUpdateCategory(category._id, {
-                              active: checked,
-                            });
-                            // Update local state immediately
-                            setCategories(
-                              categories.map((cat) =>
-                                cat._id === category._id
-                                  ? { ...cat, active: checked }
-                                  : cat
-                              )
-                            );
-                          } catch (error) {
-                            toast.error("Failed to update active status");
-                          }
-                        }}
-                      />
-                      <span className="text-sm">Active</span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setEditingCategory(category);
-                        setEditForm({
-                          name: category.name,
-                          type: category.type,
-                          showInNavbar: category.showInNavbar,
-                        });
-                        setIsEditDialogOpen(true);
-                      }}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteCategory(category._id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="inactive">
-            <div className="space-y-4">
-              {filteredCategories.map((category) => (
-                <div
-                  key={category._id}
-                  className="flex items-center justify-between p-4 bg-white rounded-lg shadow opacity-60"
-                >
-                  <div className="flex items-center space-x-4">
-                    <span className="font-medium">{category.name}</span>
-                    <Badge>{category.type}</Badge>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        checked={category.active}
-                        onCheckedChange={async (checked) => {
-                          try {
-                            await handleUpdateCategory(category._id, {
-                              active: checked,
-                            });
-                            // Update local state immediately
-                            setCategories(
-                              categories.map((cat) =>
-                                cat._id === category._id
-                                  ? { ...cat, active: checked }
-                                  : cat
-                              )
-                            );
-                          } catch (error) {
-                            toast.error("Failed to update active status");
-                          }
-                        }}
-                      />
-                      <span className="text-sm">Activate</span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteCategory(category._id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Category</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleEditSubmit} className="space-y-4">
-            <Input
-              value={editForm.name}
-              onChange={(e) =>
-                setEditForm({ ...editForm, name: e.target.value })
-              }
-              placeholder="Category name"
-            />
-            <Select
-              value={editForm.type}
-              onValueChange={(value: "png" | "vector" | "image") =>
-                setEditForm({ ...editForm, type: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="png">PNG</SelectItem>
-                <SelectItem value="vector">Vector</SelectItem>
-                <SelectItem value="image">Image</SelectItem>
-              </SelectContent>
-            </Select>
-            <div className="flex items-center space-x-2">
-              <Switch
-                checked={editForm.showInNavbar}
-                onCheckedChange={(checked) =>
-                  setEditForm({ ...editForm, showInNavbar: checked })
+              <Select
+                value={newCategoryForm.type}
+                onValueChange={(value: "png" | "vector" | "image") =>
+                  setNewCategoryForm({ ...newCategoryForm, type: value })
                 }
-              />
-              <span>Show in navbar</span>
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="png">PNG</SelectItem>
+                  <SelectItem value="vector">Vector</SelectItem>
+                  <SelectItem value="image">Image</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={newCategoryForm.showInNavbar}
+                  onCheckedChange={(checked) =>
+                    setNewCategoryForm({
+                      ...newCategoryForm,
+                      showInNavbar: checked,
+                    })
+                  }
+                />
+                <span>Show in navbar</span>
+              </div>
+              <Button type="submit">Add Category</Button>
             </div>
-            <Button type="submit">Save Changes</Button>
           </form>
-        </DialogContent>
-      </Dialog>
+        </div>
+
+        <div className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+            Categories
+          </h2>
+
+          <Tabs
+            defaultValue="active"
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
+            <TabsList className="w-full sm:w-auto">
+              <TabsTrigger value="active" className="flex-1 sm:flex-none">
+                Active Categories
+              </TabsTrigger>
+              <TabsTrigger value="inactive" className="flex-1 sm:flex-none">
+                Inactive Categories
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="active">
+              <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-1">
+                {filteredCategories.map((category) => (
+                  <div
+                    key={category._id}
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md space-y-4 sm:space-y-0"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                      <span className="font-medium text-gray-800 dark:text-white">
+                        {category.name}
+                      </span>
+                      <Badge className="w-fit bg-blue-500 dark:bg-blue-600 text-white">
+                        {category.type}
+                      </Badge>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={category.showInNavbar}
+                          onCheckedChange={async (checked) => {
+                            try {
+                              await handleUpdateCategory(category._id, {
+                                showInNavbar: checked,
+                              });
+                              // Update local state immediately
+                              setCategories(
+                                categories.map((cat) =>
+                                  cat._id === category._id
+                                    ? { ...cat, showInNavbar: checked }
+                                    : cat
+                                )
+                              );
+                            } catch (error) {
+                              toast.error("Failed to update navbar visibility");
+                            }
+                          }}
+                        />
+                        <span className="text-sm">Show in navbar</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={category.active}
+                          onCheckedChange={async (checked) => {
+                            try {
+                              await handleUpdateCategory(category._id, {
+                                active: checked,
+                              });
+                              // Update local state immediately
+                              setCategories(
+                                categories.map((cat) =>
+                                  cat._id === category._id
+                                    ? { ...cat, active: checked }
+                                    : cat
+                                )
+                              );
+                            } catch (error) {
+                              toast.error("Failed to update active status");
+                            }
+                          }}
+                        />
+                        <span className="text-sm">Active</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditingCategory(category);
+                          setEditForm({
+                            name: category.name,
+                            type: category.type,
+                            showInNavbar: category.showInNavbar,
+                          });
+                          setIsEditDialogOpen(true);
+                        }}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteCategory(category._id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="inactive">
+              <div className="space-y-4">
+                {filteredCategories.map((category) => (
+                  <div
+                    key={category._id}
+                    className="flex items-center justify-between p-4 bg-white rounded-lg shadow opacity-60"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <span className="font-medium">{category.name}</span>
+                      <Badge>{category.type}</Badge>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={category.active}
+                          onCheckedChange={async (checked) => {
+                            try {
+                              await handleUpdateCategory(category._id, {
+                                active: checked,
+                              });
+                              // Update local state immediately
+                              setCategories(
+                                categories.map((cat) =>
+                                  cat._id === category._id
+                                    ? { ...cat, active: checked }
+                                    : cat
+                                )
+                              );
+                            } catch (error) {
+                              toast.error("Failed to update active status");
+                            }
+                          }}
+                        />
+                        <span className="text-sm">Activate</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteCategory(category._id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="dark:bg-gray-800">
+            <DialogHeader>
+              <DialogTitle className="text-gray-800 dark:text-white">
+                Edit Category
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleEditSubmit} className="space-y-4">
+              <Input
+                value={editForm.name}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, name: e.target.value })
+                }
+                placeholder="Category name"
+              />
+              <Select
+                value={editForm.type}
+                onValueChange={(value: "png" | "vector" | "image") =>
+                  setEditForm({ ...editForm, type: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="png">PNG</SelectItem>
+                  <SelectItem value="vector">Vector</SelectItem>
+                  <SelectItem value="image">Image</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={editForm.showInNavbar}
+                  onCheckedChange={(checked) =>
+                    setEditForm({ ...editForm, showInNavbar: checked })
+                  }
+                />
+                <span>Show in navbar</span>
+              </div>
+              <Button type="submit">Save Changes</Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 }

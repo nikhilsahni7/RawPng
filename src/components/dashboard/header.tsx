@@ -16,6 +16,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Image from "next/image";
+import { LogoutButton } from "./LogoutButton";
 
 const navItems = [
   { title: "Dashboard", href: "/dashboard" },
@@ -103,6 +104,7 @@ export function DashboardHeader() {
               </nav>
             </SheetContent>
           </Sheet>
+          <LogoutButton />
         </div>
       </div>
     </header>

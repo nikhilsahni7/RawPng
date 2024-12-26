@@ -10,7 +10,7 @@ import { DownloadIcon } from "lucide-react";
 import RelatedImages from "@/components/related-images";
 import { MainNav } from "@/components/home/main-nav";
 import { MobileNav } from "@/components/home/mobile-nav";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export interface ImageDetails {
   _id: string;
@@ -80,24 +80,28 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
   return (
     <div className="container mx-auto py-8 px-4">
       <header className="sticky top-0 z-50 w-full border-b bg-white/90 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-2 font-bold text-2xl text-black">
-            <Image
-              src="/logo.svg"
-              alt="Pngly"
-              width={120}
-              height={40}
-              className="rounded-md"
-            />
-          </div>
-          <div className="hidden md:block">
-            <MainNav />
-          </div>
-          <div className="flex items-center gap-4">
-            <Button className="hidden md:inline-flex bg-blue-600 text-white hover:bg-blue-700">
-              Sign In
-            </Button>
-            <MobileNav />
+        <div className="container mx-auto px-4">
+          <div className="flex h-16 items-center justify-between">
+            <Link href="/" className="flex items-center gap-2">
+              <Image
+                src="/logo.svg"
+                alt="Pngly"
+                width={120}
+                height={40}
+                className="rounded-md"
+                priority
+              />
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex md:items-center md:gap-6">
+              <MainNav />
+            </div>
+
+            {/* Mobile Navigation */}
+            <div className="md:hidden">
+              <MobileNav />
+            </div>
           </div>
         </div>
       </header>

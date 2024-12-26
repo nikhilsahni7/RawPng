@@ -17,8 +17,19 @@ import { Category, GroupedCategories } from "@/types/category";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
+import { useAuth } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { UserCircle } from "lucide-react";
 
 export function MainNav() {
+  const { user, signout } = useAuth();
   const [categories, setCategories] = useState<GroupedCategories>({
     png: [],
     vector: [],
@@ -68,56 +79,90 @@ export function MainNav() {
   };
 
   return (
-    <NavigationMenu className="hidden md:block">
-      <NavigationMenuList className="gap-2">
-        {(
-          Object.entries(categories) as [keyof GroupedCategories, Category[]][]
-        ).map(([key, items]) => (
-          <NavigationMenuItem key={key}>
-            <NavigationMenuTrigger className="flex items-center gap-2 font-medium px-4 py-2">
-              {key === "png" && <FileImage className="w-4 h-4" />}
-              {key === "vector" && <Vector className="w-4 h-4" />}
-              {key === "image" && <Image className="w-4 h-4" />}
-              {key.charAt(0).toUpperCase() + key.slice(1)}
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <div className="w-[500px] p-4">
-                <div className="mb-4">
-                  <div className="relative">
-                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      placeholder={`Search ${key} categories...`}
-                      className="pl-8 pr-8"
-                      value={searchQueries[key] || ""}
-                      onChange={(e) => handleSearchChange(key, e.target.value)}
-                    />
-                    {searchQueries[key] && (
-                      <button
-                        onClick={() => handleSearchChange(key, "")}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    )}
+    <div className="flex items-center gap-4">
+      <NavigationMenu className="hidden md:block">
+        <NavigationMenuList className="gap-2">
+          {(
+            Object.entries(categories) as [
+              keyof GroupedCategories,
+              Category[]
+            ][]
+          ).map(([key, items]) => (
+            <NavigationMenuItem key={key}>
+              <NavigationMenuTrigger className="flex items-center gap-2 font-medium px-4 py-2">
+                {key === "png" && <FileImage className="w-4 h-4" />}
+                {key === "vector" && <Vector className="w-4 h-4" />}
+                {key === "image" && <Image className="w-4 h-4" />}
+                {key.charAt(0).toUpperCase() + key.slice(1)}
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <div className="w-[500px] p-4">
+                  <div className="mb-4">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        placeholder={`Search ${key} categories...`}
+                        className="pl-8 pr-8"
+                        value={searchQueries[key] || ""}
+                        onChange={(e) =>
+                          handleSearchChange(key, e.target.value)
+                        }
+                      />
+                      {searchQueries[key] && (
+                        <button
+                          onClick={() => handleSearchChange(key, "")}
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
+                  <ul className="grid w-full gap-2 grid-cols-2 max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+                    {getFilteredCategories(key, items).map((category) => (
+                      <ListItem
+                        key={category._id}
+                        title={category.name}
+                        href={`/${key}/${category.name
+                          .toLowerCase()
+                          .replace(/ /g, "-")}`}
+                      />
+                    ))}
+                  </ul>
                 </div>
-                <ul className="grid w-full gap-2 grid-cols-2 max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
-                  {getFilteredCategories(key, items).map((category) => (
-                    <ListItem
-                      key={category._id}
-                      title={category.name}
-                      href={`/${key}/${category.name
-                        .toLowerCase()
-                        .replace(/ /g, "-")}`}
-                    />
-                  ))}
-                </ul>
-              </div>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        ))}
-      </NavigationMenuList>
-    </NavigationMenu>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          ))}
+        </NavigationMenuList>
+      </NavigationMenu>
+
+      {user ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="flex items-center gap-2">
+              <UserCircle className="w-5 h-5" />
+              <span className="hidden md:inline">{user.email}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => signout()}>
+              Sign Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <div className="flex items-center gap-2">
+          <Link href="/signin">
+            <Button variant="ghost">Sign In</Button>
+          </Link>
+          <Link href="/signup">
+            <Button className="bg-blue-600 text-white hover:bg-blue-700">
+              Sign Up
+            </Button>
+          </Link>
+        </div>
+      )}
+    </div>
   );
 }
 
