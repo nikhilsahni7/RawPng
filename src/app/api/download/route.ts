@@ -1,6 +1,8 @@
 // app/api/download/route.ts
 import { NextResponse, NextRequest } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const url = req.nextUrl.searchParams.get("url");
