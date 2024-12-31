@@ -12,18 +12,25 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Papa from "papaparse";
+
+import { toast } from "react-hot-toast";
 
 interface UploadedFile {
-  id: string;
-  name: string;
-  title?: string;
-  description?: string;
-  category?: string;
-  keywords: string[];
-  uploadDate: Date;
-  preview: string;
+  _id: string;
+  fileName: string;
   fileType: string;
+  fileSize: number;
+  s3Url: string;
+  cloudFrontUrl: string;
+  category: string;
+  title: string;
+  description?: string;
+  keywords: string[];
+  dimensions?: {
+    width: number;
+    height: number;
+  };
+  uploadDate: string;
 }
 
 interface CSVUploadProps {
@@ -43,45 +50,57 @@ export function CSVUpload({ onUpload }: CSVUploadProps) {
   const handleUpload = async () => {
     if (!file) return;
 
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: function (results) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const data = results.data as any[];
-        const uploadedFiles = data.map((row) => {
-          const keywords = row.keywords
-            ? row.keywords.split(",").map((k: string) => k.trim())
-            : [];
-          return {
-            id: generateUniqueId(),
-            name: row.fileName,
-            title: row.title,
-            description: row.description,
-            category: row.category,
-            keywords: keywords,
-            uploadDate: new Date(),
-            preview: "", // No preview available for CSV imports
-            fileType: getFileTypeFromName(row.fileName),
-          } as UploadedFile;
-        });
-        onUpload(uploadedFiles);
-        setIsDialogOpen(false);
-        setFile(null);
-      },
-    });
-  };
+    const formData = new FormData();
+    formData.append("file", file);
 
-  const getFileTypeFromName = (fileName: string): string => {
-    const extension = fileName.split(".").pop()?.toLowerCase();
-    if (extension === "png") return "png";
-    if (extension === "jpg" || extension === "jpeg") return "jpeg";
-    if (extension === "svg") return "vector";
-    return extension || "unknown";
-  };
+    try {
+      const response = await fetch("/api/upload/csv", {
+        method: "POST",
+        body: formData,
+      });
 
-  const generateUniqueId = (): string => {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Upload failed");
+      }
+
+      onUpload(data.files);
+      setIsDialogOpen(false);
+      setFile(null);
+      toast.success("Files imported successfully!");
+    } catch (error) {
+      console.error("CSV Upload failed:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to import CSV"
+      );
+    }
+  };
+  //eslint-disable-next-line
+  const handleDownloadTemplate = () => {
+    const headers = [
+      "filePath",
+      "category",
+      "title",
+      "description",
+      "keywords",
+    ];
+
+    const csvContent = [
+      headers.join(","),
+      "/path/to/image.jpg,Photography,Beautiful Sunset,A stunning sunset photo,sunset;nature;landscape",
+      "/path/to/another/image.png,Nature,Mountain View,Scenic mountain landscape,mountain;landscape;nature",
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "upload-template.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   };
 
   return (
@@ -96,7 +115,22 @@ export function CSVUpload({ onUpload }: CSVUploadProps) {
         <DialogHeader>
           <DialogTitle>Upload CSV File</DialogTitle>
           <DialogDescription>
-            Upload a CSV file to import multiple entries at once.
+            Upload a CSV file containing local file paths and metadata. The
+            files will be automatically uploaded to S3 and served via
+            CloudFront.
+            <div className="mt-2 text-sm text-muted-foreground">
+              Required CSV format:
+              <code className="block mt-1 p-2 bg-muted rounded-md">
+                filePath,category,title,description,keywords
+              </code>
+              <ul className="mt-2 list-disc list-inside">
+                <li>filePath: Full path to the local image file</li>
+                <li>category: Image category (optional)</li>
+                <li>title: Image title (optional)</li>
+                <li>description: Image description (optional)</li>
+                <li>keywords: Semicolon-separated keywords (optional)</li>
+              </ul>
+            </div>
           </DialogDescription>
         </DialogHeader>
         <div className="grid w-full max-w-sm items-center gap-1.5">

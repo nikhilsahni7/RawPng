@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { File as FileModel } from "@/lib/models/file";
 import { connectDB } from "@/lib/db";
 import { Category } from "@/lib/models/category";
+import { deleteFromS3 } from "@/lib/s3-upload";
 
 export async function PUT(
   request: NextRequest,
@@ -55,14 +56,30 @@ export async function DELETE(
   try {
     await connectDB();
 
-    const file = await FileModel.findByIdAndDelete(params.id);
+    // First, get the file to access the s3Key
+    const file = await FileModel.findById(params.id);
 
     if (!file) {
       return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
 
+    // Delete from S3
+    try {
+      await deleteFromS3(file.s3Key);
+    } catch (s3Error) {
+      console.error("Failed to delete from S3:", s3Error);
+      return NextResponse.json(
+        { error: "Failed to delete file from storage" },
+        { status: 500 }
+      );
+    }
+
+    // Delete from MongoDB
+    await file.deleteOne();
+
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error("Delete operation failed:", error);
     return NextResponse.json(
       { error: "Failed to delete file" },
       { status: 500 }

@@ -277,6 +277,33 @@ export function UploadContent() {
     });
   };
 
+  const handleDownloadTemplate = () => {
+    const headers = [
+      "fileName",
+      "category",
+      "title",
+      "description",
+      "keywords",
+      "s3Url",
+      "cloudFrontUrl",
+    ];
+
+    const csvContent = [
+      headers.join(","),
+      "example.jpg,Photography,Beautiful Sunset,A stunning sunset photo,sunset;nature;landscape,https://example.com/image.jpg,https://cdn.example.com/image.jpg",
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "upload-template.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex flex-col h-screen">
       <div className="flex justify-between items-center p-4 border-b">
@@ -310,8 +337,13 @@ export function UploadContent() {
               <UploadModal onUpload={handleFileUpload} />
             </DialogContent>
           </Dialog>
-          <CSVUpload onUpload={() => {}} />
-          <Button variant="outline">
+          <CSVUpload
+            onUpload={(files) => {
+              setFiles((prevFiles) => [...files, ...prevFiles]);
+              toast.success("CSV files imported successfully!");
+            }}
+          />
+          <Button variant="outline" onClick={handleDownloadTemplate}>
             <IconDownload className="mr-2 h-4 w-4" />
             Download Template
           </Button>

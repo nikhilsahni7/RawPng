@@ -62,20 +62,20 @@ export function ImageDetails({
   hasNext,
 }: ImageDetailsProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(image.title);
-  const [editedDescription, setEditedDescription] = useState(image.description);
-  const [editedKeywords, setEditedKeywords] = useState(
-    image.keywords.join(", ")
-  );
-  const [editedCategory, setEditedCategory] = useState(image.category);
+  const [editedTitle, setEditedTitle] = useState("");
+  const [editedDescription, setEditedDescription] = useState("");
+  const [editedKeywords, setEditedKeywords] = useState("");
+  const [editedCategory, setEditedCategory] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    setEditedTitle(image.title);
-    setEditedDescription(image.description);
-    setEditedKeywords(image.keywords.join(", "));
-    setEditedCategory(image.category);
-    setIsEditing(false); // Reset editing mode when switching images
+    if (image) {
+      setEditedTitle(image.title);
+      setEditedDescription(image.description);
+      setEditedKeywords(image.keywords.join(", "));
+      setEditedCategory(image.category);
+      setIsEditing(false); // Reset editing mode when switching images
+    }
   }, [image]);
 
   useEffect(() => {
@@ -92,12 +92,21 @@ export function ImageDetails({
     fetchCategories();
   }, []);
 
+  if (!image) {
+    return null;
+  }
+
   const handleDelete = async () => {
-    await fetch(`/api/upload/${image._id}`, {
-      method: "DELETE",
-    });
-    toast.success("Image deleted successfully");
-    onClose();
+    try {
+      await fetch(`/api/upload/${image._id}`, {
+        method: "DELETE",
+      });
+      toast.success("Image deleted successfully");
+      await onClose();
+      //eslint-disable-next-line
+    } catch (error) {
+      toast.error("Failed to delete image");
+    }
   };
 
   const handleDownload = () => {

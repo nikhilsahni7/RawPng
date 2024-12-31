@@ -1,0 +1,2 @@
+fileName,category,title,description,keywords,s3Url,cloudFrontUrl
+example.jpg,Photography,Beautiful Sunset,A stunning sunset photo,sunset;nature;landscape,https://example.com/image.jpg,https://cdn.example.com/image.jpg
