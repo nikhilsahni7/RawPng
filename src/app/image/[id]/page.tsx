@@ -78,132 +78,135 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
     imageDetails.dimensions.width / imageDetails.dimensions.height;
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <header className="sticky top-0 z-50 w-full border-b bg-white/90 backdrop-blur">
-        <div className="container mx-auto px-4">
-          <div className="flex h-16 items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
-              <Image
-                src="/logo.svg"
-                alt="Pngly"
-                width={120}
-                height={40}
-                className="rounded-md"
-                priority
-              />
-            </Link>
+    <div className="min-h-screen flex flex-col">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-14 items-center">
+          <Link href="/" className="flex items-center gap-2 mr-6">
+            <Image
+              src="/logo.svg"
+              alt="Pngly"
+              width={120}
+              height={40}
+              className="rounded-md"
+              priority
+            />
+          </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex md:items-center md:gap-6">
-              <MainNav />
-            </div>
+          {/* Desktop Navigation */}
+          <MainNav />
 
-            {/* Mobile Navigation */}
-            <div className="md:hidden">
-              <MobileNav />
-            </div>
+          {/* Mobile Navigation */}
+          <div className="md:hidden ml-auto">
+            <MobileNav />
           </div>
         </div>
       </header>
-      <div className="grid gap-8 lg:grid-cols-[2fr,1fr]">
-        <div className="space-y-4">
-          <Card>
-            <CardContent className="p-2">
-              <div
-                className="relative w-full overflow-hidden rounded-lg bg-gray-100"
-                style={{
-                  paddingBottom: `${(1 / aspectRatio) * 100}%`,
-                }}
-              >
-                <Image
-                  src={imageDetails.cloudFrontUrl}
-                  alt={imageDetails.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-contain"
-                  priority
-                />
-              </div>
-            </CardContent>
-          </Card>
-          <div className="flex items-center justify-between">
-            <ImageActions />
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <DownloadIcon className="w-5 h-5" />
-              <span className="font-semibold">{imageDetails.downloads}</span>
-            </div>
-          </div>
-        </div>
 
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-2xl font-bold">{imageDetails.title}</h1>
-            <p className="mt-2 text-muted-foreground">{imageDetails.author}</p>
-          </div>
-
-          <DownloadTimer
-            imageUrl={imageDetails.cloudFrontUrl}
-            filename={`${imageDetails.title
-              .toLowerCase()
-              .replace(/ /g, "-")}.${imageDetails.fileType.toLowerCase()}`}
-            imageId={imageDetails._id}
-          />
-
-          <Card>
-            <CardContent className="grid gap-4 p-6">
-              <div className="grid gap-2">
-                <div className="font-semibold">File Details</div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="text-muted-foreground">Type</div>
-                  <div className="font-medium">{imageDetails.fileType}</div>
-                  <div className="text-muted-foreground">Size</div>
-                  <div className="font-medium">
-                    {`${(imageDetails.fileSize / (1024 * 1024)).toFixed(2)} MB`}
-                  </div>
-                  <div className="text-muted-foreground">Dimensions</div>
-                  <div className="font-medium">
-                    {`${imageDetails.dimensions.width} x ${imageDetails.dimensions.height} px`}
-                  </div>
-                  <div className="text-muted-foreground">License</div>
-                  <div className="font-medium">{imageDetails.license}</div>
-                  <div className="text-muted-foreground">Uploaded</div>
-                  <div className="font-medium">{formattedDate}</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="space-y-2">
-            <div className="font-semibold">Description</div>
-            <p className="text-sm text-muted-foreground">
-              {imageDetails.description}
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <div className="font-semibold">Category</div>
-            <Badge variant="secondary" className="rounded-full px-3 py-1">
-              {imageDetails.category}
-            </Badge>
-          </div>
-
-          <div className="space-y-2">
-            <div className="font-semibold">Keywords</div>
-            <div className="flex flex-wrap gap-2">
-              {imageDetails.keywords.map((keyword: string) => (
-                <Badge
-                  key={keyword}
-                  variant="secondary"
-                  className="rounded-full px-3 py-1"
+      <div className="container mx-auto py-8 px-4 flex-1">
+        <div className="grid gap-8 lg:grid-cols-[2fr,1fr]">
+          <div className="space-y-4">
+            <Card>
+              <CardContent className="p-2">
+                <div
+                  className="relative w-full overflow-hidden rounded-lg bg-gray-100"
+                  style={{
+                    paddingBottom: `${(1 / aspectRatio) * 100}%`,
+                  }}
                 >
-                  {keyword}
-                </Badge>
-              ))}
+                  <Image
+                    src={imageDetails.cloudFrontUrl}
+                    alt={imageDetails.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-contain"
+                    priority
+                  />
+                </div>
+              </CardContent>
+            </Card>
+            <div className="flex items-center justify-between">
+              <ImageActions />
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <DownloadIcon className="w-5 h-5" />
+                <span className="font-semibold">{imageDetails.downloads}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-2xl font-bold">{imageDetails.title}</h1>
+              <p className="mt-2 text-muted-foreground">
+                {imageDetails.author}
+              </p>
+            </div>
+
+            <DownloadTimer
+              imageUrl={imageDetails.cloudFrontUrl}
+              filename={`${imageDetails.title
+                .toLowerCase()
+                .replace(/ /g, "-")}.${imageDetails.fileType.toLowerCase()}`}
+              imageId={imageDetails._id}
+            />
+
+            <Card>
+              <CardContent className="grid gap-4 p-6">
+                <div className="grid gap-2">
+                  <div className="font-semibold">File Details</div>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="text-muted-foreground">Type</div>
+                    <div className="font-medium">{imageDetails.fileType}</div>
+                    <div className="text-muted-foreground">Size</div>
+                    <div className="font-medium">
+                      {`${(imageDetails.fileSize / (1024 * 1024)).toFixed(
+                        2
+                      )} MB`}
+                    </div>
+                    <div className="text-muted-foreground">Dimensions</div>
+                    <div className="font-medium">
+                      {`${imageDetails.dimensions.width} x ${imageDetails.dimensions.height} px`}
+                    </div>
+                    <div className="text-muted-foreground">License</div>
+                    <div className="font-medium">{imageDetails.license}</div>
+                    <div className="text-muted-foreground">Uploaded</div>
+                    <div className="font-medium">{formattedDate}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="space-y-2">
+              <div className="font-semibold">Description</div>
+              <p className="text-sm text-muted-foreground">
+                {imageDetails.description}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <div className="font-semibold">Category</div>
+              <Badge variant="secondary" className="rounded-full px-3 py-1">
+                {imageDetails.category}
+              </Badge>
+            </div>
+
+            <div className="space-y-2">
+              <div className="font-semibold">Keywords</div>
+              <div className="flex flex-wrap gap-2">
+                {imageDetails.keywords.map((keyword: string) => (
+                  <Badge
+                    key={keyword}
+                    variant="secondary"
+                    className="rounded-full px-3 py-1"
+                  >
+                    {keyword}
+                  </Badge>
+                ))}
+              </div>
             </div>
           </div>
         </div>
+        <RelatedImages imageId={imageDetails._id} />
       </div>
-      <RelatedImages imageId={imageDetails._id} />
     </div>
   );
 }

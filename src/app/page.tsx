@@ -11,6 +11,7 @@ import { MobileNav } from "@/components/home/mobile-nav";
 import Pagination from "@/components/home/pagination";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Footer } from "@/components/layout/footer";
 
 export default function Home() {
   const [images, setImages] = useState([]);
@@ -89,8 +90,8 @@ export default function Home() {
           </div>
         </div>
       </header>
-      <main className="container mx-auto py-8 space-y-12 px-4">
-        <section className="text-center space-y-6">
+      <main className="container mx-auto py-12 space-y-12 px-4">
+        <section className="text-center space-y-8 pt-8">
           <h1 className="text-4xl font-extrabold tracking-tight text-black sm:text-5xl md:text-6xl lg:text-7xl">
             Discover Millions of
             <span className="text-blue-600"> Free Resources</span>
@@ -139,11 +140,7 @@ export default function Home() {
         </section>
         <FeatureSection />
       </main>
-      <footer className="bg-gray-100 py-8">
-        <div className="container mx-auto px-4 text-center text-gray-600">
-          <p>&copy; 2024 Pngly. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

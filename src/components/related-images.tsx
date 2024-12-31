@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Pagination from "@/components/home/pagination";
 import { Card, CardContent } from "@/components/ui/card";
+import { Footer } from "@/components/layout/footer";
 
 interface RelatedImage {
   _id: string;
@@ -110,6 +111,10 @@ export default function RelatedImages({ imageId }: { imageId: string }) {
           />
         </div>
       )}
+
+      <div className="mt-auto">
+        <Footer />
+      </div>
     </div>
   );
 }

@@ -80,10 +80,10 @@ export function SearchBar({ onSearch }: SearchBarProps) {
   };
 
   return (
-    <div className="relative w-full max-w-3xl mx-auto">
-      <div className="relative flex w-full items-center bg-white rounded-full shadow-lg">
+    <div className="relative w-full max-w-4xl mx-auto px-4 sm:px-6">
+      <div className="relative flex w-full items-center bg-white rounded-full shadow-xl">
         <Select value={fileType} onValueChange={setFileType}>
-          <SelectTrigger className="w-24 md:w-28 rounded-l-full bg-gray-50 px-2 md:px-4 py-2 text-xs md:text-sm text-gray-700 border-0 focus:ring-0 focus:ring-offset-0">
+          <SelectTrigger className="w-28 md:w-32 lg:w-36 rounded-l-full bg-gray-50 px-3 md:px-4 py-3 md:py-4 text-sm md:text-base text-gray-700 border-0 focus:ring-0 focus:ring-offset-0">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent className="z-50">
@@ -100,15 +100,15 @@ export function SearchBar({ onSearch }: SearchBarProps) {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Search images..."
-            className="w-full border-0 px-3 md:px-4 py-2 text-sm md:text-base rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
+            placeholder="Search..."
+            className="w-full border-0 px-4 md:px-6 py-3 md:py-4 text-base md:text-lg rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
           />
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
+          <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 text-gray-400" />
         </div>
 
         <button
           onClick={handleSearchSubmit}
-          className="w-20 md:w-28 rounded-r-full bg-blue-600 px-2 md:px-4 py-2 text-sm md:text-base text-white hover:bg-blue-700 transition-colors duration-200"
+          className="w-24 md:w-32 lg:w-36 rounded-r-full bg-blue-600 px-3 md:px-6 py-3 md:py-4 text-base md:text-lg font-medium text-white hover:bg-blue-700 transition-colors duration-200 hover:shadow-lg"
         >
           Search
         </button>
@@ -117,13 +117,13 @@ export function SearchBar({ onSearch }: SearchBarProps) {
       {showSuggestions && suggestions.length > 0 && (
         <ul
           ref={suggestionRef}
-          className="absolute z-40 w-full bg-white shadow-lg border mt-1 rounded-lg max-h-60 overflow-y-auto left-0 right-0"
+          className="absolute z-40 w-full bg-white shadow-xl border mt-2 rounded-2xl max-h-72 overflow-y-auto left-0 right-0"
         >
           {suggestions.map((suggestion, index) => (
             <li
               key={index}
               onClick={() => handleSuggestionClick(suggestion)}
-              className="px-4 py-2.5 text-sm md:text-base cursor-pointer hover:bg-gray-50 transition-colors duration-150 border-b last:border-b-0"
+              className="px-6 py-3 text-base md:text-lg cursor-pointer hover:bg-gray-50 transition-colors duration-150 border-b last:border-b-0"
             >
               {suggestion}
             </li>

@@ -79,7 +79,7 @@ export function MainNav() {
   };
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-4 flex-1">
       <NavigationMenu className="hidden md:block">
         <NavigationMenuList className="gap-2">
           {(
@@ -136,32 +136,34 @@ export function MainNav() {
         </NavigationMenuList>
       </NavigationMenu>
 
-      {user ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-2">
-              <UserCircle className="w-5 h-5" />
-              <span className="hidden md:inline">{user.email}</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => signout()}>
-              Sign Out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : (
-        <div className="flex items-center gap-2">
-          <Link href="/signin">
-            <Button variant="ghost">Sign In</Button>
-          </Link>
-          <Link href="/signup">
-            <Button className="bg-blue-600 text-white hover:bg-blue-700">
-              Sign Up
-            </Button>
-          </Link>
-        </div>
-      )}
+      <div className="ml-auto flex items-center">
+        {user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center gap-2">
+                <UserCircle className="w-5 h-5" />
+                <span className="hidden md:inline">{user.email}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => signout()}>
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Link href="/signin">
+              <Button variant="ghost">Sign In</Button>
+            </Link>
+            <Link href="/signup">
+              <Button className="bg-blue-600 text-white hover:bg-blue-700">
+                Sign Up
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
