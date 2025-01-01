@@ -38,7 +38,6 @@ import {
   IconX,
   IconDeviceFloppy,
 } from "@tabler/icons-react";
-import { SFTPUpload } from "./sftp-upload";
 
 interface UploadedFile {
   _id: string;
@@ -340,12 +339,6 @@ export function UploadContent() {
             onUpload={(files) => {
               setFiles((prevFiles) => [...files, ...prevFiles]);
               toast.success("CSV files imported successfully!");
-            }}
-          />
-          <SFTPUpload
-            onUpload={(files) => {
-              setFiles((prevFiles) => [...files, ...prevFiles]);
-              toast.success("SFTP files imported successfully!");
             }}
           />
           <Button variant="outline" onClick={handleDownloadTemplate}>
