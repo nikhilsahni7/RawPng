@@ -91,3 +91,56 @@ body {
 .scrollbar-thumb-gray-200::-webkit-scrollbar-thumb:hover {
   background-color: #d1d5db;
 }
+
+/* Add these utility classes if needed */
+.object-contain {
+  object-fit: contain;
+  background: #f8f8f8; /* Light gray background for transparent images */
+}
+
+.grid {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.object-cover {
+  object-fit: cover;
+}
+
+/* Masonry Grid Layout */
+.masonry {
+  column-count: 2;
+  column-gap: 0.75rem;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .masonry-sm {
+    column-count: 3;
+  }
+}
+
+@media (min-width: 768px) {
+  .masonry-md {
+    column-count: 4;
+  }
+}
+
+@media (min-width: 1024px) {
+  .masonry-lg {
+    column-count: 4;
+    column-gap: 1rem;
+  }
+}
+
+.masonry-item {
+  display: inline-block;
+  width: 100%;
+}
+
+.break-inside-avoid {
+  break-inside: avoid;
+}

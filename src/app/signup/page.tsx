@@ -17,6 +17,7 @@ export default function SignUpPage() {
     setIsLoading(true);
 
     const formData = new FormData(event.currentTarget);
+    const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
@@ -31,7 +32,7 @@ export default function SignUpPage() {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       const data = await response.json();
@@ -63,6 +64,23 @@ export default function SignUpPage() {
         </div>
 
         <form onSubmit={onSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <label
+              htmlFor="name"
+              className="text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Name
+            </label>
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              required
+              placeholder="Enter your name"
+              className="w-full px-4 py-2 transition-colors border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
           <div className="space-y-2">
             <label
               htmlFor="email"

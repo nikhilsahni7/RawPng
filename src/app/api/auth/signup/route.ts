@@ -9,7 +9,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(req: Request) {
   try {
     await connectDB();
-    const { email, password } = await req.json();
+    const { name, email, password } = await req.json();
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -25,6 +25,7 @@ export async function POST(req: Request) {
     const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
     // Create user
     await User.create({
+      name,
       email,
       password,
       verificationToken,

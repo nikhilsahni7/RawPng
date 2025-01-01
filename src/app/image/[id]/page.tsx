@@ -6,11 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { DownloadTimer } from "@/components/download-timer";
 import { ImageActions } from "@/components/ImageActions";
-import { DownloadIcon } from "lucide-react";
+
 import RelatedImages from "@/components/related-images";
 import { MainNav } from "@/components/home/main-nav";
 import { MobileNav } from "@/components/home/mobile-nav";
 import Link from "next/link";
+import ExpandableDescription from "@/components/ExpandableDescription";
+import ExpandableKeywords from "@/components/ExpandableKeywords";
 
 export interface ImageDetails {
   _id: string;
@@ -103,6 +105,13 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
       </header>
 
       <div className="container mx-auto py-8 px-4 flex-1">
+        <div className="space-y-6 mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold break-words">
+            {imageDetails.title}
+          </h1>
+          <p className="text-muted-foreground">{imageDetails.author}</p>
+        </div>
+
         <div className="grid gap-8 lg:grid-cols-[2fr,1fr]">
           <div className="space-y-4">
             <Card>
@@ -124,31 +133,30 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
                 </div>
               </CardContent>
             </Card>
-            <div className="flex items-center justify-between">
-              <ImageActions />
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <DownloadIcon className="w-5 h-5" />
-                <span className="font-semibold">{imageDetails.downloads}</span>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <ImageActions />
+                <DownloadTimer
+                  imageUrl={imageDetails.cloudFrontUrl}
+                  filename={`${imageDetails.title
+                    .toLowerCase()
+                    .replace(
+                      / /g,
+                      "-"
+                    )}.${imageDetails.fileType.toLowerCase()}`}
+                  imageId={imageDetails._id}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="font-semibold">Description</div>
+                <ExpandableDescription description={imageDetails.description} />
               </div>
             </div>
           </div>
 
           <div className="space-y-6">
-            <div>
-              <h1 className="text-2xl font-bold">{imageDetails.title}</h1>
-              <p className="mt-2 text-muted-foreground">
-                {imageDetails.author}
-              </p>
-            </div>
-
-            <DownloadTimer
-              imageUrl={imageDetails.cloudFrontUrl}
-              filename={`${imageDetails.title
-                .toLowerCase()
-                .replace(/ /g, "-")}.${imageDetails.fileType.toLowerCase()}`}
-              imageId={imageDetails._id}
-            />
-
             <Card>
               <CardContent className="grid gap-4 p-6">
                 <div className="grid gap-2">
@@ -176,13 +184,6 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
             </Card>
 
             <div className="space-y-2">
-              <div className="font-semibold">Description</div>
-              <p className="text-sm text-muted-foreground">
-                {imageDetails.description}
-              </p>
-            </div>
-
-            <div className="space-y-2">
               <div className="font-semibold">Category</div>
               <Badge variant="secondary" className="rounded-full px-3 py-1">
                 {imageDetails.category}
@@ -191,17 +192,7 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
 
             <div className="space-y-2">
               <div className="font-semibold">Keywords</div>
-              <div className="flex flex-wrap gap-2">
-                {imageDetails.keywords.map((keyword: string) => (
-                  <Badge
-                    key={keyword}
-                    variant="secondary"
-                    className="rounded-full px-3 py-1"
-                  >
-                    {keyword}
-                  </Badge>
-                ))}
-              </div>
+              <ExpandableKeywords keywords={imageDetails.keywords} />
             </div>
           </div>
         </div>

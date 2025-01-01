@@ -17,7 +17,7 @@ export async function GET() {
     };
     await connectDB();
 
-    const user = await User.findById(decoded.userId).select("email");
+    const user = await User.findById(decoded.userId).select("email name");
     if (!user) {
       return NextResponse.json({ user: null });
     }
@@ -26,6 +26,7 @@ export async function GET() {
       user: {
         id: user._id,
         email: user.email,
+        name: user.name,
       },
     });
   } catch (error) {

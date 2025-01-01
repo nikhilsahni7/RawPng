@@ -38,6 +38,7 @@ import {
   IconX,
   IconDeviceFloppy,
 } from "@tabler/icons-react";
+import { SFTPUpload } from "./sftp-upload";
 
 interface UploadedFile {
   _id: string;
@@ -279,18 +280,16 @@ export function UploadContent() {
 
   const handleDownloadTemplate = () => {
     const headers = [
-      "fileName",
+      "filePath",
       "category",
       "title",
       "description",
       "keywords",
-      "s3Url",
-      "cloudFrontUrl",
     ];
 
     const csvContent = [
       headers.join(","),
-      "example.jpg,Photography,Beautiful Sunset,A stunning sunset photo,sunset;nature;landscape,https://example.com/image.jpg,https://cdn.example.com/image.jpg",
+      "example.jpg,Photography,Beautiful Sunset,A stunning sunset photo,sunset;nature;landscape",
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });
@@ -341,6 +340,12 @@ export function UploadContent() {
             onUpload={(files) => {
               setFiles((prevFiles) => [...files, ...prevFiles]);
               toast.success("CSV files imported successfully!");
+            }}
+          />
+          <SFTPUpload
+            onUpload={(files) => {
+              setFiles((prevFiles) => [...files, ...prevFiles]);
+              toast.success("SFTP files imported successfully!");
             }}
           />
           <Button variant="outline" onClick={handleDownloadTemplate}>

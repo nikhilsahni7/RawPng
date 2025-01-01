@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Pencil, Trash2, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
+import { DashboardHeader } from "@/components/dashboard/header";
 import {
   Select,
   SelectContent,
@@ -185,6 +185,8 @@ export default function CategoryPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+      <DashboardHeader />
+
       <div className="container max-w-5xl mx-auto px-4 py-4">
         <Button
           variant="ghost"

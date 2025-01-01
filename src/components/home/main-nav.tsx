@@ -11,7 +11,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import { Image, VideoIcon as Vector, FileImage } from "lucide-react";
+import { Image, VideoIcon as Vector, FileImage, LogOut } from "lucide-react";
 import axios from "axios";
 import { Category, GroupedCategories } from "@/types/category";
 import { Search } from "lucide-react";
@@ -142,11 +142,17 @@ export function MainNav() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-2">
                 <UserCircle className="w-5 h-5" />
-                <span className="hidden md:inline">{user.email}</span>
+                <span className="hidden md:inline">
+                  {user.name || user.email}
+                </span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => signout()}>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem
+                onClick={() => signout()}
+                className="text-red-600 focus:text-red-600 focus:bg-red-50"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
               </DropdownMenuItem>
             </DropdownMenuContent>

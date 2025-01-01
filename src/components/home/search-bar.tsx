@@ -1,14 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import { Search } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 interface SearchBarProps {
   onSearch: (query: string, fileType: string) => void;
@@ -21,6 +14,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionRef = useRef<HTMLUListElement>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     // Handle clicks outside suggestions
@@ -82,17 +76,38 @@ export function SearchBar({ onSearch }: SearchBarProps) {
   return (
     <div className="relative w-full max-w-4xl mx-auto px-4 sm:px-6">
       <div className="relative flex w-full items-center bg-white rounded-full shadow-xl">
-        <Select value={fileType} onValueChange={setFileType}>
-          <SelectTrigger className="w-28 md:w-32 lg:w-36 rounded-l-full bg-gray-50 px-3 md:px-4 py-3 md:py-4 text-sm md:text-base text-gray-700 border-0 focus:ring-0 focus:ring-offset-0">
-            <SelectValue placeholder="Type" />
-          </SelectTrigger>
-          <SelectContent className="z-50">
-            <SelectItem value="all">All Files</SelectItem>
-            <SelectItem value="png">PNG</SelectItem>
-            <SelectItem value="vector">Vector</SelectItem>
-            <SelectItem value="image">Images</SelectItem>
-          </SelectContent>
-        </Select>
+        <div
+          className="relative"
+          onMouseEnter={() => setIsDropdownOpen(true)}
+          onMouseLeave={() => setIsDropdownOpen(false)}
+        >
+          <button className="w-28 md:w-32 lg:w-36 rounded-l-full bg-gray-50 px-3 md:px-4 py-3 md:py-4 text-sm md:text-base text-gray-700 flex items-center justify-between">
+            <span>
+              {fileType === "all"
+                ? "All Files"
+                : fileType.charAt(0).toUpperCase() + fileType.slice(1)}
+            </span>
+            <ChevronDown className="h-4 w-4 opacity-50" />
+          </button>
+          {isDropdownOpen && (
+            <div className="absolute z-50 w-full bg-white shadow-xl border mt-1 rounded-lg">
+              {["all", "png", "vector", "image"].map((type) => (
+                <button
+                  key={type}
+                  onClick={() => {
+                    setFileType(type);
+                    setIsDropdownOpen(false);
+                  }}
+                  className="w-full px-3 py-2 text-left hover:bg-gray-50 text-sm md:text-base"
+                >
+                  {type === "all"
+                    ? "All Files"
+                    : type.charAt(0).toUpperCase() + type.slice(1)}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         <div className="relative flex-1">
           <Input

@@ -3,7 +3,14 @@
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Search, FileImage, Image, UserCircle } from "lucide-react";
+import {
+  Menu,
+  Search,
+  FileImage,
+  Image,
+  UserCircle,
+  LogOut,
+} from "lucide-react";
 import { XIcon } from "lucide-react";
 import { FaVectorSquare } from "react-icons/fa";
 import Link from "next/link";
@@ -85,7 +92,7 @@ export function MobileNav() {
               <div className="flex items-center gap-2">
                 <UserCircle className="w-5 h-5" />
                 <span className="text-sm font-medium truncate">
-                  {user.email}
+                  {user.name || user.email}
                 </span>
               </div>
             ) : (
@@ -154,9 +161,10 @@ export function MobileNav() {
           <div className="p-4 border-t mt-auto bg-white">
             {user ? (
               <Button
-                className="w-full bg-red-500 hover:bg-red-600 text-white"
+                className="w-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center gap-2"
                 onClick={handleSignOut}
               >
+                <LogOut className="w-4 h-4" />
                 Sign Out
               </Button>
             ) : (

@@ -69,7 +69,7 @@ export default function RelatedImages({ imageId }: { imageId: string }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {images.map((image) => (
-          <Link key={image._id} href={`/image/${image._id}`}>
+          <Link key={image._id} href={`/image/${image._id}`} target="_blank">
             <Card className="hover:shadow-lg transition-shadow">
               <CardContent className="p-2">
                 <div
