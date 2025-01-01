@@ -10,37 +10,57 @@ export default function TermsPage() {
   const sections = [
     {
       icon: <CheckCircle className="h-6 w-6" />,
-      title: "Acceptance of Terms",
-      content: `By accessing and using Pngly, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you must not use our services.`,
+      title: "General Terms",
+      content: `Welcome to Rawpng.com! By accessing or using our platform, you agree to comply with these Terms and Conditions. Rawpng.com reserves the right to modify these terms at any time. Continued use of the website constitutes your acceptance of any changes.`,
     },
     {
       icon: <FileText className="h-6 w-6" />,
-      title: "License and Usage",
-      content: `• You may use our resources for personal and commercial projects
-        • Attribution is required for certain premium resources
-        • You may not redistribute resources as standalone files
-        • You may not claim ownership of our resources
-        • You may not sell or lease our resources
-        • Modified versions must be part of a larger design`,
+      title: "Licensing and Usage",
+      content: `• All content on Rawpng.com is 100% free for personal use
+        • Attribution is required for commercial use of any content
+        • The content on Rawpng.com is strictly not for resale, even with modifications or changes`,
+    },
+    {
+      icon: <AlertCircle className="h-6 w-6" />,
+      title: "User Responsibilities",
+      content: `• Users are prohibited from engaging in automated activities such as bots or scraping. Violation of this policy will result in the termination of service for the associated IP address
+        • Users must use the content responsibly and within the guidelines provided`,
+    },
+    {
+      icon: <Scale className="h-6 w-6" />,
+      title: "Ownership of Content",
+      content: `All content hosted on Rawpng.com is owned by Rawpng.com or its licensors. Users are granted a license to use the content per the terms outlined above but do not own the rights to the content.`,
+    },
+    {
+      icon: <FileText className="h-6 w-6" />,
+      title: "Contributors",
+      content: `Rawpng.com currently does not allow contributors to upload or sell content on the platform.`,
+    },
+    {
+      icon: <FileText className="h-6 w-6" />,
+      title: "Payments",
+      content: `Rawpng.com provides all its content free of charge at this time.`,
     },
     {
       icon: <AlertCircle className="h-6 w-6" />,
       title: "Restrictions",
-      content: `You agree not to:
-        • Use our services for any illegal purposes
-        • Attempt to gain unauthorized access to our systems
-        • Upload malicious content or software
-        • Interfere with other users' access to the service
-        • Reverse engineer any part of our platform`,
+      content: `• Users may not redistribute or resell Rawpng.com's content
+        • Automated access, scraping, or bot usage is strictly prohibited and will result in immediate action, including service termination`,
+    },
+    {
+      icon: <FileText className="h-6 w-6" />,
+      title: "Privacy Policy",
+      content: `Rawpng.com respects your privacy. For more details on how we collect and handle your data, please refer to our Privacy Policy.`,
     },
     {
       icon: <Scale className="h-6 w-6" />,
-      title: "Intellectual Property",
-      content: `• All resources remain the property of Pngly or our contributors
-        • Our trademarks and brand features are protected
-        • You retain rights to your modified works
-        • Contributors retain rights as specified in their agreements
-        • Unauthorized use may result in legal action`,
+      title: "Liability Disclaimer",
+      content: `Rawpng.com shall not be held liable for any damages or losses resulting from the use or inability to use the website or its content. The website is provided "as-is" without any warranties.`,
+    },
+    {
+      icon: <Scale className="h-6 w-6" />,
+      title: "Governing Law",
+      content: `These Terms and Conditions are governed by the laws of Haryana, India. Any disputes shall be subject to the exclusive jurisdiction of the courts in Haryana, India.`,
     },
   ];
 
@@ -92,10 +112,10 @@ export default function TermsPage() {
               If you have any questions about our Terms & Conditions, please
               contact us at{" "}
               <a
-                href="mailto:legal@pngly.com"
+                href="mailto:info@rawpng.com"
                 className="text-blue-600 hover:text-blue-800"
               >
-                legal@pngly.com
+                info@rawpng.com
               </a>
             </p>
           </section>

@@ -20,6 +20,7 @@ const navItems = [
   { title: "Dashboard", href: "/dashboard" },
   { title: "Uploading", href: "/dashboard/upload" },
   { title: "Category", href: "/dashboard/category" },
+  { title: "Contact Info", href: "/dashboard/contact-info" },
 ];
 
 export function DashboardHeader() {
