@@ -38,6 +38,8 @@ import {
   IconX,
   IconDeviceFloppy,
 } from "@tabler/icons-react";
+import { Progress } from "@/components/ui/progress";
+import { Loader2 } from "lucide-react";
 
 interface UploadedFile {
   _id: string;
@@ -63,6 +65,8 @@ interface Category {
   active: boolean;
 }
 
+// Add interface for UploadModal prop
+
 export function UploadContent() {
   const [files, setFiles] = React.useState<UploadedFile[]>([]);
   const [selectedFile, setSelectedFile] = React.useState<UploadedFile | null>(
@@ -71,6 +75,10 @@ export function UploadContent() {
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
   const [newKeyword, setNewKeyword] = React.useState("");
   const [categories, setCategories] = useState<Category[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<{
+    [key: string]: number;
+  }>({});
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -87,7 +95,15 @@ export function UploadContent() {
   }, []);
 
   const handleFileUpload = async (uploadedFiles: File[]) => {
+    setIsUploading(true);
     const formData = new FormData();
+
+    // Initialize progress for each file
+    const initialProgress = uploadedFiles.reduce((acc, file) => {
+      acc[file.name] = 0;
+      return acc;
+    }, {} as { [key: string]: number });
+    setUploadProgress(initialProgress);
 
     for (const file of uploadedFiles) {
       if (!file.type.startsWith("image/")) {
@@ -98,16 +114,40 @@ export function UploadContent() {
     }
 
     try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
+      // Use XMLHttpRequest for upload progress
+      const xhr = new XMLHttpRequest();
+      const promise = new Promise<{
+        error: string | undefined;
+        success: boolean;
+        files: UploadedFile[];
+      }>((resolve, reject) => {
+        xhr.upload.addEventListener("progress", (event: ProgressEvent) => {
+          if (event.total) {
+            const progress = (event.loaded / event.total) * 100;
+            // Update progress for all files equally
+            const newProgress = uploadedFiles.reduce((acc, file) => {
+              acc[file.name] = Math.round(progress);
+              return acc;
+            }, {} as { [key: string]: number });
+            setUploadProgress(newProgress);
+          }
+        });
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(JSON.parse(xhr.responseText));
+          } else {
+            reject(new Error(xhr.statusText));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error("Network error"));
       });
 
-      const data = await response.json();
+      xhr.open("POST", "/api/upload");
+      xhr.send(formData);
 
-      if (!response.ok) {
-        throw new Error(data.error || "Upload failed");
-      }
+      const data = await promise;
 
       if (!data.success) {
         throw new Error(data.error);
@@ -121,6 +161,9 @@ export function UploadContent() {
       toast.error(
         error instanceof Error ? error.message : "Failed to upload files"
       );
+    } finally {
+      setIsUploading(false);
+      setUploadProgress({});
     }
   };
 
@@ -332,7 +375,30 @@ export function UploadContent() {
                   Drag and drop files or click to browse
                 </DialogDescription>
               </DialogHeader>
-              <UploadModal onUpload={handleFileUpload} />
+              <UploadModal onUpload={handleFileUpload} disabled={isUploading} />
+
+              {isUploading && Object.keys(uploadProgress).length > 0 && (
+                <div className="space-y-4">
+                  {Object.entries(uploadProgress).map(
+                    ([fileName, progress]) => (
+                      <div key={fileName} className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="truncate">{fileName}</span>
+                          <span>{progress}%</span>
+                        </div>
+                        <Progress value={progress} className="w-full" />
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+
+              {isUploading && (
+                <div className="flex items-center justify-center">
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                  <span className="ml-2">Uploading files...</span>
+                </div>
+              )}
             </DialogContent>
           </Dialog>
           <CSVUpload

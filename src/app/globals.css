@@ -5,7 +5,6 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -109,38 +108,113 @@ body {
 
 /* Masonry Grid Layout */
 .masonry {
-  column-count: 2;
-  column-gap: 0.75rem;
+  column-gap: 1.5rem;
+  column-count: 1;
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 1rem;
 }
 
 @media (min-width: 640px) {
-  .masonry-sm {
-    column-count: 3;
+  .masonry {
+    column-count: 2;
   }
 }
 
 @media (min-width: 768px) {
-  .masonry-md {
-    column-count: 4;
+  .masonry {
+    column-count: 3;
   }
 }
 
 @media (min-width: 1024px) {
-  .masonry-lg {
+  .masonry {
     column-count: 4;
-    column-gap: 1rem;
   }
 }
 
 .masonry-item {
-  display: inline-block;
-  width: 100%;
+  break-inside: avoid;
+  margin-bottom: 1.5rem;
 }
 
 .break-inside-avoid {
   break-inside: avoid;
+}
+
+.dropdown-menu {
+  position: absolute;
+  z-index: 50;
+  width: 100%;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  margin-top: 0.25rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  text-align: left;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f9fafb;
+}
+
+/* Ensure dropdown is visible on mobile */
+@media (max-width: 640px) {
+  .dropdown-menu {
+    position: absolute;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+}
+
+/* Add touch device support */
+@media (hover: none) {
+  .dropdown-menu {
+    touch-action: manipulation;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+/* Add these mobile-specific styles */
+@layer utilities {
+  .safe-padding {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Adjust mobile tap targets */
+@media (max-width: 640px) {
+  button,
+  [role="button"],
+  .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+  }
+}
+
+/* Improve mobile scrolling */
+.smooth-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Fix for mobile viewport height issues */
+.min-h-screen {
+  min-height: -webkit-fill-available;
+}
+
+html {
+  height: -webkit-fill-available;
 }

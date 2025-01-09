@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Mail, MessageSquare, Send } from "lucide-react";
 import { toast } from "react-hot-toast";
-
+import { Footer } from "@/components/layout/footer";
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -171,6 +171,7 @@ export default function ContactPage() {
           </form>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

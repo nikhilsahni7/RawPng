@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { Scale, FileText, AlertCircle, CheckCircle, Mail } from "lucide-react";
 import Link from "next/link";
+import { Footer } from "@/components/layout/footer";
 
 export const metadata: Metadata = {
   title: "License Agreement - Pngly",
@@ -127,6 +128,7 @@ export default function LicensePage() {
           </section>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

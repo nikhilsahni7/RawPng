@@ -4,10 +4,12 @@ import { CloudUpload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface UploadModalProps {
-  onUpload: (files: File[]) => void;
+  onUpload: (files: File[]) => Promise<void>;
+  disabled?: boolean;
 }
 
-export function UploadModal({ onUpload }: UploadModalProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function UploadModal({ onUpload, disabled }: UploadModalProps) {
   const dropzoneOptions: DropzoneOptions = {
     accept: {
       "image/*": [".jpeg", ".jpg", ".png", ".gif"],

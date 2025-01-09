@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Mail, User, MessageSquare, Calendar } from "lucide-react";
 import { format } from "date-fns";
+import { DashboardHeader } from "@/components/dashboard/header";
 
 interface ContactInfo {
   _id: string;
@@ -41,9 +42,10 @@ export default function ContactInfo() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
+    <div className="container mx-auto px-4 py-8 gap-y-10">
+      <DashboardHeader />
+      <div className="mb-10 mt-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2 mt-2">
           Contact Submissions
         </h1>
         <p className="mt-2 text-gray-600">

@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { Scale, FileText, AlertCircle, CheckCircle } from "lucide-react";
+import { Footer } from "@/components/layout/footer";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions - Pngly",
@@ -121,6 +122,7 @@ export default function TermsPage() {
           </section>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

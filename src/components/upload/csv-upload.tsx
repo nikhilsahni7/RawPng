@@ -1,6 +1,6 @@
 // csv-upload.tsx
 import * as React from "react";
-import { FileSpreadsheet } from "lucide-react";
+import { FileSpreadsheet, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 
 import { toast } from "react-hot-toast";
 
@@ -37,9 +38,17 @@ interface CSVUploadProps {
   onUpload: (files: UploadedFile[]) => void;
 }
 
+// Add this type for XMLHttpRequest upload progress
+type ProgressEvent = {
+  loaded: number;
+  total?: number;
+};
+
 export function CSVUpload({ onUpload }: CSVUploadProps) {
   const [file, setFile] = React.useState<File | null>(null);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [isUploading, setIsUploading] = React.useState(false);
+  const [uploadProgress, setUploadProgress] = React.useState(0);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -50,21 +59,39 @@ export function CSVUpload({ onUpload }: CSVUploadProps) {
   const handleUpload = async () => {
     if (!file) return;
 
+    setIsUploading(true);
+    setUploadProgress(0);
     const formData = new FormData();
     formData.append("file", file);
 
     try {
-      const response = await fetch("/api/upload/csv", {
-        method: "POST",
-        body: formData,
-      });
+      // Use XMLHttpRequest instead of fetch for upload progress
+      const xhr = new XMLHttpRequest();
+      const promise = new Promise<{ files: UploadedFile[] }>(
+        (resolve, reject) => {
+          xhr.upload.addEventListener("progress", (event: ProgressEvent) => {
+            if (event.total) {
+              const progress = (event.loaded / event.total) * 100;
+              setUploadProgress(Math.round(progress));
+            }
+          });
 
-      const data = await response.json();
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve(JSON.parse(xhr.responseText));
+            } else {
+              reject(new Error(xhr.statusText));
+            }
+          };
 
-      if (!response.ok) {
-        throw new Error(data.error || "Upload failed");
-      }
+          xhr.onerror = () => reject(new Error("Network error"));
+        }
+      );
 
+      xhr.open("POST", "/api/upload/csv");
+      xhr.send(formData);
+
+      const data = await promise;
       onUpload(data.files);
       setIsDialogOpen(false);
       setFile(null);
@@ -74,6 +101,9 @@ export function CSVUpload({ onUpload }: CSVUploadProps) {
       toast.error(
         error instanceof Error ? error.message : "Failed to import CSV"
       );
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
   //eslint-disable-next-line
@@ -140,10 +170,28 @@ export function CSVUpload({ onUpload }: CSVUploadProps) {
             type="file"
             accept=".csv"
             onChange={handleFileChange}
+            disabled={isUploading}
           />
         </div>
-        <Button onClick={handleUpload} disabled={!file}>
-          Upload
+
+        {isUploading && (
+          <div className="space-y-2">
+            <Progress value={uploadProgress} className="w-full" />
+            <p className="text-sm text-muted-foreground text-center">
+              Uploading... {uploadProgress}%
+            </p>
+          </div>
+        )}
+
+        <Button onClick={handleUpload} disabled={!file || isUploading}>
+          {isUploading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Uploading...
+            </>
+          ) : (
+            "Upload"
+          )}
         </Button>
       </DialogContent>
     </Dialog>

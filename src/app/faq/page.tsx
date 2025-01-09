@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { HelpCircle, MessageCircle, Mail } from "lucide-react";
 import Link from "next/link";
+import { Footer } from "@/components/layout/footer";
 export const metadata: Metadata = {
   title: "FAQ - Pngly",
   description: "Frequently asked questions about Pngly's services and platform",
@@ -108,6 +109,7 @@ export default function FAQPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

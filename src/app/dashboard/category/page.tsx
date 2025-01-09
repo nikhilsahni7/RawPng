@@ -184,21 +184,21 @@ export default function CategoryPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 ">
       <DashboardHeader />
 
       <div className="container max-w-5xl mx-auto px-4 py-4">
         <Button
           variant="ghost"
           onClick={() => router.back()}
-          className="mb-6 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+          className="mb-6 hover:bg-gray-200 text-gray-700"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back
         </Button>
 
-        <div className="mb-8 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
+        <div className="mb-8 bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold mb-4 text-gray-800 ">
             Add New Category
           </h2>
           <form onSubmit={handleAddCategory} className="space-y-4">
@@ -246,10 +246,8 @@ export default function CategoryPage() {
           </form>
         </div>
 
-        <div className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-            Categories
-          </h2>
+        <div className="space-y-4 bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold text-gray-800">Categories</h2>
 
           <Tabs
             defaultValue="active"
@@ -270,13 +268,13 @@ export default function CategoryPage() {
                 {filteredCategories.map((category) => (
                   <div
                     key={category._id}
-                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md space-y-4 sm:space-y-0"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white rounded-lg shadow-md space-y-4 sm:space-y-0"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                      <span className="font-medium text-gray-800 dark:text-white">
+                      <span className="font-medium text-gray-800">
                         {category.name}
                       </span>
-                      <Badge className="w-fit bg-blue-500 dark:bg-blue-600 text-white">
+                      <Badge className="w-fit bg-blue-500 text-white">
                         {category.type}
                       </Badge>
                     </div>
@@ -407,11 +405,9 @@ export default function CategoryPage() {
         </div>
 
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="dark:bg-gray-800">
+          <DialogContent>
             <DialogHeader>
-              <DialogTitle className="text-gray-800 dark:text-white">
-                Edit Category
-              </DialogTitle>
+              <DialogTitle className="text-gray-800">Edit Category</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleEditSubmit} className="space-y-4">
               <Input

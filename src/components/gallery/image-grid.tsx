@@ -130,6 +130,13 @@ export function ImageGrid() {
     }
   };
 
+  const handleBackgroundClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setSelectedImage(null);
+      setSelectedImageIndex(null);
+    }
+  };
+
   const categories = {
     all: "All",
     png: "PNG",
@@ -225,6 +232,7 @@ export function ImageGrid() {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       className="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4"
+                      onClick={handleBackgroundClick}
                     >
                       <ImageDetails
                         image={selectedImage!}

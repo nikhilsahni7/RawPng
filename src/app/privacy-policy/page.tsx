@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { Shield, Lock, Eye, Database } from "lucide-react";
 import Link from "next/link";
+import { Footer } from "@/components/layout/footer";
 
 export const metadata: Metadata = {
   title: "Privacy Policy - Pngly",
@@ -130,6 +131,7 @@ export default function PrivacyPolicyPage() {
           </section>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import { Users, Target, Award, ArrowRight } from "lucide-react";
 import Link from "next/link";
-
+import { Footer } from "@/components/layout/footer";
 export const metadata: Metadata = {
   title: "About Us - Pngly",
   description: "Learn more about Pngly and our mission",
@@ -125,6 +125,7 @@ export default function AboutPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

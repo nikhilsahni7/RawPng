@@ -137,6 +137,24 @@ export function ImageDetails({
   return (
     <Card>
       <CardContent className="p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">{image.title}</h2>
+          <div className="flex gap-2">
+            {hasPrevious && (
+              <Button variant="outline" onClick={onPrevious}>
+                Previous
+              </Button>
+            )}
+            {hasNext && (
+              <Button variant="outline" onClick={onNext}>
+                Next
+              </Button>
+            )}
+            <Button variant="destructive" onClick={onClose}>
+              Close
+            </Button>
+          </div>
+        </div>
         <div className="grid md:grid-cols-2 gap-6">
           <div className="relative aspect-square">
             <Image

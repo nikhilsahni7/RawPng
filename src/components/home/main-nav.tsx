@@ -79,9 +79,9 @@ export function MainNav() {
   };
 
   return (
-    <div className="flex items-center gap-4 flex-1">
+    <div className="flex items-center gap-6 flex-1">
       <NavigationMenu className="hidden md:block">
-        <NavigationMenuList className="gap-2">
+        <NavigationMenuList className="gap-6">
           {(
             Object.entries(categories) as [
               keyof GroupedCategories,
@@ -89,14 +89,14 @@ export function MainNav() {
             ][]
           ).map(([key, items]) => (
             <NavigationMenuItem key={key}>
-              <NavigationMenuTrigger className="flex items-center gap-2 font-medium px-4 py-2">
+              <NavigationMenuTrigger className="bg-transparent hover:bg-gray-50/80 text-gray-700 font-medium px-4 py-2 rounded-full transition-colors">
                 {key === "png" && <FileImage className="w-4 h-4" />}
                 {key === "vector" && <Vector className="w-4 h-4" />}
                 {key === "image" && <Image className="w-4 h-4" />}
                 {key.charAt(0).toUpperCase() + key.slice(1)}
               </NavigationMenuTrigger>
               <NavigationMenuContent>
-                <div className="w-[500px] p-4">
+                <div className="w-[500px] p-6 bg-white rounded-2xl shadow-lg border">
                   <div className="mb-4">
                     <div className="relative">
                       <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -136,21 +136,27 @@ export function MainNav() {
         </NavigationMenuList>
       </NavigationMenu>
 
-      <div className="ml-auto flex items-center">
+      <div className="ml-auto flex items-center gap-4">
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2">
-                <UserCircle className="w-5 h-5" />
-                <span className="hidden md:inline">
+              <Button
+                variant="ghost"
+                className="flex items-center gap-2 hover:bg-gray-50/80 rounded-full px-4"
+              >
+                <UserCircle className="w-5 h-5 text-gray-700" />
+                <span className="hidden md:inline text-gray-700">
                   {user.name || user.email}
                 </span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuContent
+              align="end"
+              className="w-48 bg-white rounded-xl shadow-lg"
+            >
               <DropdownMenuItem
                 onClick={() => signout()}
-                className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                className="text-red-600"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
@@ -158,12 +164,17 @@ export function MainNav() {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Link href="/signin">
-              <Button variant="ghost">Sign In</Button>
+              <Button
+                variant="ghost"
+                className="text-gray-700 hover:bg-gray-50/80 rounded-full"
+              >
+                Sign In
+              </Button>
             </Link>
             <Link href="/signup">
-              <Button className="bg-blue-600 text-white hover:bg-blue-700">
+              <Button className="bg-blue-600 text-white hover:bg-blue-700 rounded-full px-6">
                 Sign Up
               </Button>
             </Link>
