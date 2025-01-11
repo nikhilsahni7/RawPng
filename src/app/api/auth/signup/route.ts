@@ -3,6 +3,8 @@ import { Resend } from "resend";
 import { User } from "@/lib/models/user";
 import { connectDB } from "@/lib/db";
 import crypto from "crypto";
+import { render } from "@react-email/render";
+import VerificationEmail from "@/emails/VerificationEmail";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -32,17 +34,20 @@ export async function POST(req: Request) {
       verificationTokenExpiry,
     });
 
+    const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}`;
+    const emailHtml = render(
+      VerificationEmail({
+        verificationUrl,
+        userName: name,
+      })
+    );
+
     // Send verification email
     await resend.emails.send({
-      from: "Nikhil Sahni <hello@nikhilsahni.me>",
+      from: "RawPng <hello@rawpng.com>",
       to: email,
-      subject: "Verify your email",
-      html: `
-        <p>Please verify your email by clicking the link below:</p>
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}">
-          Verify Email
-        </a>
-      `,
+      subject: "Verify your email - RawPng",
+      html: await emailHtml,
     });
 
     return NextResponse.json({

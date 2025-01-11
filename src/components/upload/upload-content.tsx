@@ -40,6 +40,7 @@ import {
 } from "@tabler/icons-react";
 import { Progress } from "@/components/ui/progress";
 import { Loader2 } from "lucide-react";
+import { FTPUpload } from "./ftp-upload";
 
 interface UploadedFile {
   _id: string;
@@ -99,10 +100,13 @@ export function UploadContent() {
     const formData = new FormData();
 
     // Initialize progress for each file
-    const initialProgress = uploadedFiles.reduce((acc, file) => {
-      acc[file.name] = 0;
-      return acc;
-    }, {} as { [key: string]: number });
+    const initialProgress = uploadedFiles.reduce(
+      (acc, file) => {
+        acc[file.name] = 0;
+        return acc;
+      },
+      {} as { [key: string]: number }
+    );
     setUploadProgress(initialProgress);
 
     for (const file of uploadedFiles) {
@@ -125,10 +129,13 @@ export function UploadContent() {
           if (event.total) {
             const progress = (event.loaded / event.total) * 100;
             // Update progress for all files equally
-            const newProgress = uploadedFiles.reduce((acc, file) => {
-              acc[file.name] = Math.round(progress);
-              return acc;
-            }, {} as { [key: string]: number });
+            const newProgress = uploadedFiles.reduce(
+              (acc, file) => {
+                acc[file.name] = Math.round(progress);
+                return acc;
+              },
+              {} as { [key: string]: number }
+            );
             setUploadProgress(newProgress);
           }
         });
@@ -405,6 +412,12 @@ export function UploadContent() {
             onUpload={(files) => {
               setFiles((prevFiles) => [...files, ...prevFiles]);
               toast.success("CSV files imported successfully!");
+            }}
+          />
+          <FTPUpload
+            onUpload={(files) => {
+              setFiles((prevFiles) => [...files, ...prevFiles]);
+              toast.success("FTP files imported successfully!");
             }}
           />
           <Button variant="outline" onClick={handleDownloadTemplate}>

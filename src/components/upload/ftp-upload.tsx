@@ -1,139 +1,172 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Card } from "@/components/ui/card";
+import * as React from "react";
+import { Server, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Copy, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { toast } from "react-hot-toast";
 
-export function FtpUpload() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [copied, setCopied] = useState<string | null>(null);
+interface FTPUploadProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onUpload: (files: any[]) => void;
+}
 
-  const handleCopy = (text: string, field: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(field);
-    setTimeout(() => setCopied(null), 2000);
+export function FTPUpload({ onUpload }: FTPUploadProps) {
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [isUploading, setIsUploading] = React.useState(false);
+  const [progress, setProgress] = React.useState(0);
+  const [ftpConfig, setFtpConfig] = React.useState({
+    host: "",
+    user: "",
+    password: "",
+    path: "/",
+  });
+
+  const handleUpload = async () => {
+    setIsUploading(true);
+    setProgress(0);
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minute timeout
+
+      const response = await fetch("/api/upload/ftp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(ftpConfig),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+
+      onUpload(data.files);
+      setIsDialogOpen(false);
+      toast.success(
+        `Successfully imported ${data.files.length} files from FTP!`
+      );
+    } catch (error) {
+      console.error("FTP Upload failed:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to import from FTP"
+      );
+    } finally {
+      setIsUploading(false);
+      setProgress(0);
+    }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <Card className="p-6 space-y-6">
-        <div className="space-y-2">
-          <h3 className="text-2xl font-semibold">FTP Upload</h3>
-          <p className="text-muted-foreground">
-            Use these credentials to connect to our FTP server and upload your
-            files.
-          </p>
-        </div>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline">
+          <Server className="mr-2 h-4 w-4" />
+          FTP Upload
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Upload from FTP Server</DialogTitle>
+          <DialogDescription>
+            Connect to an FTP server to import files automatically. All images
+            will be processed and optimized during import.
+          </DialogDescription>
+        </DialogHeader>
 
-        <Alert>
-          <AlertDescription>
-            Make sure to keep these credentials secure and do not share them
-            with others.
-          </AlertDescription>
-        </Alert>
-
-        <div className="grid gap-6">
-          <div className="space-y-2">
-            <Label htmlFor="server" className="text-lg">
-              Server
-            </Label>
-            <div className="flex">
-              <Input
-                id="server"
-                value="content-ftp.example.com"
-                readOnly
-                className="rounded-r-none"
-              />
-              <Button
-                variant="outline"
-                className="rounded-l-none px-3"
-                onClick={() => handleCopy("content-ftp.example.com", "server")}
-              >
-                {copied === "server" ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="ftp-host">FTP Host</Label>
+            <Input
+              id="ftp-host"
+              value={ftpConfig.host}
+              onChange={(e) =>
+                setFtpConfig({ ...ftpConfig, host: e.target.value })
+              }
+              placeholder="ftp.example.com"
+              disabled={isUploading}
+            />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="username" className="text-lg">
-              Username
-            </Label>
-            <div className="flex">
-              <Input
-                id="username"
-                value="your-username"
-                readOnly
-                className="rounded-r-none"
-              />
-              <Button
-                variant="outline"
-                className="rounded-l-none px-3"
-                onClick={() => handleCopy("your-username", "username")}
-              >
-                {copied === "username" ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
+          <div>
+            <Label htmlFor="ftp-user">Username</Label>
+            <Input
+              id="ftp-user"
+              value={ftpConfig.user}
+              onChange={(e) =>
+                setFtpConfig({ ...ftpConfig, user: e.target.value })
+              }
+              disabled={isUploading}
+            />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-lg">
-              Password
-            </Label>
-            <div className="flex">
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value="your-secure-password"
-                readOnly
-                className="rounded-r-none"
-              />
-              <Button
-                variant="outline"
-                className="rounded-l-none border-r-0 px-3"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </Button>
-              <Button
-                variant="outline"
-                className="rounded-l-none px-3"
-                onClick={() => handleCopy("your-secure-password", "password")}
-              >
-                {copied === "password" ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
+          <div>
+            <Label htmlFor="ftp-password">Password</Label>
+            <Input
+              id="ftp-password"
+              type="password"
+              value={ftpConfig.password}
+              onChange={(e) =>
+                setFtpConfig({ ...ftpConfig, password: e.target.value })
+              }
+              disabled={isUploading}
+            />
           </div>
-        </div>
 
-        <div className="pt-4">
-          <Button className="w-full">Connect to FTP</Button>
+          <div>
+            <Label htmlFor="ftp-path">Directory Path</Label>
+            <Input
+              id="ftp-path"
+              value={ftpConfig.path}
+              onChange={(e) =>
+                setFtpConfig({ ...ftpConfig, path: e.target.value })
+              }
+              placeholder="/path/to/files"
+              disabled={isUploading}
+            />
+          </div>
+
+          {isUploading && (
+            <div className="space-y-2">
+              <Progress value={progress} className="w-full" />
+              <p className="text-sm text-muted-foreground text-center">
+                Importing files... {progress}%
+              </p>
+            </div>
+          )}
+
+          <Button
+            onClick={handleUpload}
+            disabled={
+              isUploading ||
+              !ftpConfig.host ||
+              !ftpConfig.user ||
+              !ftpConfig.password
+            }
+            className="w-full"
+          >
+            {isUploading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Importing Files...
+              </>
+            ) : (
+              "Import Files"
+            )}
+          </Button>
         </div>
-      </Card>
-    </motion.div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -125,7 +125,7 @@ const config: Config = {
         modal: "2000",
       },
       screens: {
-        xs: "375px",
+        xs: "475px",
       },
       spacing: {
         "safe-top": "env(safe-area-inset-top)",

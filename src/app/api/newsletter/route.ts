@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { Newsletter } from "@/lib/models/newsletter";
 import { Resend } from "resend";
+import { render } from "@react-email/render";
+import NewsletterWelcomeEmail from "@/emails/NewsletterWelcomeEmail";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -30,16 +32,18 @@ export async function POST(req: NextRequest) {
     // Save to database
     await Newsletter.create({ email });
 
+    const emailHtml = render(
+      NewsletterWelcomeEmail({
+        email,
+      })
+    );
+
     // Send welcome email
     await resend.emails.send({
-      from: "Pngly <hello@yourdomain.com>",
+      from: "RawPng <hello@rawpng.com>",
       to: email,
-      subject: "Welcome to Pngly Newsletter!",
-      html: `
-        <h2>Welcome to Pngly Newsletter!</h2>
-        <p>Thank you for subscribing to our newsletter. We'll keep you updated with the latest resources and news.</p>
-        <p>Best regards,<br>The Pngly Team</p>
-      `,
+      subject: "Welcome to RawPng Newsletter! 🎨",
+      html: await emailHtml,
     });
 
     return NextResponse.json({
