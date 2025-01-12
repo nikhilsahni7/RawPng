@@ -113,22 +113,40 @@ body {
   width: 100%;
 }
 
-@media (min-width: 640px) {
+/* Update media queries to use viewport width (vw) */
+@media screen and (min-width: 640px) {
   .masonry {
-    column-count: 2;
+    column-count: auto;
+    column-width: 300px; /* Base column width */
   }
 }
 
-@media (min-width: 768px) {
+@media screen and (min-width: 1024px) {
   .masonry {
-    column-count: 3;
+    column-width: 320px;
   }
 }
 
-@media (min-width: 1024px) {
+@media screen and (min-width: 1536px) {
   .masonry {
-    column-count: 4;
+    column-width: 340px;
   }
+}
+
+/* Ensure images scale properly */
+.masonry img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+/* Add container constraints */
+.masonry-container {
+  width: 100%;
+  max-width: 1920px; /* Maximum width for very large screens */
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
 .masonry-item {
@@ -217,4 +235,30 @@ body {
 
 html {
   height: -webkit-fill-available;
+}
+
+.signin-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Add these styles for auth pages */
+.auth-container {
+  @apply flex min-h-[100dvh] items-center justify-center p-4 bg-gradient-to-br from-gray-50 to-gray-100;
+}
+
+.auth-form-container {
+  @apply w-full max-w-[400px] p-6 sm:p-8 space-y-6 bg-card rounded-2xl shadow-auth;
+}
+
+.shadow-auth {
+  box-shadow: 0px 4px 24px -1px rgba(0, 0, 0, 0.08);
+}
+
+/* Add this for the Google icon background */
+.google-icon-bg {
+  background-color: #fff;
+  padding: 6px;
+  border-radius: 50%;
 }

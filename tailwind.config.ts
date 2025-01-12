@@ -118,6 +118,7 @@ const config: Config = {
       boxShadow: {
         nav: "0 2px 4px rgba(0,0,0,0.02)",
         card: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+        auth: "0 4px 24px -1px rgba(0, 0, 0, 0.1), 0 2px 8px -1px rgba(0, 0, 0, 0.06)",
       },
       zIndex: {
         "100": "100",

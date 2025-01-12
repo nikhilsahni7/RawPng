@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { Scale, FileText, AlertCircle, CheckCircle, Mail } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
 
 export const metadata: Metadata = {
   title: "License Agreement - Pngly",
@@ -51,6 +52,7 @@ export default function LicensePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <Header />
       {/* Hero Section */}
       <div className="bg-blue-600 text-white">
         <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">

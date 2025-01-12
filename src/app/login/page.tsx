@@ -27,7 +27,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="auth-container">
       <div className="w-full max-w-md">
         <form
           onSubmit={handleSubmit}

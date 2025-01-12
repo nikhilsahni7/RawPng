@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Mail, MessageSquare, Send } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -53,6 +54,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
+      <Header />
       <div className="bg-blue-600 text-white">
         <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
           <div className="text-center">

@@ -10,6 +10,7 @@ export interface IUser extends Document {
   verificationToken?: string;
   verificationTokenExpiry?: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
+  googleId?: string;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -37,6 +38,11 @@ const UserSchema = new Schema<IUser>(
     },
     verificationToken: String,
     verificationTokenExpiry: Date,
+    googleId: {
+      type: String,
+      sparse: true,
+      unique: true,
+    },
   },
   { timestamps: true }
 );
