@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Twitter, Instagram, Linkedin, Github } from "lucide-react";
@@ -45,7 +45,7 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-2 mb-4">
               <Image
                 src="/logo.svg"
-                alt="Pngly"
+                alt="rawpng"
                 width={120}
                 height={40}
                 className="rounded-md"
@@ -209,7 +209,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Pngly. All rights reserved.
+              © {new Date().getFullYear()} rawpng. All rights reserved.
             </p>
             <div className="flex gap-4 mt-4 md:mt-0">
               <Link

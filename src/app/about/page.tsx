@@ -6,8 +6,8 @@ import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
 export const metadata: Metadata = {
-  title: "About Us - Pngly",
-  description: "Learn more about Pngly and our mission",
+  title: "About Us - rawpng",
+  description: "Learn more about rawpng and our mission",
 };
 
 export default function AboutPage() {
@@ -29,7 +29,7 @@ export default function AboutPage() {
       icon: <Users className="h-6 w-6" />,
       title: "Community Driven",
       description:
-        "Our community of designers and creators helps shape the future of Pngly.",
+        "Our community of designers and creators helps shape the future of rawpng.",
     },
     {
       icon: <Award className="h-6 w-6" />,
@@ -48,7 +48,7 @@ export default function AboutPage() {
           <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-                About Pngly
+                About rawpng
               </h1>
               <p className="mt-4 text-xl text-blue-100">
                 Empowering creators with high-quality design resources
@@ -83,7 +83,7 @@ export default function AboutPage() {
               </h2>
               <div className="prose text-gray-600">
                 <p>
-                  Founded in 2020, Pngly started with a simple mission: to
+                  Founded in 2020, rawpng started with a simple mission: to
                   provide designers and creators with high-quality resources
                   that make their work easier and more efficient.
                 </p>
@@ -103,7 +103,7 @@ export default function AboutPage() {
             <div className="relative h-[400px] rounded-xl overflow-hidden">
               <Image
                 src="/team.jpg"
-                alt="Pngly team"
+                alt="rawpng team"
                 fill
                 className="object-cover"
               />

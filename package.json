@@ -39,6 +39,7 @@
     "critters": "^0.0.25",
     "date-fns": "^4.1.0",
     "framer-motion": "^11.12.0",
+    "ftp-srv": "^4.6.3",
     "google-auth-library": "^9.15.0",
     "install": "^0.13.0",
     "jsonwebtoken": "^9.0.2",

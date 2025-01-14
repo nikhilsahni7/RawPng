@@ -4,8 +4,8 @@ import Link from "next/link";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 export const metadata: Metadata = {
-  title: "Privacy Policy - Pngly",
-  description: "Privacy Policy and data handling practices of Pngly",
+  title: "Privacy Policy - rawpng",
+  description: "Privacy Policy and data handling practices of rawpng",
 };
 
 export default function PrivacyPolicyPage() {

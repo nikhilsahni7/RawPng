@@ -8,11 +8,9 @@ import { DownloadTimer } from "@/components/download-timer";
 import { ImageActions } from "@/components/ImageActions";
 
 import RelatedImages from "@/components/related-images";
-import { MainNav } from "@/components/home/main-nav";
-import { MobileNav } from "@/components/home/mobile-nav";
-import Link from "next/link";
 import ExpandableDescription from "@/components/ExpandableDescription";
 import ExpandableKeywords from "@/components/ExpandableKeywords";
+import { Header } from "@/components/layout/header";
 
 export interface ImageDetails {
   _id: string;
@@ -58,7 +56,7 @@ async function getImageDetails(id: string): Promise<ImageDetails | null> {
     return {
       ...data,
       license: "Standard License",
-      author: "by Pngly",
+      author: "by rawpng",
     };
   } catch (error) {
     console.error("Error fetching image details:", error);
@@ -81,28 +79,7 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
-        <div className="container flex h-14 items-center">
-          <Link href="/" className="flex items-center gap-2 mr-6">
-            <Image
-              src="/logo.svg"
-              alt="Pngly"
-              width={120}
-              height={40}
-              className="rounded-md"
-              priority
-            />
-          </Link>
-
-          {/* Desktop Navigation */}
-          <MainNav />
-
-          {/* Mobile Navigation */}
-          <div className="md:hidden ml-auto">
-            <MobileNav />
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <div className="container mx-auto py-8 px-4 flex-1">
         <div className="space-y-6 mb-8">
@@ -217,11 +194,11 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${imageDetails.title} - Pngly`,
+    title: `${imageDetails.title} - rawpng`,
     description: imageDetails.description,
     keywords: imageDetails.keywords,
     openGraph: {
-      title: `${imageDetails.title} - Pngly`,
+      title: `${imageDetails.title} - rawpng`,
       description: imageDetails.description,
       type: "article",
       publishedTime: imageDetails.uploadDate,
@@ -237,7 +214,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${imageDetails.title} - Pngly`,
+      title: `${imageDetails.title} - rawpng`,
       description: imageDetails.description,
       images: [`/image/${params.id}/opengraph-image`],
     },

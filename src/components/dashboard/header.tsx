@@ -33,7 +33,7 @@ export function DashboardHeader() {
         <div className="flex items-center space-x-4">
           <Link href="/" className="flex items-center space-x-2">
             <motion.div className="rounded-md">
-              <Image src="/logo.svg" alt="Pngly" width={100} height={100} />
+              <Image src="/logo.svg" alt="rawpng" width={100} height={100} />
             </motion.div>
           </Link>
           <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">

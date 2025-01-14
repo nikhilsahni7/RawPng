@@ -85,7 +85,7 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <Image
               src="/logo.svg"
-              alt="Pngly"
+              alt="rawpng"
               width={120}
               height={40}
               className="w-24 sm:w-32 md:w-40"
@@ -162,12 +162,9 @@ export default function Home() {
             </div>
 
             {loading ? (
-              <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 sm:gap-6 sm:grid-cols-3 md:grid-cols-4">
+              <div className="grid grid-cols-1 xs:grid-cols-2 gap-0 sm:grid-cols-3 md:grid-cols-4">
                 {Array.from({ length: 8 }).map((_, index) => (
-                  <Skeleton
-                    key={index}
-                    className="aspect-[4/3] w-full rounded-xl"
-                  />
+                  <Skeleton key={index} className="aspect-[4/3] w-full" />
                 ))}
               </div>
             ) : images.length > 0 ? (

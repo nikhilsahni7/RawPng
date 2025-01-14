@@ -76,10 +76,10 @@ export default function ContactPage() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-900">Email</p>
               <a
-                href="mailto:support@pngly.com"
+                href="mailto:support@rawpng.com"
                 className="text-blue-600 hover:text-blue-800"
               >
-                support@pngly.com
+                support@rawpng.com
               </a>
             </div>
           </div>

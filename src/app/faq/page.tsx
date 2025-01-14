@@ -4,21 +4,22 @@ import Link from "next/link";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 export const metadata: Metadata = {
-  title: "FAQ - Pngly",
-  description: "Frequently asked questions about Pngly's services and platform",
+  title: "FAQ - rawpng",
+  description:
+    "Frequently asked questions about rawpng's services and platform",
 };
 
 export default function FAQPage() {
   const faqs = [
     {
-      question: "What file formats does Pngly support?",
+      question: "What file formats does rawpng support?",
       answer:
-        "Pngly supports multiple file formats including PNG, SVG, AI, and EPS. All images are available in high resolution and are optimized for both web and print use.",
+        "rawpng supports multiple file formats including PNG, SVG, AI, and EPS. All images are available in high resolution and are optimized for both web and print use.",
     },
     {
       question: "Are the resources free to use?",
       answer:
-        "Yes, all resources on Pngly are free to use for both personal and commercial projects. However, we recommend checking the specific license terms for each resource as some may require attribution.",
+        "Yes, all resources on rawpng are free to use for both personal and commercial projects. However, we recommend checking the specific license terms for each resource as some may require attribution.",
     },
     {
       question: "Can I modify and redistribute the resources?",
@@ -31,7 +32,7 @@ export default function FAQPage() {
         "Most of our PNG images are available in resolutions up to 4000x4000 pixels. Vector files (SVG, AI) are scalable to any size without quality loss.",
     },
     {
-      question: "Do I need to credit Pngly when using the resources?",
+      question: "Do I need to credit rawpng when using the resources?",
       answer:
         "While attribution is not required for most resources, we appreciate credits when possible. Some premium resources may require attribution - this will be clearly stated in the resource's license information.",
     },
@@ -54,7 +55,7 @@ export default function FAQPage() {
               Frequently Asked Questions
             </h1>
             <p className="mt-4 text-xl text-blue-100">
-              Find answers to common questions about using Pngly
+              Find answers to common questions about using rawpng
             </p>
           </div>
         </div>
@@ -102,7 +103,7 @@ export default function FAQPage() {
               <span className="font-medium text-blue-900">Contact Support</span>
             </Link>
             <a
-              href="mailto:support@pngly.com"
+              href="mailto:support@rawpng.com"
               className="flex items-center justify-center gap-3 p-6 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors"
             >
               <Mail className="h-6 w-6 text-blue-600" />

@@ -4,8 +4,8 @@ import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions - Pngly",
-  description: "Terms and conditions for using Pngly's services",
+  title: "Terms & Conditions - rawpng",
+  description: "Terms and conditions for using rawpng's services",
 };
 
 export default function TermsPage() {

@@ -11,33 +11,38 @@ export default function Pagination({
   totalPages,
   onPageChange,
 }: PaginationProps) {
-  const pages = [];
-
-  for (let i = 1; i <= totalPages; i++) {
-    pages.push(i);
-  }
-
   return (
-    <div className="flex items-center space-x-2">
-      {currentPage > 1 && (
-        <Button variant="outline" onClick={() => onPageChange(currentPage - 1)}>
-          Previous
-        </Button>
-      )}
-      {pages.map((page) => (
-        <Button
-          key={page}
-          variant={page === currentPage ? "default" : "outline"}
-          onClick={() => onPageChange(page)}
-        >
-          {page}
-        </Button>
-      ))}
-      {currentPage < totalPages && (
-        <Button variant="outline" onClick={() => onPageChange(currentPage + 1)}>
-          Next
-        </Button>
-      )}
+    <div className="flex items-center justify-center space-x-4">
+      <Button
+        variant="ghost"
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage <= 1}
+      >
+        <span>←</span>
+      </Button>
+
+      <div className="flex items-center space-x-2">
+        <input
+          type="text"
+          value={currentPage}
+          className="w-12 text-center border rounded-md p-1"
+          onChange={(e) => {
+            const value = parseInt(e.target.value);
+            if (value > 0 && value <= totalPages) {
+              onPageChange(value);
+            }
+          }}
+        />
+        <span className="text-gray-600">of {totalPages} pages</span>
+      </div>
+
+      <Button
+        variant="ghost"
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage >= totalPages}
+      >
+        <span>→</span>
+      </Button>
     </div>
   );
 }

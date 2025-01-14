@@ -5,8 +5,9 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Pagination from "@/components/home/pagination";
-import { Card, CardContent } from "@/components/ui/card";
+
 import { Footer } from "@/components/layout/footer";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface RelatedImage {
   _id: string;
@@ -60,47 +61,62 @@ export default function RelatedImages({ imageId }: { imageId: string }) {
   };
 
   if (loading) {
-    return <div className="mt-8">Loading related images...</div>;
+    return (
+      <div className="grid grid-cols-1 xs:grid-cols-2 gap-0 sm:grid-cols-3 md:grid-cols-4">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <Skeleton key={index} className="aspect-[4/3] w-full" />
+        ))}
+      </div>
+    );
   }
 
   return (
     <div className="mt-12 space-y-6">
       <h2 className="text-2xl font-bold">Related Images</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {images.map((image) => (
-          <Link key={image._id} href={`/image/${image._id}`} target="_blank">
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-2">
-                <div
-                  className="relative w-full"
-                  style={{
-                    paddingBottom: `${
-                      (image.dimensions.height / image.dimensions.width) * 100
-                    }%`,
-                  }}
-                >
+      {images.length > 0 ? (
+        <div className="masonry">
+          {images.map((image) => (
+            <div key={image._id} className="masonry-item">
+              <Link href={`/image/${image._id}`} target="_blank">
+                <div className="relative w-full">
+                  <div
+                    style={{
+                      paddingBottom: `${
+                        (image.dimensions.height / image.dimensions.width) * 100
+                      }%`,
+                    }}
+                  />
                   <Image
                     src={image.cloudFrontUrl}
                     alt={image.title}
                     fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                    className="object-cover rounded-lg"
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover absolute top-0 left-0"
+                    priority={false}
                   />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
+                      <h3 className="text-xs font-medium text-white truncate">
+                        {image.title}
+                      </h3>
+                      <span className="inline-block mt-1 px-2 py-0.5 text-xs text-white bg-black/50 border border-white/30">
+                        {image.category}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-2">
-                  <h3 className="text-sm font-medium truncate">
-                    {image.title}
-                  </h3>
-                  <p className="text-xs text-muted-foreground">
-                    {image.category}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
-      </div>
+              </Link>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-2xl border-2 border-dashed p-6 sm:p-12 text-center">
+          <p className="text-sm sm:text-base text-gray-500">
+            No related images found
+          </p>
+        </div>
+      )}
 
       {pagination.totalPages > 1 && (
         <div className="flex justify-center mt-8">

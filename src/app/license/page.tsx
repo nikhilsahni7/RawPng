@@ -5,8 +5,8 @@ import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 
 export const metadata: Metadata = {
-  title: "License Agreement - Pngly",
-  description: "License agreement for using Pngly's services and content",
+  title: "License Agreement - rawpng",
+  description: "License agreement for using rawpng's services and content",
 };
 
 export default function LicensePage() {

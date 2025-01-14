@@ -9,7 +9,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <Image
             src="/logo.svg"
-            alt="Pngly"
+            alt="rawpng"
             width={120}
             height={40}
             className="w-24 sm:w-32 md:w-40"
