@@ -80,8 +80,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#FAFBFC]">
       {/* Header - Updated for better mobile spacing */}
-      <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
+      <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm safe-padding">
+        <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <Image
               src="/logo.svg"
@@ -100,10 +100,10 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="flex-1">
+      <main className="flex-1 safe-padding">
         {/* Hero Section - Updated for mobile */}
-        <section className="relative bg-[#FAFBFC] py-8 sm:py-12 lg:py-32">
-          <div className="container relative mx-auto px-4 sm:px-6">
+        <section className="relative bg-[#FAFBFC] py-6 sm:py-12 lg:py-32">
+          <div className="container relative mx-auto px-4">
             <div className="mx-auto max-w-4xl text-center">
               <h1 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
                 Discover
@@ -124,7 +124,7 @@ export default function Home() {
               <p className="mx-auto mb-6 sm:mb-8 max-w-2xl text-sm sm:text-base text-gray-600 md:text-lg px-2 sm:px-4">
                 Looking for resources? We are here to help you use it for free
               </p>
-              <div className="mx-auto max-w-2xl px-2 sm:px-0">
+              <div className="mx-auto max-w-2xl px-2 sm:px-0 block">
                 <SearchBar onSearch={handleSearch} />
               </div>
             </div>

@@ -1,4 +1,6 @@
 // app/api/upload/route.ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { NextRequest, NextResponse } from "next/server";
 import { uploadToS3 } from "@/lib/s3-upload";
 import { File as FileModel } from "@/lib/models/file";
@@ -6,7 +8,6 @@ import { connectDB } from "@/lib/db";
 import sharp from "sharp";
 import { Category } from "@/lib/models/category";
 
-// Add proper typing for uploaded file
 interface UploadedFile {
   name: string;
   type: string;
@@ -24,10 +25,12 @@ async function getCategory(): Promise<string> {
   }
 }
 
+// Optimize batch processing->
+const BATCH_SIZE = 25; //
+
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
-
     const formData = await req.formData();
     const files = formData.getAll("files");
 
@@ -36,112 +39,151 @@ export async function POST(req: NextRequest) {
     }
 
     const uploadedFiles = [];
+    const errors: any[] = [];
 
-    for (const file of files) {
-      const f = file as unknown as UploadedFile;
+    // Process files in smaller batches
+    for (let i = 0; i < files.length; i += BATCH_SIZE) {
+      const batch = files.slice(i, i + BATCH_SIZE);
+      const batchPromises = batch.map(async (file) => {
+        const f = file as unknown as UploadedFile;
 
-      // Add more detailed logging
-      console.log("Processing file:", {
-        name: f.name,
-        type: f.type,
-        size: f.size,
+        if (!f.type.startsWith("image/")) {
+          return null;
+        }
+
+        try {
+          const buffer = Buffer.from(await f.arrayBuffer());
+          const imageInfo = await sharp(buffer).metadata();
+
+          // Optimize image processing based on type
+          let processedBuffer;
+          if (f.type === "image/svg+xml") {
+            processedBuffer = buffer; // Don't process SVGs
+          } else {
+            processedBuffer = await sharp(buffer)
+              .resize(2000, 2000, { fit: "inside", withoutEnlargement: true })
+              .toBuffer();
+          }
+
+          const s3Result = await uploadToS3(processedBuffer, f.name, f.type);
+          const category = await getCategory();
+
+          // Enhanced metadata generation
+          const metadata = generateMetadata(f.name, imageInfo);
+
+          return await FileModel.create({
+            fileName: f.name,
+            fileType: getFileType(f),
+            fileSize: f.size,
+            dimensions: {
+              width: imageInfo?.width || 0,
+              height: imageInfo?.height || 0,
+            },
+            ...s3Result,
+            category,
+            ...metadata,
+            uploadDate: new Date(),
+          });
+        } catch (error) {
+          errors.push({
+            file: f.name,
+            error: error instanceof Error ? error.message : "Unknown error",
+          });
+          return null;
+        }
       });
 
-      if (!f.type.startsWith("image/")) {
-        return NextResponse.json(
-          { error: `Invalid file type: ${f.type}` },
-          { status: 400 }
-        );
-      }
+      const batchResults = await Promise.allSettled(batchPromises);
+      const successfulUploads = batchResults
+        .filter((result) => result.status === "fulfilled" && result.value)
+        .map((result) => (result as PromiseFulfilledResult<any>).value);
 
-      try {
-        const buffer = Buffer.from(await f.arrayBuffer());
-
-        // Log image processing
-        console.log("Processing image with Sharp");
-
-        const imageInfo = await sharp(buffer).metadata();
-
-        const processedBuffer = await sharp(buffer)
-          .resize(2000, 2000, { fit: "inside", withoutEnlargement: true })
-          .toBuffer();
-
-        // Log S3 upload
-        console.log("Uploading to S3");
-
-        const s3Result = await uploadToS3(processedBuffer, f.name, f.type);
-
-        // Create file document
-        const category = await getCategory();
-
-        const fileDoc = await FileModel.create({
-          fileName: f.name,
-          fileType: getFileType(f),
-          fileSize: f.size,
-          dimensions: {
-            width: imageInfo?.width || 0,
-            height: imageInfo?.height || 0,
-          },
-          ...s3Result,
-          category,
-          title: generateTitle(f.name),
-          description: generateDescription(f.name),
-          keywords: generateKeywords(f.name),
-          uploadDate: new Date(),
-        });
-
-        uploadedFiles.push(fileDoc);
-        console.log("File processed successfully:", fileDoc._id);
-      } catch (processError) {
-        console.error("Detailed processing error:", processError);
-        const errorMessage =
-          processError instanceof Error
-            ? processError.message
-            : "Unknown error";
-        return NextResponse.json(
-          { error: `Failed to process file: ${errorMessage}` },
-          { status: 500 }
-        );
-      }
+      uploadedFiles.push(...successfulUploads);
     }
 
-    return NextResponse.json({ success: true, files: uploadedFiles });
+    return NextResponse.json({
+      success: true,
+      files: uploadedFiles,
+      totalProcessed: uploadedFiles.length,
+      totalAttempted: files.length,
+      errors: errors.length > 0 ? errors : undefined,
+    });
   } catch (error) {
     console.error("Upload handler error:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: `Failed to upload files: ${errorMessage}` },
+      {
+        error: `Failed to upload files: ${error instanceof Error ? error.message : "Unknown error"}`,
+      },
       { status: 500 }
     );
   }
 }
 
-// Utility functions to generate metadata
-function generateKeywords(filename: string): string[] {
-  const words = filename
+// Enhanced metadata generation
+function generateMetadata(filename: string, imageInfo: sharp.Metadata) {
+  const baseName = filename.replace(/\.[^/.]+$/, "");
+  const words = baseName.split(/[-_\s]+/).filter((w) => w.length > 2);
+
+  const title = words
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+
+  const description = `High-quality ${imageInfo?.format || "image"} of ${title}`;
+
+  // Enhanced keyword generation
+  const keywords = generateEnhancedKeywords(filename, imageInfo);
+
+  return { title, description, keywords };
+}
+
+function generateEnhancedKeywords(
+  filename: string,
+  imageInfo: sharp.Metadata
+): string[] {
+  const baseWords = filename
     .replace(/\.[^/.]+$/, "")
     .split(/[-_\s]+/)
     .filter((word) => word.length > 2)
     .map((word) => word.toLowerCase());
-  const additionalKeywords = ["digital", "media", "content"];
-  return [...new Set([...words, ...additionalKeywords])];
+
+  const formatKeywords = {
+    png: ["transparent background", "png", "digital art"],
+    svg: ["vector", "scalable", "svg", "illustration"],
+    jpeg: ["photo", "photography", "high-quality"],
+    jpg: ["photo", "photography", "high-quality"],
+  };
+
+  const format = imageInfo?.format as keyof typeof formatKeywords;
+  const formatSpecificKeywords = formatKeywords[format] || [];
+
+  const dimensionBasedKeywords = [];
+  if (imageInfo?.width && imageInfo?.height) {
+    if (imageInfo.width >= 2000 || imageInfo.height >= 2000) {
+      dimensionBasedKeywords.push("high-resolution", "4k", "large");
+    }
+  }
+
+  return [
+    ...new Set([
+      ...baseWords,
+      ...formatSpecificKeywords,
+      ...dimensionBasedKeywords,
+      "digital",
+      "media",
+      "content",
+    ]),
+  ];
 }
 
-function generateTitle(filename: string): string {
-  return filename.replace(/\.[^/.]+$/, "");
-}
-
-function generateDescription(filename: string): string {
-  return `An image titled ${generateTitle(filename)}.`;
-}
-
+// Enhanced file type detection
 function getFileType(file: UploadedFile): string {
   const typeMap: { [key: string]: string } = {
     "image/png": "png",
     "image/svg+xml": "vector",
     "image/jpeg": "image",
     "image/jpg": "image",
+    "image/gif": "image",
+    "image/webp": "image",
   };
   return typeMap[file.type] || "image";
 }

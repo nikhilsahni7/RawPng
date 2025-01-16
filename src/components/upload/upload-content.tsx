@@ -24,23 +24,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
+
 import { UploadModal } from "./upload-modal";
 import { CSVUpload } from "./csv-upload";
-import Image from "next/image";
+
 import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import {
   IconArrowLeft,
   IconUpload,
   IconDownload,
-  IconFile,
   IconX,
   IconDeviceFloppy,
+  IconInbox,
 } from "@tabler/icons-react";
 import { Progress } from "@/components/ui/progress";
 import { Loader2 } from "lucide-react";
 import { FTPUpload } from "./ftp-upload";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { FileGridItem } from "./file-grid-item";
 
 interface UploadedFile {
   _id: string;
@@ -80,6 +82,17 @@ export function UploadContent() {
     [key: string]: number;
   }>({});
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoading] = useState(false);
+  const [error] = useState<string | null>(null);
+
+  const parentRef = React.useRef<HTMLDivElement>(null);
+
+  const rowVirtualizer = useVirtualizer({
+    count: Math.ceil(files.length / 4),
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 200, // Estimated row height
+    overscan: 5,
+  });
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -97,81 +110,73 @@ export function UploadContent() {
 
   const handleFileUpload = async (uploadedFiles: File[]) => {
     setIsUploading(true);
-    const formData = new FormData();
 
-    // Initialize progress for each file
-    const initialProgress = uploadedFiles.reduce(
-      (acc, file) => {
-        acc[file.name] = 0;
-        return acc;
-      },
-      {} as { [key: string]: number }
-    );
-    setUploadProgress(initialProgress);
+    // Process files in chunks to avoid memory issues
+    const CHUNK_SIZE = 100;
+    const totalChunks = Math.ceil(uploadedFiles.length / CHUNK_SIZE);
 
-    for (const file of uploadedFiles) {
-      if (!file.type.startsWith("image/")) {
-        toast.error("Only image files are allowed");
-        return;
-      }
-      formData.append("files", file);
-    }
+    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      const start = chunkIndex * CHUNK_SIZE;
+      const end = start + CHUNK_SIZE;
+      const chunk = uploadedFiles.slice(start, end);
 
-    try {
-      // Use XMLHttpRequest for upload progress
-      const xhr = new XMLHttpRequest();
-      const promise = new Promise<{
-        error: string | undefined;
-        success: boolean;
-        files: UploadedFile[];
-      }>((resolve, reject) => {
-        xhr.upload.addEventListener("progress", (event: ProgressEvent) => {
-          if (event.total) {
-            const progress = (event.loaded / event.total) * 100;
-            // Update progress for all files equally
-            const newProgress = uploadedFiles.reduce(
-              (acc, file) => {
-                acc[file.name] = Math.round(progress);
-                return acc;
-              },
-              {} as { [key: string]: number }
-            );
-            setUploadProgress(newProgress);
-          }
-        });
-
-        xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve(JSON.parse(xhr.responseText));
-          } else {
-            reject(new Error(xhr.statusText));
-          }
-        };
-
-        xhr.onerror = () => reject(new Error("Network error"));
+      const formData = new FormData();
+      chunk.forEach((file) => {
+        if (file.type.startsWith("image/")) {
+          formData.append("files", file);
+        }
       });
 
-      xhr.open("POST", "/api/upload");
-      xhr.send(formData);
+      try {
+        const xhr = new XMLHttpRequest();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const promise = new Promise<any>((resolve, reject) => {
+          xhr.upload.addEventListener("progress", (event: ProgressEvent) => {
+            if (event.total) {
+              const progress = (event.loaded / event.total) * 100;
+              const currentProgress = Math.round(
+                ((chunkIndex * CHUNK_SIZE) / uploadedFiles.length) * 100 +
+                  progress / totalChunks
+              );
 
-      const data = await promise;
+              setUploadProgress((prev) => ({
+                ...prev,
+                total: currentProgress,
+              }));
+            }
+          });
 
-      if (!data.success) {
-        throw new Error(data.error);
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve(JSON.parse(xhr.responseText));
+            } else {
+              reject(new Error(xhr.statusText));
+            }
+          };
+
+          xhr.onerror = () => reject(new Error("Network error"));
+        });
+
+        xhr.open("POST", "/api/upload");
+        xhr.send(formData);
+
+        const data = await promise;
+
+        if (data.files?.length) {
+          setFiles((prev) => [...data.files, ...prev]);
+        }
+
+        toast.success(`Processed chunk ${chunkIndex + 1}/${totalChunks}`);
+      } catch (error) {
+        console.error(`Error uploading chunk ${chunkIndex + 1}:`, error);
+        toast.error(`Failed to upload some files in chunk ${chunkIndex + 1}`);
       }
-
-      setFiles((prevFiles) => [...data.files, ...prevFiles]);
-      setIsUploadModalOpen(false);
-      toast.success("Files uploaded successfully!");
-    } catch (error) {
-      console.error("Upload failed:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to upload files"
-      );
-    } finally {
-      setIsUploading(false);
-      setUploadProgress({});
     }
+
+    setIsUploading(false);
+    setUploadProgress({});
+    setIsUploadModalOpen(false);
+    toast.success("Upload completed!");
   };
 
   const handleSave = async () => {
@@ -429,50 +434,70 @@ export function UploadContent() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left side - File grid */}
-        <div className="w-2/3 p-4 overflow-y-auto">
-          <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
-            <AnimatePresence>
-              {files.map((file) => (
-                <motion.div
-                  key={file._id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  className={cn(
-                    "relative group cursor-pointer",
-                    selectedFile?._id === file._id ? "ring-2 ring-primary" : ""
-                  )}
-                  onClick={() => setSelectedFile(file)}
-                >
-                  {file.cloudFrontUrl ? (
-                    <Image
-                      src={file.cloudFrontUrl}
-                      alt={file.fileName || "Uploaded image"}
-                      width={200}
-                      height={200}
-                      className="w-full h-32 object-cover rounded-lg"
-                    />
-                  ) : (
-                    <div className="w-full h-32 flex items-center justify-center bg-muted rounded-lg">
-                      <IconFile className="h-12 w-12 text-muted-foreground" />
-                    </div>
-                  )}
-                  <div className="absolute top-2 right-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(file);
+        <div ref={parentRef} className="w-2/3 p-4 overflow-y-auto">
+          {isLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <IconX className="h-12 w-12 text-destructive mb-4" />
+              <h3 className="font-semibold">Failed to load files</h3>
+              <p className="text-muted-foreground">{error}</p>
+            </div>
+          ) : files.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <IconInbox className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="font-semibold">No files uploaded yet</h3>
+              <p className="text-muted-foreground">
+                Upload files by clicking the button above or drag and drop them
+                here
+              </p>
+            </div>
+          ) : (
+            <div
+              style={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+                width: "100%",
+                position: "relative",
+              }}
+            >
+              <AnimatePresence>
+                {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                  const startIndex = virtualRow.index * 4;
+                  const rowFiles = files.slice(startIndex, startIndex + 4);
+
+                  return (
+                    <motion.div
+                      key={virtualRow.index}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: `${virtualRow.size}px`,
+                        transform: `translateY(${virtualRow.start}px)`,
                       }}
+                      className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
                     >
-                      <IconX className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
+                      {rowFiles.map((file) => (
+                        <FileGridItem
+                          key={file._id}
+                          file={file}
+                          isSelected={selectedFile?._id === file._id}
+                          onSelect={() => setSelectedFile(file)}
+                          onDelete={() => handleDelete(file)}
+                        />
+                      ))}
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
 
         {/* Right side - Metadata form */}

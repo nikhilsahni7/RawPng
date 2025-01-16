@@ -75,13 +75,13 @@ export function SearchBar({ onSearch }: SearchBarProps) {
 
   return (
     <div className="relative w-full max-w-4xl mx-auto px-2 sm:px-6">
-      <div className="relative flex w-full flex-col sm:flex-row items-center bg-white rounded-2xl sm:rounded-full shadow-xl z-dropdown">
+      <div className="relative flex w-full flex-col sm:flex-row items-center bg-white rounded-lg sm:rounded-full shadow-xl">
         <div
-          className="relative w-full sm:w-auto border-b sm:border-b-0"
+          className="relative w-full sm:w-auto border-b sm:border-b-0 min-h-[48px] sm:min-h-0"
           onMouseEnter={() => setIsDropdownOpen(true)}
           onMouseLeave={() => setIsDropdownOpen(false)}
         >
-          <button className="w-full sm:w-28 md:w-32 lg:w-36 rounded-t-2xl sm:rounded-l-full sm:rounded-t-none bg-gray-50 px-3 md:px-4 py-3 md:py-4 text-sm md:text-base text-gray-700 flex items-center justify-between">
+          <button className="w-full sm:w-28 md:w-32 lg:w-36 h-12 sm:h-auto rounded-t-lg sm:rounded-l-full sm:rounded-t-none bg-gray-50 px-4 py-3 text-base text-gray-700 flex items-center justify-between">
             <span>
               {fileType === "all"
                 ? "All Files"
@@ -90,7 +90,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
             <ChevronDown className="h-4 w-4 opacity-50" />
           </button>
           {isDropdownOpen && (
-            <div className="absolute z-dropdown w-full bg-white shadow-xl border mt-1 rounded-lg">
+            <div className="absolute z-50 w-full bg-white shadow-xl border mt-1 rounded-lg max-h-[50vh] overflow-y-auto">
               {["all", "png", "vector", "image"].map((type) => (
                 <button
                   key={type}
@@ -116,14 +116,14 @@ export function SearchBar({ onSearch }: SearchBarProps) {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search..."
-            className="w-full border-0 px-4 md:px-6 py-3 md:py-4 text-base rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none"
+            className="w-full border-0 px-4 py-3 h-12 sm:h-auto text-base rounded-none focus-visible:ring-0 focus-visible:ring-offset-0"
           />
           <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 text-gray-400" />
         </div>
 
         <button
           onClick={handleSearchSubmit}
-          className="w-full sm:w-24 md:w-32 lg:w-36 rounded-b-2xl sm:rounded-r-full sm:rounded-b-none bg-blue-600 px-3 md:px-6 py-3 md:py-4 text-base md:text-lg font-medium text-white hover:bg-blue-700 transition-colors duration-200"
+          className="w-full sm:w-24 md:w-32 lg:w-36 h-12 sm:h-auto rounded-b-lg sm:rounded-r-full sm:rounded-b-none bg-blue-600 px-4 py-3 text-base font-medium text-white hover:bg-blue-700"
         >
           Search
         </button>
@@ -132,7 +132,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
       {showSuggestions && suggestions.length > 0 && (
         <ul
           ref={suggestionRef}
-          className="absolute z-dropdown w-[calc(100%-1rem)] sm:w-[calc(100%-3rem)] bg-white shadow-xl border mt-2 rounded-2xl max-h-60 overflow-y-auto left-2 sm:left-6 right-2 sm:right-6 scrollbar-thin scrollbar-thumb-gray-200"
+          className="absolute z-50 w-full left-0 right-0 sm:left-6 sm:right-6 bg-white shadow-xl border mt-2 rounded-lg max-h-[40vh] overflow-y-auto"
         >
           {suggestions.map((suggestion, index) => (
             <li
