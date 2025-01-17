@@ -76,7 +76,7 @@ export function ImageActions() {
 
   return (
     <>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -84,37 +84,42 @@ export function ImageActions() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsShareOpen(true)}
+                className="hover:bg-secondary transition-colors"
               >
                 <Share2 className="h-5 w-5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Share</TooltipContent>
+            <TooltipContent sideOffset={4}>Share</TooltipContent>
           </Tooltip>
         </TooltipProvider>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-secondary transition-colors"
+              >
                 <Info className="h-5 w-5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Report</TooltipContent>
+            <TooltipContent sideOffset={4}>Report</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
 
       <Dialog open={isShareOpen} onOpenChange={setIsShareOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md p-6">
           <DialogHeader>
-            <DialogTitle>Share</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">Share</DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-6 py-4">
             <div className="grid grid-cols-2 gap-4">
               {shareButtons.map((button) => (
                 <Button
                   key={button.name}
                   onClick={button.onClick}
-                  className={`flex items-center gap-2 text-white ${button.className}`}
+                  className={`flex items-center justify-center gap-2.5 text-white font-medium transition-colors ${button.className}`}
                 >
                   <button.icon className="h-5 w-5" />
                   {button.name}

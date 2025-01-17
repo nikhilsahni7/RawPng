@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Image from "next/image";
-import { Users, Target, Award, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
@@ -16,27 +16,6 @@ export default function AboutPage() {
     { number: "500K+", label: "Users" },
     { number: "50K+", label: "Downloads/day" },
     { number: "100+", label: "Countries" },
-  ];
-
-  const values = [
-    {
-      icon: <Target className="h-6 w-6" />,
-      title: "Quality First",
-      description:
-        "We ensure every resource meets our high-quality standards before being added to our platform.",
-    },
-    {
-      icon: <Users className="h-6 w-6" />,
-      title: "Community Driven",
-      description:
-        "Our community of designers and creators helps shape the future of rawpng.",
-    },
-    {
-      icon: <Award className="h-6 w-6" />,
-      title: "Excellence",
-      description:
-        "We strive for excellence in everything we do, from customer support to resource curation.",
-    },
   ];
 
   return (
@@ -83,14 +62,18 @@ export default function AboutPage() {
               </h2>
               <div className="prose text-gray-600">
                 <p>
-                  Founded in 2020, rawpng started with a simple mission: to
-                  provide designers and creators with high-quality resources
-                  that make their work easier and more efficient.
+                  Welcome to Rawpng.com, your ultimate destination for
+                  high-quality, free stock images available in various formats.
+                  We’re here to support your creative endeavors by providing
+                  versatile and accessible graphic resources for personal and
+                  commercial projects
                 </p>
                 <p>
-                  Today, we&apos;re proud to serve a global community of
-                  creators, offering millions of carefully curated resources
-                  that help bring creative visions to life.
+                  At Rawpng.com, we believe that creativity should be accessible
+                  to everyone, regardless of budget. Our platform offers a wide
+                  range of stock images, including PNGs, JPEGs, and more.
+                  Whether you&apos;re a graphic designer, marketer, or content
+                  creator, our resources are designed to meet your need
                 </p>
               </div>
               <Link
@@ -107,29 +90,6 @@ export default function AboutPage() {
                 fill
                 className="object-cover"
               />
-            </div>
-          </div>
-
-          {/* Values Section */}
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">
-              Our Values
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-              {values.map((value, index) => (
-                <div
-                  key={index}
-                  className="bg-white p-8 rounded-xl shadow-sm border border-gray-100"
-                >
-                  <div className="text-blue-600 flex justify-center mb-4">
-                    {value.icon}
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    {value.title}
-                  </h3>
-                  <p className="text-gray-600">{value.description}</p>
-                </div>
-              ))}
             </div>
           </div>
         </div>

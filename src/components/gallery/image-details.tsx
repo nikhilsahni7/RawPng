@@ -156,7 +156,7 @@ export function ImageDetails({
           </div>
         </div>
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="relative aspect-square">
+          <div className="relative aspect-square p-4">
             <Image
               src={image.cloudFrontUrl}
               alt={image.title}

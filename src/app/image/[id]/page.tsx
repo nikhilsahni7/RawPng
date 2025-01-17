@@ -81,20 +81,19 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <div className="container mx-auto py-8 px-4 flex-1">
-        <div className="space-y-6 mb-8">
+      <main className="container mx-auto px-4 py-8 flex-1">
+        <div className="mb-8">
           <h1 className="text-2xl md:text-3xl font-bold break-words">
             {imageDetails.title}
           </h1>
-          <p className="text-muted-foreground">{imageDetails.author}</p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[2fr,1fr]">
-          <div className="space-y-4">
-            <Card>
-              <CardContent className="p-2">
+        <div className="flex flex-col lg:flex-row gap-8 mb-8">
+          <div className="flex-[2] flex flex-col gap-8">
+            <Card className="overflow-hidden shadow-md">
+              <CardContent className="p-6">
                 <div
-                  className="relative w-full overflow-hidden rounded-lg bg-gray-100"
+                  className="relative w-full rounded-lg bg-secondary/30"
                   style={{
                     paddingBottom: `${(1 / aspectRatio) * 100}%`,
                   }}
@@ -104,38 +103,33 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
                     alt={imageDetails.title}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-contain"
+                    className="object-contain p-2"
                     priority
                   />
                 </div>
               </CardContent>
             </Card>
 
-            <div className="space-y-4">
-              <div className="flex items-center justify-between gap-4">
+            <div className="space-y-8">
+              <div className="flex items-center justify-between gap-4 flex-wrap bg-card p-4 rounded-lg shadow-sm">
                 <ImageActions />
                 <DownloadTimer
                   imageUrl={imageDetails.cloudFrontUrl}
-                  filename={`${imageDetails.title
-                    .toLowerCase()
-                    .replace(
-                      / /g,
-                      "-"
-                    )}.${imageDetails.fileType.toLowerCase()}`}
+                  filename={`${imageDetails.title.toLowerCase().replace(/ /g, "-")}.${imageDetails.fileType.toLowerCase()}`}
                   imageId={imageDetails._id}
                 />
               </div>
 
-              <div className="space-y-2">
-                <div className="font-semibold">Description</div>
+              <div className="space-y-4 bg-card p-6 rounded-lg shadow-sm">
+                <h2 className="font-semibold text-lg">Description</h2>
                 <ExpandableDescription description={imageDetails.description} />
               </div>
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="flex-1 flex flex-col gap-8 lg:sticky lg:top-8">
             <Card>
-              <CardContent className="grid gap-4 p-6">
+              <CardContent className="grid gap-6 p-6">
                 <div className="grid gap-2">
                   <div className="font-semibold">File Details</div>
                   <div className="grid grid-cols-2 gap-2 text-sm">
@@ -173,8 +167,11 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
             </div>
           </div>
         </div>
-        <RelatedImages imageId={imageDetails._id} />
-      </div>
+
+        <div className="mt-12">
+          <RelatedImages imageId={imageDetails._id} />
+        </div>
+      </main>
     </div>
   );
 }

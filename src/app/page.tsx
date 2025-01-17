@@ -84,7 +84,7 @@ export default function Home() {
         <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <Image
-              src="/logo.svg"
+              src="/Rawpnglogo(1).svg"
               alt="rawpng"
               width={120}
               height={40}
@@ -102,9 +102,9 @@ export default function Home() {
 
       <main className="flex-1 safe-padding">
         {/* Hero Section - Updated for mobile */}
-        <section className="relative bg-[#FAFBFC] py-6 sm:py-12 lg:py-32">
+        <section className="relative bg-[#FAFBFC] py-6 sm:py-12 lg:py-24">
           <div className="container relative mx-auto px-4">
-            <div className="mx-auto max-w-4xl text-center">
+            <div className="mx-auto max-w-7xl text-center">
               <h1 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
                 Discover
                 <span className="mx-1 sm:mx-2">Free</span>
@@ -124,15 +124,15 @@ export default function Home() {
               <p className="mx-auto mb-6 sm:mb-8 max-w-2xl text-sm sm:text-base text-gray-600 md:text-lg px-2 sm:px-4">
                 Looking for resources? We are here to help you use it for free
               </p>
-              <div className="mx-auto max-w-2xl px-2 sm:px-0 block">
+              <div className="mx-auto max-w-7xl px-2 sm:px-0 block">
                 <SearchBar onSearch={handleSearch} />
               </div>
             </div>
           </div>
         </section>
 
-        {/* Categories Section - Updated spacing */}
-        <section className="py-8 sm:py-16 bg-gray-50">
+        {/* Categories Section - Reduced top spacing */}
+        <section className="py-6 sm:py-12 bg-gray-50">
           <div className="container mx-auto px-4 sm:px-6">
             <div className="mb-8 sm:mb-12 text-center">
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">

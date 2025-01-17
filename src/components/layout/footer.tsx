@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Facebook, Twitter, Instagram, Linkedin, Github } from "lucide-react";
+import { Twitter, Instagram, Linkedin } from "lucide-react";
+import { FaPinterest } from "react-icons/fa";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -44,7 +45,7 @@ export function Footer() {
           <div className="col-span-1 md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <Image
-                src="/logo.svg"
+                src="/Rawpnglogo(1).svg"
                 alt="rawpng"
                 width={120}
                 height={40}
@@ -85,14 +86,6 @@ export function Footer() {
                   FAQ
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/blog"
-                  className="text-sm text-muted-foreground hover:text-gray-900"
-                >
-                  Blog
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -124,14 +117,6 @@ export function Footer() {
                   License
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/copyright"
-                  className="text-sm text-muted-foreground hover:text-gray-900"
-                >
-                  Copyright Info
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -140,15 +125,7 @@ export function Footer() {
             <h3 className="font-semibold mb-4">Connect With Us</h3>
             <div className="flex space-x-4">
               <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-gray-900"
-              >
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a
-                href="https://twitter.com"
+                href="https://x.com/rawpng1"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-gray-900"
@@ -164,20 +141,21 @@ export function Footer() {
                 <Instagram className="h-5 w-5" />
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/company/rawpng"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-gray-900"
               >
                 <Linkedin className="h-5 w-5" />
               </a>
+              {/* pinterest */}
               <a
-                href="https://github.com"
+                href="https://in.pinterest.com/rawpng1/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-gray-900"
               >
-                <Github className="h-5 w-5" />
+                <FaPinterest className="h-5 w-5" />
               </a>
             </div>
             <div className="mt-6">

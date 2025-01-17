@@ -17,7 +17,7 @@ export default function ExpandableKeywords({
         <Badge
           key={keyword}
           variant="secondary"
-          className="rounded-full px-3 py-1"
+          className="rounded-full px-3 py-1.5 text-sm hover:bg-secondary/80 transition-colors cursor-pointer"
         >
           {keyword}
         </Badge>
@@ -25,7 +25,7 @@ export default function ExpandableKeywords({
       {shouldTruncate && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-sm text-primary hover:underline"
+          className="text-sm text-primary hover:text-primary/80 font-medium transition-colors mt-1"
         >
           {isExpanded ? "Show Less" : `+${keywords.length - 8} more`}
         </button>

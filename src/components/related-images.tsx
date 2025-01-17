@@ -62,7 +62,7 @@ export default function RelatedImages({ imageId }: { imageId: string }) {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 xs:grid-cols-2 gap-0 sm:grid-cols-3 md:grid-cols-4">
+      <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
         {Array.from({ length: 8 }).map((_, index) => (
           <Skeleton key={index} className="aspect-[4/3] w-full" />
         ))}

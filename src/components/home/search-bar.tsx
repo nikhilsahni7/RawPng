@@ -75,13 +75,13 @@ export function SearchBar({ onSearch }: SearchBarProps) {
 
   return (
     <div className="relative w-full max-w-4xl mx-auto px-2 sm:px-6">
-      <div className="relative flex w-full flex-col sm:flex-row items-center bg-white rounded-lg sm:rounded-full shadow-xl">
+      <div className="relative flex w-full flex-col sm:flex-row items-center bg-white rounded-lg sm:rounded-full shadow-xl sm:h-16">
         <div
           className="relative w-full sm:w-auto border-b sm:border-b-0 min-h-[48px] sm:min-h-0"
           onMouseEnter={() => setIsDropdownOpen(true)}
           onMouseLeave={() => setIsDropdownOpen(false)}
         >
-          <button className="w-full sm:w-28 md:w-32 lg:w-36 h-12 sm:h-auto rounded-t-lg sm:rounded-l-full sm:rounded-t-none bg-gray-50 px-4 py-3 text-base text-gray-700 flex items-center justify-between">
+          <button className="w-full sm:w-32 md:w-40 lg:w-44 h-12 sm:h-16 rounded-t-lg sm:rounded-l-full sm:rounded-t-none bg-gray-50 px-4 py-3 text-base text-gray-700 flex items-center justify-between">
             <span>
               {fileType === "all"
                 ? "All Files"
@@ -116,14 +116,14 @@ export function SearchBar({ onSearch }: SearchBarProps) {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search..."
-            className="w-full border-0 px-4 py-3 h-12 sm:h-auto text-base rounded-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="w-full border-0 px-8 py-3 h-12 sm:h-16 text-base sm:text-lg rounded-none focus-visible:ring-0 focus-visible:ring-offset-0"
           />
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 text-gray-400" />
+          <Search className="absolute right-8 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 text-gray-400" />
         </div>
 
         <button
           onClick={handleSearchSubmit}
-          className="w-full sm:w-24 md:w-32 lg:w-36 h-12 sm:h-auto rounded-b-lg sm:rounded-r-full sm:rounded-b-none bg-blue-600 px-4 py-3 text-base font-medium text-white hover:bg-blue-700"
+          className="w-full sm:w-32 md:w-40 lg:w-44 h-12 sm:h-16 rounded-b-lg sm:rounded-r-full sm:rounded-b-none bg-blue-600 px-4 py-3 text-base font-medium text-white hover:bg-blue-700"
         >
           Search
         </button>
