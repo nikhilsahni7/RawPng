@@ -4,6 +4,8 @@ import { verify } from "jsonwebtoken";
 import { User } from "@/lib/models/user";
 import { connectDB } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const token = cookies().get("auth_token")?.value;

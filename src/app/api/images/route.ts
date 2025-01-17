@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { File } from "@/lib/models/file";
 
+export const dynamic = "force-dynamic";
+
 // app/api/images/route.ts
 export async function GET(req: NextRequest) {
   await connectDB();

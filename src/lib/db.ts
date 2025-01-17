@@ -33,14 +33,19 @@ if (!cached) {
 }
 
 export async function connectDB() {
-  if (cached.conn) {
-    return cached.conn;
+  if (process.env.NEXT_PHASE === "build") {
+    return;
   }
 
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI);
-    console.log("DB connected");
+  if (mongoose.connection.readyState >= 1) {
+    return;
   }
-  cached.conn = await cached.promise;
-  return cached.conn;
+
+  try {
+    await mongoose.connect(process.env.MONGODB_URI!);
+    console.log("DB connected");
+  } catch (error) {
+    console.error("Failed to connect to DB:", error);
+    throw error;
+  }
 }

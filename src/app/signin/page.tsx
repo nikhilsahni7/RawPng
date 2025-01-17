@@ -18,13 +18,17 @@ export default function SignInPage() {
 
   const handleGoogleSignIn = () => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    const state = Math.random().toString(36).substring(7);
+    if (!clientId) {
+      toast.error("Google authentication is not configured");
+      return;
+    }
+
     const redirectUri = encodeURIComponent(
       `${window.location.origin}/api/auth/callback/google`
     );
     const scope = encodeURIComponent("email profile");
 
-    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&access_type=offline&prompt=consent`;
 
     window.location.href = googleAuthUrl;
   };
