@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { getImageDetails } from "./page";
+import { getImageDetails } from "@/lib/api/images";
+import type { ImageDetails } from "@/types/image";
 //eslint-disable-next-line
-function generateImageSchema(imageDetails: any) {
+function generateImageSchema(imageDetails: ImageDetails) {
   return {
     "@context": "https://schema.org",
     "@type": "ImageObject",
@@ -24,7 +25,7 @@ function generateImageSchema(imageDetails: any) {
   };
 }
 //eslint-disable-next-line
-function generateWebPageSchema(imageDetails: any) {
+function generateWebPageSchema(imageDetails: ImageDetails) {
   return {
     "@context": "https://schema.org",
     "@type": "WebPage",
@@ -37,6 +38,33 @@ function generateWebPageSchema(imageDetails: any) {
       "@type": "ImageObject",
       contentUrl: imageDetails.cloudFrontUrl,
     },
+  };
+}
+//eslint-disable-next-line
+function generateBreadcrumbSchema(imageDetails: ImageDetails) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: imageDetails.category,
+        item: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/${imageDetails.fileType.toLowerCase()}/${imageDetails.category.toLowerCase()}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: imageDetails.title,
+        item: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/image/${imageDetails._id}`,
+      },
+    ],
   };
 }
 
@@ -54,10 +82,11 @@ export async function generateMetadata({
     };
   }
 
-  // Generate the schema scripts
+  // Generate all schemas
   const schemas = [
     generateImageSchema(imageDetails),
     generateWebPageSchema(imageDetails),
+    generateBreadcrumbSchema(imageDetails),
   ];
 
   return {

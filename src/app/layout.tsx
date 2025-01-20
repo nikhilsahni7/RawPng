@@ -47,6 +47,22 @@ function generateOrganizationSchema() {
   };
 }
 
+// Add this function after generateOrganizationSchema
+function generateBreadcrumbSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      },
+    ],
+  };
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -61,7 +77,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generateOrganizationSchema()),
+            __html: JSON.stringify([
+              generateOrganizationSchema(),
+              generateBreadcrumbSchema(),
+            ]),
           }}
         />
         <AuthProvider>
