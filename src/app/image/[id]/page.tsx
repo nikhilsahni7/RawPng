@@ -31,7 +31,9 @@ export interface ImageDetails {
   author: string;
 }
 
-async function getImageDetails(id: string): Promise<ImageDetails | null> {
+export async function getImageDetails(
+  id: string
+): Promise<ImageDetails | null> {
   if (!process.env.NEXT_PUBLIC_API_URL) {
     throw new Error("NEXT_PUBLIC_API_URL is not defined");
   }
