@@ -140,38 +140,45 @@ function generateEnhancedKeywords(
   filename: string,
   imageInfo: sharp.Metadata
 ): string[] {
+  // Clean and normalize filename
   const baseWords = filename
     .replace(/\.[^/.]+$/, "")
     .split(/[-_\s]+/)
     .filter((word) => word.length > 2)
     .map((word) => word.toLowerCase());
 
+  // Format-specific keywords
   const formatKeywords = {
-    png: ["transparent background", "png", "digital art"],
-    svg: ["vector", "scalable", "svg", "illustration"],
-    jpeg: ["photo", "photography", "high-quality"],
-    jpg: ["photo", "photography", "high-quality"],
+    png: ["transparent background", "png", "digital art", "clipart"],
+    svg: ["vector", "scalable", "svg", "illustration", "graphic"],
+    jpeg: ["photo", "photography", "high-quality", "image"],
   };
 
   const format = imageInfo?.format as keyof typeof formatKeywords;
   const formatSpecificKeywords = formatKeywords[format] || [];
 
-  const dimensionBasedKeywords = [];
+  // Add dimension-based keywords
+  const dimensionKeywords = [];
   if (imageInfo?.width && imageInfo?.height) {
     if (imageInfo.width >= 2000 || imageInfo.height >= 2000) {
-      dimensionBasedKeywords.push("high-resolution", "4k", "large");
+      dimensionKeywords.push("high-resolution", "4k", "hd", "large");
     }
   }
 
+  // Combine all keywords and remove duplicates
   return [
-    ...new Set([
-      ...baseWords,
-      ...formatSpecificKeywords,
-      ...dimensionBasedKeywords,
-      "digital",
-      "media",
-      "content",
-    ]),
+    ...new Set(
+      [
+        ...baseWords,
+        ...formatSpecificKeywords,
+        ...dimensionKeywords,
+        "free",
+        "download",
+        "stock",
+        baseWords.length > 0 ? `${baseWords[0]} background` : "",
+        baseWords.length > 0 ? `${baseWords[0]} illustration` : "",
+      ].filter(Boolean)
+    ),
   ];
 }
 

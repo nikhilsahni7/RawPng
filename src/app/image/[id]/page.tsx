@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { DownloadTimer } from "@/components/download-timer";
 import { ImageActions } from "@/components/ImageActions";
-
 import RelatedImages from "@/components/related-images";
 import ExpandableDescription from "@/components/ExpandableDescription";
 import ExpandableKeywords from "@/components/ExpandableKeywords";
@@ -140,30 +139,92 @@ export async function generateMetadata({
     };
   }
 
-  return {
-    title: `${imageDetails.title} - rawpng`,
-    description: imageDetails.description,
-    keywords: imageDetails.keywords,
-    openGraph: {
-      title: `${imageDetails.title} - rawpng`,
+  const seoDescription = `Download this ${imageDetails.fileType.toUpperCase()} image of ${imageDetails.title} (${imageDetails.dimensions.width}x${imageDetails.dimensions.height}px). ${imageDetails.description}. Free for commercial use.`;
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "ItemPage",
+    name: imageDetails.title,
+    description: seoDescription,
+    mainEntity: {
+      "@type": "ImageObject",
+      contentUrl: imageDetails.cloudFrontUrl,
+      thumbnailUrl: imageDetails.cloudFrontUrl,
+      name: imageDetails.title,
       description: imageDetails.description,
+      uploadDate: imageDetails.uploadDate,
+      height: imageDetails.dimensions.height,
+      width: imageDetails.dimensions.width,
+      encodingFormat: imageDetails.fileType.toUpperCase(),
+      license: "https://creativecommons.org/licenses/by/4.0/",
+      acquireLicensePage: `${process.env.NEXT_PUBLIC_APP_URL}/license`,
+      creditText: "Rawpng",
+      keywords: imageDetails.keywords.join(", "),
+      creator: {
+        "@type": "Organization",
+        name: "Rawpng",
+        url: process.env.NEXT_PUBLIC_APP_URL,
+      },
+    },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          item: {
+            "@id": process.env.NEXT_PUBLIC_APP_URL,
+            name: "Home",
+          },
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          item: {
+            "@id": `${process.env.NEXT_PUBLIC_APP_URL}/${imageDetails.fileType.toLowerCase()}/${imageDetails.category.toLowerCase()}`,
+            name: imageDetails.category,
+          },
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          item: {
+            "@id": `${process.env.NEXT_PUBLIC_APP_URL}/image/${params.id}`,
+            name: imageDetails.title,
+          },
+        },
+      ],
+    },
+  };
+
+  return {
+    title: `${imageDetails.title} - Download Free ${imageDetails.fileType.toUpperCase()} | rawpng`,
+    description: seoDescription,
+    keywords: [
+      ...imageDetails.keywords,
+      `free ${imageDetails.fileType}`,
+      "download",
+      "transparent background",
+      imageDetails.category,
+    ],
+    openGraph: {
+      title: `${imageDetails.title} - Free ${imageDetails.fileType.toUpperCase()} Download`,
+      description: seoDescription,
       type: "article",
-      publishedTime: imageDetails.uploadDate,
-      authors: [imageDetails.author],
       images: [
         {
-          url: `/image/${params.id}/opengraph-image`,
-          width: 1200,
-          height: 630,
+          url: imageDetails.cloudFrontUrl,
+          width: imageDetails.dimensions.width,
+          height: imageDetails.dimensions.height,
           alt: imageDetails.title,
         },
       ],
     },
-    twitter: {
-      card: "summary_large_image",
-      title: `${imageDetails.title} - rawpng`,
-      description: imageDetails.description,
-      images: [`/image/${params.id}/opengraph-image`],
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_APP_URL}/image/${params.id}`,
+    },
+    other: {
+      "json-ld": JSON.stringify(structuredData),
     },
   };
 }

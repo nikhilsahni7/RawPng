@@ -39,15 +39,15 @@ export default function CategoryPage() {
           typeof params.type === "string"
             ? params.type.toLowerCase()
             : Array.isArray(params.type)
-            ? params.type[0].toLowerCase()
-            : "";
+              ? params.type[0].toLowerCase()
+              : "";
 
         const normalizedCategory =
           typeof params.category === "string"
             ? params.category.toLowerCase()
             : Array.isArray(params.category)
-            ? params.category[0].toLowerCase()
-            : "";
+              ? params.category[0].toLowerCase()
+              : "";
 
         const response = await axios.get("/api/category-images", {
           params: {

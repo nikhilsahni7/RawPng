@@ -16,12 +16,18 @@ function generateImageSchema(imageDetails: ImageDetails) {
     width: imageDetails.dimensions.width,
     author: {
       "@type": "Organization",
-      name: imageDetails.author,
+      name: "Rawpng",
+      url: process.env.NEXT_PUBLIC_APP_URL,
     },
     license: imageDetails.license,
     keywords: imageDetails.keywords.join(", "),
     contentSize: `${(imageDetails.fileSize / (1024 * 1024)).toFixed(2)}MB`,
     encodingFormat: imageDetails.fileType,
+    isFamilyFriendly: true,
+    copyrightYear: new Date(imageDetails.uploadDate).getFullYear(),
+    isAccessibleForFree: true,
+    acquireLicensePage: `${process.env.NEXT_PUBLIC_APP_URL}/license`,
+    creditText: "Rawpng - Free Stock Images",
   };
 }
 //eslint-disable-next-line
