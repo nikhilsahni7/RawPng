@@ -8,10 +8,13 @@ export async function GET() {
     const categories = await Category.find({
       active: true,
       showInNavbar: true,
-    }).sort({ name: 1 });
+    })
+      .select("_id name type")
+      .lean()
+      .sort({ name: 1 });
 
     if (!categories || categories.length === 0) {
-      console.log("No active navbar categories found");
+      return NextResponse.json([], { status: 200 });
     }
 
     return NextResponse.json(categories);

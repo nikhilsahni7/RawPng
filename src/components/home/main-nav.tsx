@@ -44,20 +44,27 @@ export function MainNav() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
+        const cachedData = sessionStorage.getItem("navbarCategories");
+        if (cachedData) {
+          setCategories(JSON.parse(cachedData));
+        }
+
         const response = await axios.get<Category[]>("/api/categories/navbar");
         const allCategories = response.data;
 
         const grouped = allCategories.reduce<GroupedCategories>(
           (acc, category) => {
-            if (acc[category.type]) {
-              acc[category.type].push(category);
+            if (!acc[category.type]) {
+              acc[category.type] = [];
             }
+            acc[category.type].push(category);
             return acc;
           },
           { png: [], vector: [], image: [] }
         );
 
         setCategories(grouped);
+        sessionStorage.setItem("navbarCategories", JSON.stringify(grouped));
       } catch (error) {
         console.error("Failed to fetch categories:", error);
       }
@@ -85,7 +92,7 @@ export function MainNav() {
           {(
             Object.entries(categories) as [
               keyof GroupedCategories,
-              Category[]
+              Category[],
             ][]
           ).map(([key, items]) => (
             <NavigationMenuItem key={key}>
