@@ -11,7 +11,7 @@ async function updateCategories() {
       {
         $set: {
           type: "png", // Default type
-          showInNavbar: false, // Default showInNavbar value
+          showInNavbar: true, // Default showInNavbar value
           active: true, // Ensure active field exists
         },
       }
