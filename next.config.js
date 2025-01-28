@@ -14,7 +14,7 @@ const nextConfig = {
       "d1u0z778tbk6uw.cloudfront.net",
       "rawpngbucket.s3.ap-south-1.amazonaws.com",
     ],
-    unoptimized: true,
+    unoptimized: false,
     minimumCacheTTL: 60,
     remotePatterns: [
       {
