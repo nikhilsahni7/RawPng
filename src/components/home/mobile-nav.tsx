@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,55 +18,55 @@ import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Category, GroupedCategories } from "@/types/category";
 import { useAuth } from "@/lib/auth";
+import { useQuery } from "@tanstack/react-query";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
   const { user, signout } = useAuth();
-  const [categories, setCategories] = useState<GroupedCategories>({
-    png: [],
-    vector: [],
-    image: [],
-  });
+  const { data: categories = { png: [], vector: [], image: [] }, isLoading } =
+    useQuery({
+      queryKey: ["navbarCategories"],
+      queryFn: async () => {
+        try {
+          const cached = sessionStorage.getItem("navbarCategories");
+          if (cached) {
+            return JSON.parse(cached);
+          }
+
+          const response = await axios.get<Category[]>(
+            "/api/categories/navbar"
+          );
+          const grouped = response.data.reduce<GroupedCategories>(
+            (acc, category) => {
+              const type = category.type as keyof GroupedCategories;
+              acc[type] = acc[type] || [];
+              acc[type].push(category);
+              return acc;
+            },
+            { png: [], vector: [], image: [] }
+          );
+
+          sessionStorage.setItem("navbarCategories", JSON.stringify(grouped));
+          return grouped;
+        } catch (error) {
+          console.error("Failed to fetch navbar categories:", error);
+          return { png: [], vector: [], image: [] };
+        }
+      },
+    });
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const cachedData = sessionStorage.getItem("navbarCategories");
-        if (cachedData) {
-          setCategories(JSON.parse(cachedData));
-        }
-
-        const response = await axios.get<Category[]>("/api/categories/navbar");
-        const allCategories = response.data;
-
-        const grouped = allCategories.reduce<GroupedCategories>(
-          (acc, category) => {
-            if (!acc[category.type]) {
-              acc[category.type] = [];
-            }
-            acc[category.type].push(category);
-            return acc;
-          },
-          { png: [], vector: [], image: [] }
-        );
-
-        setCategories(grouped);
-        sessionStorage.setItem("navbarCategories", JSON.stringify(grouped));
-      } catch (error) {
-        console.error("Failed to fetch categories:", error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
+  if (isLoading) {
+    return null;
+  }
 
   const filteredCategories = Object.entries(
     categories
   ).reduce<GroupedCategories>(
     (acc, [key, items]) => {
-      acc[key as keyof GroupedCategories] = items.filter((item: Category) =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+      acc[key as keyof GroupedCategories] = (items as Category[]).filter(
+        (item: Category) =>
+          item.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
       return acc;
     },

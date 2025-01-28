@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -27,51 +27,49 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UserCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 export function MainNav() {
   const { user, signout } = useAuth();
-  const [categories, setCategories] = useState<GroupedCategories>({
-    png: [],
-    vector: [],
-    image: [],
-  });
-  const [searchQueries, setSearchQueries] = useState<Record<string, string>>({
-    png: "",
-    vector: "",
-    image: "",
-  });
+  const [searchQueries, setSearchQueries] = useState<Record<string, string>>(
+    {}
+  );
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const cachedData = sessionStorage.getItem("navbarCategories");
-        if (cachedData) {
-          setCategories(JSON.parse(cachedData));
+  const { data: categories = { png: [], vector: [], image: [] }, isLoading } =
+    useQuery({
+      queryKey: ["navbarCategories"],
+      queryFn: async () => {
+        try {
+          const cached = sessionStorage.getItem("navbarCategories");
+          if (cached) {
+            return JSON.parse(cached);
+          }
+
+          const response = await axios.get<Category[]>(
+            "/api/categories/navbar"
+          );
+          const grouped = response.data.reduce<GroupedCategories>(
+            (acc, category) => {
+              const type = category.type as keyof GroupedCategories;
+              acc[type] = acc[type] || [];
+              acc[type].push(category);
+              return acc;
+            },
+            { png: [], vector: [], image: [] }
+          );
+
+          sessionStorage.setItem("navbarCategories", JSON.stringify(grouped));
+          return grouped;
+        } catch (error) {
+          console.error("Failed to fetch navbar categories:", error);
+          return { png: [], vector: [], image: [] };
         }
+      },
+    });
 
-        const response = await axios.get<Category[]>("/api/categories/navbar");
-        const allCategories = response.data;
-
-        const grouped = allCategories.reduce<GroupedCategories>(
-          (acc, category) => {
-            if (!acc[category.type]) {
-              acc[category.type] = [];
-            }
-            acc[category.type].push(category);
-            return acc;
-          },
-          { png: [], vector: [], image: [] }
-        );
-
-        setCategories(grouped);
-        sessionStorage.setItem("navbarCategories", JSON.stringify(grouped));
-      } catch (error) {
-        console.error("Failed to fetch categories:", error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
+  if (isLoading) {
+    return <div className="flex items-center gap-6 flex-1">Loading...</div>;
+  }
 
   const getFilteredCategories = (type: string, items: Category[]) => {
     const query = searchQueries[type]?.toLowerCase() || "";

@@ -3,10 +3,9 @@ export type CategoryType = "png" | "vector" | "image";
 export interface Category {
   _id: string;
   name: string;
-  type: "png" | "vector" | "image";
+  type: CategoryType;
   active: boolean;
   showInNavbar: boolean;
-  createdAt?: Date;
 }
 
 export interface GroupedCategories {
