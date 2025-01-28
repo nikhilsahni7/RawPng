@@ -11,7 +11,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import { Image, VideoIcon as Vector, FileImage, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import axios from "axios";
 import { Category, GroupedCategories } from "@/types/category";
 import { Search } from "lucide-react";
@@ -96,10 +96,7 @@ export function MainNav() {
             ][]
           ).map(([key, items]) => (
             <NavigationMenuItem key={key}>
-              <NavigationMenuTrigger className="bg-transparent hover:bg-gray-50/80 text-gray-700 font-medium px-4 py-2 rounded-full transition-colors">
-                {key === "png" && <FileImage className="w-4 h-4" />}
-                {key === "vector" && <Vector className="w-4 h-4" />}
-                {key === "image" && <Image className="w-4 h-4" />}
+              <NavigationMenuTrigger className="bg-transparent hover:bg-gray-50/80 text-gray-700 font-bold text-lg px-4 py-2 rounded-full transition-colors">
                 {key.charAt(0).toUpperCase() + key.slice(1)}
               </NavigationMenuTrigger>
               <NavigationMenuContent>
