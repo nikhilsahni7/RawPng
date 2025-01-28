@@ -13,6 +13,7 @@ const nextConfig = {
       "d3pf9vt7kp1xrg.cloudfront.net",
       "d1u0z778tbk6uw.cloudfront.net",
       "rawpngbucket.s3.ap-south-1.amazonaws.com",
+      "localhost",
     ],
     unoptimized: false,
     minimumCacheTTL: 60,
@@ -44,6 +45,8 @@ const nextConfig = {
       },
     ],
   },
+  assetPrefix:
+    process.env.NODE_ENV === "production" ? "https://rawpng.com" : "",
 };
 
 module.exports = nextConfig;
