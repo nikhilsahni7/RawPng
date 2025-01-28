@@ -121,24 +121,68 @@ export async function POST(req: NextRequest) {
 
 // Enhanced metadata generation
 function generateMetadata(filename: string, imageInfo: sharp.Metadata) {
-  const baseName = filename.replace(/\.[^/.]+$/, "");
-  const words = baseName.split(/[-_\s]+/).filter((w) => w.length > 2);
+  // Extract folder path if exists and normalize it
+  const normalizedPath = filename.replace(/\\/g, "/"); // Convert Windows paths to forward slashes
+  const pathParts = normalizedPath.split("/");
+  const actualFilename = pathParts[pathParts.length - 1];
+  const folderPath = pathParts.slice(0, -1).join("/");
 
-  const title = words
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
+  // Clean up the base name more thoroughly
+  const baseName = actualFilename
+    .replace(/\.[^/.]+$/, "") // remove extension
+    .replace(/\d{4}-\d{2}-\d{2}/g, "") // Remove date patterns
+    .replace(/screenshot\s*from/i, "") // Remove "screenshot from"
+    .replace(/[_\s]{2,}/g, " "); // Replace multiple spaces/underscores with single space
 
-  const description = `High-quality ${imageInfo?.format || "image"} of ${title}`;
+  // Generate clean words with better filtering
+  const words = baseName
+    .split(/[-_\s]+/)
+    .filter((w) => w.length > 2)
+    .map((w) => w.toLowerCase())
+    .filter((w) => !w.match(/^\d+$/)); // Remove pure number words
 
-  // Enhanced keyword generation
-  const keywords = generateEnhancedKeywords(filename, imageInfo);
+  // Add folder name to keywords if it exists
+  const folderWords = folderPath
+    ? folderPath
+        .split("/")
+        .filter(Boolean) // Remove empty strings
+        .map((folder) =>
+          folder
+            .split(/[-_\s]+/)
+            .filter((w) => w.length > 2)
+            .join(" ")
+        )
+    : [];
+
+  // Generate unique timestamp with milliseconds for more uniqueness
+  const timestamp = new Date();
+  const dateStr = timestamp.toISOString().slice(0, 10);
+  const timeStr = timestamp.getTime().toString().slice(-6); // Use last 6 digits of timestamp
+
+  // Create title with folder context
+  const titlePrefix =
+    folderWords.length > 0 ? `${folderWords.join(" - ")} - ` : "";
+  const titleWords =
+    words.length > 0
+      ? words.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+      : "Image";
+  const title = `${titlePrefix}${titleWords} ${dateStr}-${timeStr}`;
+
+  // Create description with better folder context
+  const descriptionContext =
+    folderWords.length > 0 ? ` from ${folderWords.join(" > ")}` : "";
+  const description = `High-quality ${imageInfo?.format || "image"}${descriptionContext} - ${words.join(" ")}`;
+
+  // Generate keywords including folder context
+  const keywords = generateEnhancedKeywords(filename, imageInfo, folderWords);
 
   return { title, description, keywords };
 }
 
 function generateEnhancedKeywords(
   filename: string,
-  imageInfo: sharp.Metadata
+  imageInfo: sharp.Metadata,
+  folderWords: string[] = []
 ): string[] {
   // Clean and normalize filename
   const baseWords = filename
@@ -147,11 +191,21 @@ function generateEnhancedKeywords(
     .filter((word) => word.length > 2)
     .map((word) => word.toLowerCase());
 
+  // Process folder keywords more thoroughly
+  const folderKeywords = folderWords.flatMap((folder) =>
+    folder
+      .toLowerCase()
+      .split(/[-_\s]+/)
+      .filter((word) => word.length > 2)
+  );
+
   // Format-specific keywords
   const formatKeywords = {
     png: ["transparent background", "png", "digital art", "clipart"],
     svg: ["vector", "scalable", "svg", "illustration", "graphic"],
     jpeg: ["photo", "photography", "high-quality", "image"],
+    jpg: ["photo", "photography", "high-quality", "image"],
+    webp: ["web optimized", "modern format", "image"],
   };
 
   const format = imageInfo?.format as keyof typeof formatKeywords;
@@ -163,6 +217,11 @@ function generateEnhancedKeywords(
     if (imageInfo.width >= 2000 || imageInfo.height >= 2000) {
       dimensionKeywords.push("high-resolution", "4k", "hd", "large");
     }
+    // Add aspect ratio keywords
+    const ratio = imageInfo.width / imageInfo.height;
+    if (ratio > 1.7) dimensionKeywords.push("widescreen", "panoramic");
+    else if (ratio < 0.7) dimensionKeywords.push("portrait", "vertical");
+    else dimensionKeywords.push("standard", "square");
   }
 
   // Combine all keywords and remove duplicates
@@ -170,13 +229,18 @@ function generateEnhancedKeywords(
     ...new Set(
       [
         ...baseWords,
+        ...folderKeywords,
         ...formatSpecificKeywords,
         ...dimensionKeywords,
         "free",
         "download",
         "stock",
-        baseWords.length > 0 ? `${baseWords[0]} background` : "",
-        baseWords.length > 0 ? `${baseWords[0]} illustration` : "",
+        // Add folder-specific compound keywords
+        ...folderKeywords.map((word) => `${word} content`),
+        ...folderKeywords.map((word) => `${word} image`),
+        // Add base word compound keywords
+        ...baseWords.map((word) => `${word} background`),
+        ...baseWords.map((word) => `${word} illustration`),
       ].filter(Boolean)
     ),
   ];

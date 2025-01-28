@@ -90,14 +90,30 @@ FileSchema.index({ createdAt: -1 });
 
 // Generate SEO-friendly slug
 FileSchema.pre("save", function (next) {
-  if (this.isModified("title")) {
-    this.seoSlug = this.title
+  // Generate slug for new documents or when title is modified
+  if (this.isNew || this.isModified("title")) {
+    // Generate unique identifiers
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 15); // Increased random string length
+    const uniqueId = `${timestamp}${random}`;
+
+    // Clean the title and add folder structure if present
+    const folderPath = this.fileName.split("/").slice(0, -1).join("-");
+    const baseSlug = this.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
+
+    // Ensure uniqueness by adding the uniqueId
+    this.seoSlug = folderPath
+      ? `${folderPath}-${baseSlug}-${uniqueId}`
+      : `${baseSlug}-${uniqueId}`;
   }
   next();
 });
+
+// Add a unique compound index for extra safety
+FileSchema.index({ seoSlug: 1 }, { unique: true });
 
 export const File =
   mongoose.models?.File || mongoose.model<IFile>("File", FileSchema);
