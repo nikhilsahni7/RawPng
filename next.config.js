@@ -8,11 +8,10 @@ const nextConfig = {
 
   images: {
     domains: [
-      "images.unsplash.com",
-      "plus.unsplash.com",
-      "unsplash.com",
-      "m.media-amazon.com",
+      "rawpng.com",
+      "images-hub-nine.vercel.app",
       "d3pf9vt7kp1xrg.cloudfront.net",
+      "d1u0z778tbk6uw.cloudfront.net",
       "rawpngbucket.s3.ap-south-1.amazonaws.com",
     ],
     unoptimized: true,
@@ -20,7 +19,22 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "rawpng.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images-hub-nine.vercel.app",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "d3pf9vt7kp1xrg.cloudfront.net",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "d1u0z778tbk6uw.cloudfront.net",
         pathname: "/**",
       },
       {

@@ -162,6 +162,9 @@ export function ImageDetails({
               alt={image.title}
               fill
               className="object-cover rounded-lg"
+              onError={(e) => {
+                console.log("Error loading image", e);
+              }}
             />
           </div>
           <div className="flex flex-col space-y-4">
