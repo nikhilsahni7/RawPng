@@ -5,6 +5,7 @@ const nextConfig = {
   // },
 
   /* config options here */
+
   images: {
     domains: [
       "images.unsplash.com",
@@ -12,6 +13,7 @@ const nextConfig = {
       "unsplash.com",
       "m.media-amazon.com",
       "d3pf9vt7kp1xrg.cloudfront.net",
+      "rawpngbucket.s3.ap-south-1.amazonaws.com",
     ],
     unoptimized: true,
     minimumCacheTTL: 60,
@@ -19,6 +21,11 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "d3pf9vt7kp1xrg.cloudfront.net",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "rawpngbucket.s3.ap-south-1.amazonaws.com",
         pathname: "/**",
       },
     ],
