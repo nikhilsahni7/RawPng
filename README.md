@@ -34,3 +34,45 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+# Stop the current containers
+
+docker-compose down
+
+# Rebuild and start the containers
+
+docker-compose up --build
+
+# Stop all containers and remove volumes
+
+docker-compose down -v
+
+# Remove all related images
+
+docker rmi $(docker images -q)
+
+# Start fresh
+
+docker-compose up --build
+
+# View running containers
+
+docker ps
+
+# View all containers (including stopped ones)
+
+docker ps -a
+
+# View logs of a specific container
+
+docker logs nextjs_app # for the Next.js app
+docker logs mongo_db # for MongoDB
+
+# Remove all unused containers, networks, and images
+
+docker system prune
+
+# Force rebuild without using cache
+
+docker-compose build --no-cache
+docker-compose up
