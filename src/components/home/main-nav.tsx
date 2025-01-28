@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UserCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function MainNav() {
   const { user, signout } = useAuth();
@@ -68,7 +69,21 @@ export function MainNav() {
     });
 
   if (isLoading) {
-    return <div className="flex items-center gap-6 flex-1">Loading...</div>;
+    return (
+      <div className="flex items-center gap-6 flex-1">
+        <NavigationMenu className="hidden md:block">
+          <NavigationMenuList className="gap-6">
+            {["PNG", "Vector", "Image"].map((type) => (
+              <NavigationMenuItem key={type}>
+                <div className="flex items-center space-x-4">
+                  <Skeleton className="h-8 w-24 rounded-full bg-gray-200" />
+                </div>
+              </NavigationMenuItem>
+            ))}
+          </NavigationMenuList>
+        </NavigationMenu>
+      </div>
+    );
   }
 
   const getFilteredCategories = (type: string, items: Category[]) => {
@@ -120,17 +135,17 @@ export function MainNav() {
                       )}
                     </div>
                   </div>
-                  <ul className="grid w-full gap-2 grid-cols-2 max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
-                    {getFilteredCategories(key, items).map((category) => (
-                      <ListItem
-                        key={category._id}
-                        title={category.name}
-                        href={`/${key}/${category.name
-                          .toLowerCase()
-                          .replace(/ /g, "-")}`}
-                      />
+                  <div className="grid grid-cols-2 gap-2">
+                    {getFilteredCategories(key, items).map((item) => (
+                      <a
+                        key={item._id}
+                        href={`/${key}/${item.name.toLowerCase().replace(/ /g, "-")}`}
+                        className="block p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                      >
+                        {item.name}
+                      </a>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               </NavigationMenuContent>
             </NavigationMenuItem>
