@@ -60,12 +60,6 @@ export function DownloadChart() {
           change=""
           trend="up"
         />
-        <StatCard
-          title="Active Users"
-          value="10,283"
-          change="+5.2%"
-          trend="up"
-        />
       </div>
       <Card>
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-1 sm:space-y-0 pb-4">

@@ -50,6 +50,9 @@ export async function POST(req: Request) {
       html: await emailHtml,
     });
 
+    console.log("Verification email sent to:", email);
+    console.log("Verification URL:", verificationUrl);
+
     return NextResponse.json({
       message:
         "Registration successful. Please check your email to verify your account.",

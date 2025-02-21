@@ -43,8 +43,9 @@ export const VerificationEmail = ({
           If you didn&apos;t sign up for RawPng, you can safely ignore this
           email.
         </Text>
+
         <Text style={footer}>
-          © {new Date().getFullYear()} RawPng. All rights reserved.
+        © {new Date().getFullYear()} RawPng. All rights reserved.
         </Text>
       </Container>
     </Body>

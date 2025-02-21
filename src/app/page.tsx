@@ -34,11 +34,14 @@ export default function Home() {
           page: currentPage,
         },
       });
-      setImages(response.data.images);
-      setTotalPages(response.data.totalPages);
+
+      if (response.data) {
+        setImages(response.data.images);
+        setTotalPages(response.data.totalPages);
+      }
     } catch (error) {
       console.error("Error fetching images:", error);
-      setImages([]); // Clear images on error
+      setImages([]);
       setTotalPages(1);
     } finally {
       setLoading(false);
@@ -82,13 +85,6 @@ export default function Home() {
 
         setImages(response.data.images);
         setTotalPages(response.data.totalPages);
-
-        // Ensure the results section exists and is visible
-        const resultsSection = document.getElementById("search-results");
-        if (resultsSection) {
-          resultsSection.style.opacity = "1";
-          resultsSection.style.visibility = "visible";
-        }
       } catch (error) {
         console.error("Error fetching images:", error);
         setImages([]);
@@ -130,11 +126,11 @@ export default function Home() {
       </header>
 
       <main className="flex-1 safe-padding">
-        {/* Hero Section - Updated for mobile */}
-        <section className="relative bg-[#FAFBFC] py-6 sm:py-12 lg:py-24">
+        {/* Hero Section - Updated spacing */}
+        <section className="relative bg-[#FAFBFC] py-4 sm:py-8 lg:py-12">
           <div className="container relative mx-auto px-4">
             <div className="mx-auto max-w-7xl text-center">
-              <h1 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
+              <h1 className="mb-3 sm:mb-4 text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
                 Discover
                 <span className="mx-1 sm:mx-2">Free</span>
                 <span className="relative whitespace-nowrap text-blue-600">
@@ -150,7 +146,7 @@ export default function Home() {
                 </span>
                 <span className="mx-1 sm:mx-2">Resources</span>
               </h1>
-              <p className="mx-auto mb-6 sm:mb-8 max-w-2xl text-sm sm:text-base text-gray-600 md:text-lg px-2 sm:px-4">
+              <p className="mx-auto mb-4 sm:mb-6 max-w-2xl text-sm sm:text-base text-gray-600 md:text-lg px-2 sm:px-4">
                 Looking for resources? We are here to help you use it for free
               </p>
               <div className="mx-auto max-w-7xl px-2 sm:px-0 block">
@@ -160,14 +156,14 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Categories Section - Reduced top spacing */}
-        <section className="py-6 sm:py-12 bg-gray-50">
+        {/* Categories Section - Reduced spacing */}
+        <section className="py-4 sm:py-8 bg-gray-50">
           <div className="container mx-auto px-4 sm:px-6">
-            <div className="mb-8 sm:mb-12 text-center">
+            <div className="mb-4 sm:mb-8 text-center">
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
                 Popular Categories
               </h2>
-              <p className="mt-2 sm:mt-4 text-base sm:text-lg text-gray-600">
+              <p className="mt-2 text-base sm:text-lg text-gray-600">
                 Browse through our curated collection of categories
               </p>
             </div>
@@ -181,11 +177,11 @@ export default function Home() {
         {/* Image Grid Section - Enhanced visibility handling */}
         <section
           id="search-results"
-          className={`py-8 sm:py-16 bg-white transition-opacity duration-300 ${
+          className={`py-8 sm:py-16 bg-[#f8f9fa] transition-opacity duration-300 ${
             loading ? "opacity-50" : "opacity-100"
           }`}
         >
-          <div className="container mx-auto px-4 sm:px-6">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-8 sm:mb-12 text-center">
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
                 {query ? "Search Results" : "Trending Resources"}
@@ -200,13 +196,15 @@ export default function Home() {
             {/* Loading and Results Display */}
             <div className="relative min-h-[300px]">
               {loading ? (
-                <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-4">
                   {Array.from({ length: 8 }).map((_, index) => (
                     <Skeleton key={index} className="aspect-[4/3] w-full" />
                   ))}
                 </div>
               ) : images.length > 0 ? (
-                <ImageGrid images={images} />
+                <div className="masonry-container">
+                  <ImageGrid images={images} />
+                </div>
               ) : (
                 <div className="rounded-2xl border-2 border-dashed p-6 sm:p-12 text-center">
                   <p className="text-sm sm:text-base text-gray-500">

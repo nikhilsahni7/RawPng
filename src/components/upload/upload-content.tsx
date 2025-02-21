@@ -40,7 +40,7 @@ import {
 } from "@tabler/icons-react";
 import { Progress } from "@/components/ui/progress";
 import { Loader2 } from "lucide-react";
-import { FTPUpload } from "./ftp-upload";
+
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { FileGridItem } from "./file-grid-item";
 
@@ -419,12 +419,7 @@ export function UploadContent() {
               toast.success("CSV files imported successfully!");
             }}
           />
-          <FTPUpload
-            onUpload={(files) => {
-              setFiles((prevFiles) => [...files, ...prevFiles]);
-              toast.success("FTP files imported successfully!");
-            }}
-          />
+
           <Button variant="outline" onClick={handleDownloadTemplate}>
             <IconDownload className="mr-2 h-4 w-4" />
             Download Template

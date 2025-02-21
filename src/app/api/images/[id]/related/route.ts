@@ -4,6 +4,8 @@ import { connectDB } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -19,7 +21,7 @@ export async function GET(
     }
 
     const page = Number(req.nextUrl.searchParams.get("page")) || 1;
-    const limit = 8;
+    const limit = 50;
     const skip = (page - 1) * limit;
 
     const sourceImage = await File.findById(params.id);

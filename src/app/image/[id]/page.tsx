@@ -4,7 +4,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { DownloadTimer } from "@/components/download-timer";
+import { DownloadButton } from "@/components/download-timer";
 import { ImageActions } from "@/components/ImageActions";
 import RelatedImages from "@/components/related-images";
 import ExpandableDescription from "@/components/ExpandableDescription";
@@ -62,7 +62,7 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
             <div className="space-y-8">
               <div className="flex items-center justify-between gap-4 flex-wrap bg-card p-4 rounded-lg shadow-sm">
                 <ImageActions />
-                <DownloadTimer
+                <DownloadButton
                   imageUrl={imageDetails.cloudFrontUrl}
                   filename={`${imageDetails.title.toLowerCase().replace(/ /g, "-")}.${imageDetails.fileType.toLowerCase()}`}
                   imageId={imageDetails._id}

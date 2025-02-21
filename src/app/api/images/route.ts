@@ -22,7 +22,17 @@ export async function GET(req: NextRequest) {
   const filters: any = {};
 
   if (fileType !== "all") {
-    filters.fileType = fileType;
+    switch (fileType) {
+      case "png":
+        filters.fileType = "png";
+        break;
+      case "vector":
+        filters.fileType = "vector";
+        break;
+      case "image":
+        filters.fileType = "image";
+        break;
+    }
   }
 
   if (query) {

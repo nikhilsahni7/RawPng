@@ -10,6 +10,7 @@ const config: Config = {
     extend: {
       backgroundColor: {
         background: "hsl(var(--background))",
+        "card-hover": "rgba(0, 0, 0, 0.02)",
       },
       textColor: {
         foreground: "hsl(var(--foreground))",
@@ -52,6 +53,10 @@ const config: Config = {
           "3": "hsl(var(--chart-3))",
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
+        },
+        gray: {
+          50: "#f8f9fa",
+          100: "#f1f5f9",
         },
       },
       variants: {

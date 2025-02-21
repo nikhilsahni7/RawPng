@@ -1,7 +1,7 @@
 // components/ImageActions.tsx
 "use client";
 
-import { Share2, Info, Link2, Twitter, Facebook } from "lucide-react";
+import { Share2, Link2, Twitter, Facebook } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import {
@@ -90,20 +90,6 @@ export function ImageActions() {
               </Button>
             </TooltipTrigger>
             <TooltipContent sideOffset={4}>Share</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hover:bg-secondary transition-colors"
-              >
-                <Info className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent sideOffset={4}>Report</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>

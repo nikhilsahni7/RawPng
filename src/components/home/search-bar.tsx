@@ -94,6 +94,13 @@ export function SearchBar({ onSearch }: SearchBarProps) {
     }
   };
 
+  const handleFileTypeChange = (type: string) => {
+    setFileType(type);
+    setIsDropdownOpen(false);
+    // Trigger search immediately when file type changes
+    onSearch(inputValue, type);
+  };
+
   return (
     <div className="relative w-full max-w-4xl mx-auto px-2 sm:px-6">
       <div className="relative flex w-full flex-col sm:flex-row items-center bg-white rounded-lg sm:rounded-full shadow-xl sm:h-16 transition-shadow duration-200 hover:shadow-2xl">
@@ -115,10 +122,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
               {["all", "png", "vector", "image"].map((type) => (
                 <button
                   key={type}
-                  onClick={() => {
-                    setFileType(type);
-                    setIsDropdownOpen(false);
-                  }}
+                  onClick={() => handleFileTypeChange(type)}
                   className="w-full px-4 py-3 text-left hover:bg-blue-50 text-sm md:text-base transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg"
                 >
                   {type === "all"
