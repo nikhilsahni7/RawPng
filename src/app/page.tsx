@@ -63,14 +63,43 @@ export default function Home() {
     }
   };
 
-  const handleSearch = (searchQuery: string, selectedFileType: string) => {
-    setQuery(searchQuery);
-    setFileType(selectedFileType);
-    setSelectedCategory(""); // Clear category when searching
-    setCurrentPage(1);
-    // Trigger immediate search with new file type
-    fetchImages();
-  };
+  const handleSearch = useCallback(
+    async (searchQuery: string, selectedFileType: string) => {
+      setQuery(searchQuery);
+      setFileType(selectedFileType);
+      setSelectedCategory(""); // Clear category when searching
+      setCurrentPage(1);
+      setLoading(true);
+
+      try {
+        const response = await axios.get("/api/images", {
+          params: {
+            fileType: selectedFileType,
+            query: searchQuery,
+            page: 1,
+          },
+        });
+
+        setImages(response.data.images);
+        setTotalPages(response.data.totalPages);
+
+        // Ensure the results section exists and is visible
+        const resultsSection = document.getElementById("search-results");
+        if (resultsSection) {
+          resultsSection.style.opacity = "1";
+          resultsSection.style.visibility = "visible";
+        }
+      } catch (error) {
+        console.error("Error fetching images:", error);
+        setImages([]);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
     setQuery(""); // Clear search query when selecting category
@@ -149,33 +178,45 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Image Grid Section - Updated grid and spacing */}
-        <section className="py-8 sm:py-16 bg-white">
+        {/* Image Grid Section - Enhanced visibility handling */}
+        <section
+          id="search-results"
+          className={`py-8 sm:py-16 bg-white transition-opacity duration-300 ${
+            loading ? "opacity-50" : "opacity-100"
+          }`}
+        >
           <div className="container mx-auto px-4 sm:px-6">
             <div className="mb-8 sm:mb-12 text-center">
               <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                Trending Resources
+                {query ? "Search Results" : "Trending Resources"}
               </h2>
               <p className="mt-2 sm:mt-4 text-base sm:text-lg text-gray-600">
-                Discover what creators are downloading right now
+                {query
+                  ? `Showing results for "${query}"`
+                  : "Discover what creators are downloading right now"}
               </p>
             </div>
 
-            {loading ? (
-              <div className="grid grid-cols-1 xs:grid-cols-2 gap-0 sm:grid-cols-3 md:grid-cols-4">
-                {Array.from({ length: 8 }).map((_, index) => (
-                  <Skeleton key={index} className="aspect-[4/3] w-full" />
-                ))}
-              </div>
-            ) : images.length > 0 ? (
-              <ImageGrid images={images} />
-            ) : (
-              <div className="rounded-2xl border-2 border-dashed p-6 sm:p-12 text-center">
-                <p className="text-sm sm:text-base text-gray-500">
-                  No images found
-                </p>
-              </div>
-            )}
+            {/* Loading and Results Display */}
+            <div className="relative min-h-[300px]">
+              {loading ? (
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <Skeleton key={index} className="aspect-[4/3] w-full" />
+                  ))}
+                </div>
+              ) : images.length > 0 ? (
+                <ImageGrid images={images} />
+              ) : (
+                <div className="rounded-2xl border-2 border-dashed p-6 sm:p-12 text-center">
+                  <p className="text-sm sm:text-base text-gray-500">
+                    {query
+                      ? `No results found for "${query}"`
+                      : "No images found"}
+                  </p>
+                </div>
+              )}
+            </div>
 
             <div className="mt-8 sm:mt-12">
               <Pagination
