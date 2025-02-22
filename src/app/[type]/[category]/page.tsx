@@ -26,7 +26,6 @@ export default function CategoryPage() {
   const fetchTimeoutRef = useRef<NodeJS.Timeout>();
 
   const fetchCategoryImages = useCallback(async () => {
-    // Clear any existing timeout
     if (fetchTimeoutRef.current) {
       clearTimeout(fetchTimeoutRef.current);
     }
@@ -34,7 +33,6 @@ export default function CategoryPage() {
     setLoading(true);
     setError(null);
 
-    // Set a new timeout
     fetchTimeoutRef.current = setTimeout(async () => {
       try {
         const normalizedType =
@@ -51,6 +49,13 @@ export default function CategoryPage() {
               ? params.category[0].toLowerCase()
               : "";
 
+        console.log("Fetching with params:", {
+          type: normalizedType,
+          category: normalizedCategory,
+          page: currentPage,
+        });
+
+        // Ensure we're using the correct API endpoint
         const response = await axios.get("/api/category-images", {
           params: {
             type: normalizedType,
@@ -59,7 +64,9 @@ export default function CategoryPage() {
           },
         });
 
-        if (response.data.total === 0) {
+        console.log("API Response:", response.data);
+
+        if (!response.data || response.data.total === 0) {
           setError(
             `No ${normalizedType}s found in the ${normalizedCategory} category`
           );

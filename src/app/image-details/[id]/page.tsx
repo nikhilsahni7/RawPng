@@ -189,7 +189,7 @@ export async function generateMetadata({
           "@type": "ListItem",
           position: 3,
           item: {
-            "@id": `${process.env.NEXT_PUBLIC_APP_URL}/image/${params.id}`,
+            "@id": `${process.env.NEXT_PUBLIC_APP_URL}/image-details/${params.id}`,
             name: imageDetails.title,
           },
         },
@@ -221,7 +221,7 @@ export async function generateMetadata({
       ],
     },
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_APP_URL}/image/${params.id}`,
+      canonical: `${process.env.NEXT_PUBLIC_APP_URL}/image-details/${params.id}`,
     },
     other: {
       "json-ld": JSON.stringify(structuredData),

@@ -68,7 +68,7 @@ function generateBreadcrumbSchema(imageDetails: ImageDetails) {
         "@type": "ListItem",
         position: 3,
         name: imageDetails.title,
-        item: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/image/${imageDetails._id}`,
+        item: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/image-details/${imageDetails._id}`,
       },
     ],
   };

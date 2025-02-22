@@ -21,7 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const categories = await Category.find({ active: true }).lean();
 
   const imageUrls = images.map((image) => ({
-    url: `${process.env.NEXT_PUBLIC_APP_URL}/image/${image._id}`,
+    url: `${process.env.NEXT_PUBLIC_APP_URL}/image-details/${image._id}`,
     lastModified: image.updatedAt,
     changeFrequency: "weekly" as const,
     priority: 0.8,

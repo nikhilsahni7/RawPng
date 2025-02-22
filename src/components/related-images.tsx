@@ -78,7 +78,7 @@ export default function RelatedImages({ imageId }: { imageId: string }) {
         <div className="masonry">
           {images.map((image) => (
             <div key={image._id} className="masonry-item">
-              <Link href={`/image/${image._id}`} target="_blank">
+              <Link href={`/image-details/${image._id}`} target="_blank">
                 <div className="relative w-full">
                   <div
                     style={{

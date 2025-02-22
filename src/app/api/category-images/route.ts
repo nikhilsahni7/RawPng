@@ -20,23 +20,25 @@ export async function GET(request: Request) {
 
     // Handle category matching
     if (category) {
-      // Convert hyphenated category to possible variations
-      const categoryValue = category.replace(/-/g, " "); // Replace hyphens with spaces
+      const categoryValue = category.replace(/-/g, " ");
       query.category = {
-        $regex: new RegExp(`^${categoryValue}$`, "i"), // Exact match but case insensitive
+        $regex: new RegExp(`^${categoryValue}$`, "i"),
       };
     }
 
     // Handle file type
-    if (type && ["png", "vector", "image"].includes(type.toLowerCase())) {
-      query.fileType = type.toLowerCase();
+    if (type) {
+      const normalizedType = type.toLowerCase();
+      if (normalizedType === "image") {
+        // For "image" type, we'll match files that are not PNG or vector
+        query.fileType = { $nin: ["png", "vector"] };
+      } else if (["png", "vector"].includes(normalizedType)) {
+        // For PNG and vector types, exact match
+        query.fileType = normalizedType;
+      }
     }
 
     console.log("MongoDB Query:", query);
-
-    // First, let's log what categories exist in the database
-    const existingCategories = await File.distinct("category");
-    console.log("Existing categories in DB:", existingCategories);
 
     const total = await File.countDocuments(query);
     const images = await File.find(query)
@@ -46,6 +48,19 @@ export async function GET(request: Request) {
       .lean();
 
     console.log(`Found ${images.length} images out of ${total} total`);
+
+    if (images.length === 0) {
+      return NextResponse.json(
+        {
+          error: `No ${type}s found in the ${category} category`,
+          images: [],
+          totalPages: 0,
+          currentPage: page,
+          total: 0,
+        },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({
       images,

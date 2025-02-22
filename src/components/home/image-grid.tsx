@@ -19,7 +19,7 @@ export function ImageGrid({ images }: ImageGridProps) {
 
         return (
           <div key={image._id as string} className="masonry-item">
-            <Link href={`/image/${image._id}`} target="_blank">
+            <Link href={`/image-details/${image._id}`} target="_blank">
               <div className="relative w-full">
                 <div style={{ paddingBottom: `${aspectRatio}%` }} />
                 <Image
