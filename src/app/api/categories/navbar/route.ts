@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { Category } from "@/lib/models/category";
 import { connectDB } from "@/lib/db";
 import { Types } from "mongoose";
-
 interface CategoryDocument {
   _id: Types.ObjectId;
   name: string;
@@ -32,7 +31,16 @@ export async function GET() {
       showInNavbar: Boolean(category.showInNavbar),
     }));
 
-    return NextResponse.json(serializedCategories);
+    // Add cache control headers to prevent browser caching
+    const response = NextResponse.json(serializedCategories, {
+      headers: {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    });
+
+    return response;
   } catch (error) {
     console.error("Failed to fetch navbar categories:", error);
     return NextResponse.json(

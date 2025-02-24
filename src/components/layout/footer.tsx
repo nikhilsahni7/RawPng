@@ -38,172 +38,174 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-gradient-to-b from-white to-gray-50 border-t">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
-          {/* Logo and Description */}
-          <div className="col-span-1 md:col-span-1">
-            <Link
-              href="/"
-              className="inline-block mb-6 transform hover:scale-105 transition-transform duration-200"
-            >
-              <Image
-                src="/Rawpnglogo(1).svg"
-                alt="rawpng"
-                width={180}
-                height={60}
-                className="rounded-md object-contain"
-              />
-            </Link>
-            <p className="text-sm text-muted-foreground/80 leading-relaxed max-w-md">
-              Your go-to destination for high-quality stock free PNG images,
-              vectors, and more. Download royalty free resources for your next
-              project.
+    <footer className="bg-gradient-to-b from-gray-50 to-gray-100 border-t">
+      {/* Newsletter Section */}
+      <div className="w-full bg-blue-600 text-white py-8 sm:py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center text-center space-y-3">
+            <h2 className="text-2xl sm:text-3xl font-bold">Stay in the Loop</h2>
+            <p className="text-blue-100 max-w-2xl text-sm sm:text-base">
+              Subscribe to our newsletter for exclusive updates, fresh
+              resources, and creative inspiration.
             </p>
-          </div>
-
-          {/* Quick Links */}
-          <div className="col-span-1">
-            <h3 className="font-semibold text-gray-900 mb-6">Quick Links</h3>
-            <ul className="space-y-4">
-              <li>
-                <Link
-                  href="/about"
-                  className="text-sm text-muted-foreground/80 hover:text-gray-900 transition-colors duration-200 flex items-center gap-2 group"
-                >
-                  <span className="w-0 group-hover:w-2 h-[2px] bg-blue-600 transition-all duration-200"></span>
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-sm text-muted-foreground/80 hover:text-gray-900 transition-colors duration-200 flex items-center gap-2 group"
-                >
-                  <span className="w-0 group-hover:w-2 h-[2px] bg-blue-600 transition-all duration-200"></span>
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/faq"
-                  className="text-sm text-muted-foreground/80 hover:text-gray-900 transition-colors duration-200 flex items-center gap-2 group"
-                >
-                  <span className="w-0 group-hover:w-2 h-[2px] bg-blue-600 transition-all duration-200"></span>
-                  FAQ
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div className="col-span-1">
-            <h3 className="font-semibold text-gray-900 mb-6">Legal</h3>
-            <ul className="space-y-4">
-              <li>
-                <Link
-                  href="/privacy-policy"
-                  className="text-sm text-muted-foreground/80 hover:text-gray-900 transition-colors duration-200 flex items-center gap-2 group"
-                >
-                  <span className="w-0 group-hover:w-2 h-[2px] bg-blue-600 transition-all duration-200"></span>
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/terms"
-                  className="text-sm text-muted-foreground/80 hover:text-gray-900 transition-colors duration-200 flex items-center gap-2 group"
-                >
-                  <span className="w-0 group-hover:w-2 h-[2px] bg-blue-600 transition-all duration-200"></span>
-                  Terms & Conditions
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/license"
-                  className="text-sm text-muted-foreground/80 hover:text-gray-900 transition-colors duration-200 flex items-center gap-2 group"
-                >
-                  <span className="w-0 group-hover:w-2 h-[2px] bg-blue-600 transition-all duration-200"></span>
-                  License
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Connect */}
-          <div className="col-span-1">
-            <h3 className="font-semibold text-gray-900 mb-6">
-              Connect With Us
-            </h3>
-            <div className="flex space-x-5">
-              <a
-                href="https://x.com/rawpng1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground/80 hover:text-gray-900 transform hover:scale-110 transition-all duration-200"
-              >
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a
-                href="https://www.instagram.com/rawpng_1/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground/80 hover:text-gray-900 transform hover:scale-110 transition-all duration-200"
-              >
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a
-                href="https://www.linkedin.com/company/rawpng"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground/80 hover:text-gray-900 transform hover:scale-110 transition-all duration-200"
-              >
-                <Linkedin className="h-5 w-5" />
-              </a>
-              <a
-                href="https://in.pinterest.com/rawpng1/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground/80 hover:text-gray-900 transform hover:scale-110 transition-all duration-200"
-              >
-                <FaPinterest className="h-5 w-5" />
-              </a>
-            </div>
-
-            <div className="mt-8">
-              <h4 className="font-semibold text-gray-900 mb-4">
-                Subscribe to our newsletter
-              </h4>
-              <form
-                onSubmit={handleSubscribe}
-                className="flex flex-col sm:flex-row gap-3"
-              >
+            <form
+              onSubmit={handleSubscribe}
+              className="w-full max-w-md mt-4 sm:mt-6"
+            >
+              <div className="flex flex-col gap-3">
                 <input
                   type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-2.5 rounded-xl text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all duration-200"
                   required
                 />
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 shadow-sm hover:shadow-md"
+                  className="w-full px-8 py-2.5 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
-                  {isLoading ? "Subscribing..." : "Subscribe"}
+                  {isLoading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      Subscribing...
+                    </span>
+                  ) : (
+                    "Subscribe"
+                  )}
                 </button>
-              </form>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-2 lg:grid-cols-12">
+          {/* Logo Section */}
+          <div className="col-span-2 lg:col-span-3">
+            <Link href="/" className="inline-block">
+              <Image
+                src="/Rawpnglogo(1).svg"
+                alt="rawpng"
+                width={140}
+                height={45}
+                className="rounded-md object-contain sm:w-[180px]"
+              />
+            </Link>
+          </div>
+
+          {/* Quick Links */}
+          <div className="col-span-1 lg:col-span-3">
+            <h3 className="font-bold text-gray-900 mb-3 sm:mb-4 text-base sm:text-lg">
+              Quick Links
+            </h3>
+            <ul className="space-y-2 sm:space-y-3">
+              {["About Us", "Contact", "FAQ"].map((item) => (
+                <li key={item}>
+                  <Link
+                    href={`/${item.toLowerCase().replace(" ", "-")}`}
+                    className="text-sm sm:text-base text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center gap-2"
+                  >
+                    {item}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div className="col-span-1 lg:col-span-3">
+            <h3 className="font-bold text-gray-900 mb-3 sm:mb-4 text-base sm:text-lg">
+              Legal
+            </h3>
+            <ul className="space-y-2 sm:space-y-3">
+              {["Privacy Policy", "Terms & Conditions", "License"].map(
+                (item) => (
+                  <li key={item}>
+                    <Link
+                      href={`/${item.toLowerCase().replace(/ & | /g, "-")}`}
+                      className="text-sm sm:text-base text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center gap-2"
+                    >
+                      {item}
+                    </Link>
+                  </li>
+                )
+              )}
+            </ul>
+          </div>
+
+          {/* Social Links */}
+          <div className="col-span-2 lg:col-span-3">
+            <h3 className="font-bold text-gray-900 mb-3 sm:mb-4 text-base sm:text-lg">
+              Connect With Us
+            </h3>
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+              {[
+                {
+                  icon: Twitter,
+                  label: "Twitter",
+                  href: "https://x.com/rawpng1",
+                },
+                {
+                  icon: Instagram,
+                  label: "Instagram",
+                  href: "https://www.instagram.com/rawpng_1/",
+                },
+                {
+                  icon: Linkedin,
+                  label: "LinkedIn",
+                  href: "https://www.linkedin.com/company/rawpng",
+                },
+                {
+                  icon: FaPinterest,
+                  label: "Pinterest",
+                  href: "https://in.pinterest.com/rawpng1/",
+                },
+              ].map(({ icon: Icon, label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-gray-600 hover:text-blue-600 p-1.5 sm:p-2 rounded-lg hover:bg-blue-50 transition-all duration-200"
+                >
+                  <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="text-xs sm:text-sm">{label}</span>
+                </a>
+              ))}
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-gray-200">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-muted-foreground/80">
+        <div className="mt-8 sm:mt-12 pt-4 sm:pt-6 border-t border-gray-200">
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+            <p className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
               © {new Date().getFullYear()} rawpng. All rights reserved.
             </p>
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-xs sm:text-sm text-gray-600">
+                Made with ❤️ for creators
+              </span>
+            </div>
           </div>
         </div>
       </div>

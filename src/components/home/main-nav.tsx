@@ -40,32 +40,20 @@ export function MainNav() {
     useQuery({
       queryKey: ["navbarCategories"],
       queryFn: async () => {
-        try {
-          const cached = sessionStorage.getItem("navbarCategories");
-          if (cached) {
-            return JSON.parse(cached);
-          }
-
-          const response = await axios.get<Category[]>(
-            "/api/categories/navbar"
-          );
-          const grouped = response.data.reduce<GroupedCategories>(
-            (acc, category) => {
-              const type = category.type as keyof GroupedCategories;
-              acc[type] = acc[type] || [];
-              acc[type].push(category);
-              return acc;
-            },
-            { png: [], vector: [], image: [] }
-          );
-
-          sessionStorage.setItem("navbarCategories", JSON.stringify(grouped));
-          return grouped;
-        } catch (error) {
-          console.error("Failed to fetch navbar categories:", error);
-          return { png: [], vector: [], image: [] };
-        }
+        const response = await axios.get<Category[]>("/api/categories/navbar");
+        const grouped = response.data.reduce<GroupedCategories>(
+          (acc, category) => {
+            const type = category.type as keyof GroupedCategories;
+            acc[type] = acc[type] || [];
+            acc[type].push(category);
+            return acc;
+          },
+          { png: [], vector: [], image: [] }
+        );
+        return grouped;
       },
+      refetchInterval: 30000,
+      staleTime: 10000,
     });
 
   if (isLoading) {
