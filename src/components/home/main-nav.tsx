@@ -40,20 +40,32 @@ export function MainNav() {
     useQuery({
       queryKey: ["navbarCategories"],
       queryFn: async () => {
-        const response = await axios.get<Category[]>("/api/categories/navbar");
-        const grouped = response.data.reduce<GroupedCategories>(
-          (acc, category) => {
-            const type = category.type as keyof GroupedCategories;
-            acc[type] = acc[type] || [];
-            acc[type].push(category);
-            return acc;
-          },
-          { png: [], vector: [], image: [] }
-        );
-        return grouped;
+        try {
+          const cached = sessionStorage.getItem("navbarCategories");
+          if (cached) {
+            return JSON.parse(cached);
+          }
+
+          const response = await axios.get<Category[]>(
+            "/api/categories/navbar"
+          );
+          const grouped = response.data.reduce<GroupedCategories>(
+            (acc, category) => {
+              const type = category.type as keyof GroupedCategories;
+              acc[type] = acc[type] || [];
+              acc[type].push(category);
+              return acc;
+            },
+            { png: [], vector: [], image: [] }
+          );
+
+          sessionStorage.setItem("navbarCategories", JSON.stringify(grouped));
+          return grouped;
+        } catch (error) {
+          console.error("Failed to fetch navbar categories:", error);
+          return { png: [], vector: [], image: [] };
+        }
       },
-      refetchInterval: 30000,
-      staleTime: 10000,
     });
 
   if (isLoading) {
@@ -173,14 +185,9 @@ export function MainNav() {
             <Link href="/signin">
               <Button
                 variant="ghost"
-                className="text-gray-700 hover:bg-gray-50/80 rounded-full"
+                className="bg-blue-600 text-white hover:bg-blue-700 rounded-full px-6"
               >
                 Sign In
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="bg-blue-600 text-white hover:bg-blue-700 rounded-full px-6">
-                Sign Up
               </Button>
             </Link>
           </div>
