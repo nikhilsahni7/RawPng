@@ -32,7 +32,10 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${baseUrl}/signin?error=no_code`);
     }
 
-    const redirectUri = `${baseUrl}/api/auth/callback/google`;
+    const redirectUri =
+      process.env.NODE_ENV === "production"
+        ? "https://rawpng.com/api/auth/callback/google" // Make sure this matches exactly what's in Google Console
+        : `${baseUrl}/api/auth/callback/google`;
     const oauth2Client = createOAuthClient(redirectUri);
 
     const { tokens } = await oauth2Client.getToken(code);
