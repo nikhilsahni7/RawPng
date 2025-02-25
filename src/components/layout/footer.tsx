@@ -199,6 +199,13 @@ export function Footer() {
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
             <p className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
               © {new Date().getFullYear()} rawpng. All rights reserved.
+              {" | "}
+              <Link
+                href="/sitemap"
+                className="hover:text-blue-600 transition-colors duration-200"
+              >
+                Sitemap
+              </Link>
             </p>
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse" />

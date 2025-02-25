@@ -39,8 +39,10 @@ export function MobileNav() {
         );
         return grouped;
       },
-      refetchInterval: 30000,
-      staleTime: 10000,
+      refetchInterval: 10000,
+      staleTime: 1000,
+      refetchOnMount: true,
+      refetchOnWindowFocus: true,
     });
   const [searchQuery, setSearchQuery] = useState("");
 

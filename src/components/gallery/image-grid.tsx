@@ -78,6 +78,8 @@ export function ImageGrid() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedImages, setSelectedImages] = useState<Set<string>>(new Set());
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
 
   useEffect(() => {
     async function fetchImages() {
@@ -102,10 +104,43 @@ export function ImageGrid() {
     fetchImages();
   }, [selectedTab, searchQuery, currentPage]);
 
-  const handleImageClick = (image: ImageItem, index: number) => {
-    setSelectedImage(image);
-    setSelectedImageIndex(index);
-    toast.success("Image selected");
+  const toggleSelectionMode = () => {
+    setIsSelectionMode(!isSelectionMode);
+    if (isSelectionMode) {
+      // Clear selections when exiting selection mode
+      setSelectedImages(new Set());
+    }
+  };
+
+  const toggleImageSelection = (
+    imageId: string,
+    event: React.MouseEvent<Element, MouseEvent>
+  ) => {
+    event.stopPropagation();
+    const newSelectedImages = new Set(selectedImages);
+
+    if (newSelectedImages.has(imageId)) {
+      newSelectedImages.delete(imageId);
+    } else {
+      newSelectedImages.add(imageId);
+    }
+
+    setSelectedImages(newSelectedImages);
+  };
+
+  const handleImageClick = (
+    image: ImageItem,
+    index: number,
+    event?: React.MouseEvent<Element, MouseEvent>
+  ) => {
+    if (isSelectionMode) {
+      if (event) {
+        toggleImageSelection(image._id, event);
+      }
+    } else {
+      setSelectedImage(image);
+      setSelectedImageIndex(index);
+    }
   };
 
   const handlePageChange = (page: number) => {
@@ -137,6 +172,51 @@ export function ImageGrid() {
     }
   };
 
+  const handleDeleteSelected = async () => {
+    if (selectedImages.size === 0) return;
+
+    const confirmed = window.confirm(
+      `Delete ${selectedImages.size} selected images?`
+    );
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch("/api/upload/batch-delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ids: Array.from(selectedImages),
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toast.success(`Successfully deleted ${result.deletedCount} images`);
+        // Refresh the image list
+        setCurrentPage(1);
+        setSelectedImages(new Set());
+        setIsSelectionMode(false);
+
+        // Trigger a refetch of images
+        const res = await fetch(
+          `/api/images?fileType=${selectedTab}&query=${encodeURIComponent(
+            searchQuery
+          )}&page=${1}`
+        );
+        const data = await res.json();
+        setImages(data.images);
+        setTotalPages(data.totalPages);
+      } else {
+        toast.error("Failed to delete images");
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      toast.error("An error occurred while deleting images");
+    }
+  };
+
   const categories = {
     all: "All",
     png: "PNG",
@@ -165,21 +245,42 @@ export function ImageGrid() {
                 ))}
               </TabsList>
             </Tabs>
-            <div className="relative w-full sm:w-[300px]">
-              <Search
-                className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-                size={18}
-              />
-              <Input
-                type="text"
-                placeholder="Search images..."
-                className="pl-8 w-full"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setCurrentPage(1);
-                }}
-              />
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="relative w-full sm:w-[300px]">
+                <Search
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+                  size={18}
+                />
+                <Input
+                  type="text"
+                  placeholder="Search images..."
+                  className="pl-8 w-full"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                />
+              </div>
+
+              <Button
+                variant={isSelectionMode ? "default" : "outline"}
+                onClick={toggleSelectionMode}
+                className="whitespace-nowrap"
+              >
+                {isSelectionMode ? "Cancel Selection" : "Select Images"}
+              </Button>
+
+              {isSelectionMode && (
+                <Button
+                  variant="destructive"
+                  onClick={handleDeleteSelected}
+                  disabled={selectedImages.size === 0}
+                  className="whitespace-nowrap"
+                >
+                  Delete Selected ({selectedImages.size})
+                </Button>
+              )}
             </div>
           </div>
 
@@ -196,8 +297,12 @@ export function ImageGrid() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="group relative rounded-lg overflow-hidden border bg-card text-card-foreground shadow-sm"
-                    onClick={() => handleImageClick(image, index)}
+                    className={`group relative rounded-lg overflow-hidden border bg-card text-card-foreground shadow-sm ${
+                      selectedImages.has(image._id) ? "ring-2 ring-primary" : ""
+                    }`}
+                    onClick={(e: React.MouseEvent<Element, MouseEvent>) =>
+                      handleImageClick(image, index, e)
+                    }
                   >
                     <div className="aspect-square relative">
                       <Image
@@ -208,9 +313,24 @@ export function ImageGrid() {
                       />
                       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <p className="text-white text-sm">
-                          Click to view details
+                          {isSelectionMode
+                            ? "Click to select"
+                            : "Click to view details"}
                         </p>
                       </div>
+
+                      {isSelectionMode && (
+                        <div
+                          className="absolute top-2 right-2 h-6 w-6 rounded-full border-2 flex items-center justify-center bg-white"
+                          onClick={(e: React.MouseEvent<Element, MouseEvent>) =>
+                            toggleImageSelection(image._id, e)
+                          }
+                        >
+                          {selectedImages.has(image._id) && (
+                            <div className="h-4 w-4 rounded-full bg-primary"></div>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="p-4">
                       <h3 className="text-sm font-medium truncate">

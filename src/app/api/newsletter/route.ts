@@ -32,6 +32,21 @@ export async function POST(req: NextRequest) {
     // Save to database
     await Newsletter.create({ email });
 
+    // Add subscriber to Resend contacts
+    try {
+      await resend.contacts.create({
+        email: email,
+        unsubscribed: false,
+        firstName: "Subscriber",
+        lastName: "",
+        audienceId: "28c3abdc-783b-4a7f-8a63-b8df2d9a620d",
+      });
+      console.log("Contact added to Resend");
+    } catch (contactError) {
+      console.error("Failed to add contact to Resend:", contactError);
+      console.error("Error details:", JSON.stringify(contactError));
+    }
+
     const emailHtml = render(
       NewsletterWelcomeEmail({
         email,

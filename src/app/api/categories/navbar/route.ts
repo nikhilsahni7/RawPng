@@ -31,10 +31,10 @@ export async function GET() {
       showInNavbar: Boolean(category.showInNavbar),
     }));
 
-    // Add cache control headers to prevent browser caching
+    // Add cache control headers to prevent ALL caching
     const response = NextResponse.json(serializedCategories, {
       headers: {
-        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
         Pragma: "no-cache",
         Expires: "0",
       },

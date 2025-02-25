@@ -45,6 +45,7 @@ interface ImageDetailsProps {
   onNext: () => void;
   hasPrevious: boolean;
   hasNext: boolean;
+  onDelete?: () => void;
 }
 
 interface Category {
@@ -60,6 +61,7 @@ export function ImageDetails({
   onNext,
   hasPrevious,
   hasNext,
+  onDelete,
 }: ImageDetailsProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState("");
@@ -97,13 +99,25 @@ export function ImageDetails({
   }
 
   const handleDelete = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this image?"
+    );
+    if (!confirmed) return;
+
     try {
       await fetch(`/api/upload/${image._id}`, {
         method: "DELETE",
       });
       toast.success("Image deleted successfully");
-      await onClose();
-      //eslint-disable-next-line
+
+      // If there's a custom delete handler (for batch operations), use it
+      if (onDelete) {
+        onDelete();
+      } else {
+        // Otherwise just close the details view
+        onClose();
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("Failed to delete image");
     }

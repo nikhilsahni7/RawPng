@@ -41,11 +41,6 @@ export function MainNav() {
       queryKey: ["navbarCategories"],
       queryFn: async () => {
         try {
-          const cached = sessionStorage.getItem("navbarCategories");
-          if (cached) {
-            return JSON.parse(cached);
-          }
-
           const response = await axios.get<Category[]>(
             "/api/categories/navbar"
           );
@@ -59,13 +54,16 @@ export function MainNav() {
             { png: [], vector: [], image: [] }
           );
 
-          sessionStorage.setItem("navbarCategories", JSON.stringify(grouped));
           return grouped;
         } catch (error) {
           console.error("Failed to fetch navbar categories:", error);
           return { png: [], vector: [], image: [] };
         }
       },
+      staleTime: 1000,
+      refetchOnMount: true,
+      refetchOnWindowFocus: true,
+      refetchInterval: 10000,
     });
 
   if (isLoading) {
