@@ -78,9 +78,16 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.redirect(`${baseUrl}/`);
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     console.error("Google Auth Error:", error);
     const baseUrl = new URL(request.url).origin;
+    console.log(baseUrl);
+    console.log(request.url);
+    console.log(request);
+    console.log(error);
+    console.log(error.message);
+    console.log(error.stack);
     return NextResponse.redirect(`${baseUrl}/signin?error=google_auth_failed`);
   }
 }
