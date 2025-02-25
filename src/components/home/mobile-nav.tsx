@@ -25,24 +25,32 @@ export function MobileNav() {
   const { user, signout } = useAuth();
   const { data: categories = { png: [], vector: [], image: [] }, isLoading } =
     useQuery({
-      queryKey: ["navbarCategories"],
+      queryKey: ["mobileNavbarCategories"],
       queryFn: async () => {
-        const response = await axios.get<Category[]>("/api/categories/navbar");
-        const grouped = response.data.reduce<GroupedCategories>(
-          (acc, category) => {
-            const type = category.type as keyof GroupedCategories;
-            acc[type] = acc[type] || [];
-            acc[type].push(category);
-            return acc;
-          },
-          { png: [], vector: [], image: [] }
-        );
-        return grouped;
+        try {
+          const response = await axios.get<Category[]>(
+            "/api/categories/navbar?timestamp=" + new Date().getTime()
+          );
+          const grouped = response.data.reduce<GroupedCategories>(
+            (acc, category) => {
+              const type = category.type as keyof GroupedCategories;
+              acc[type] = acc[type] || [];
+              acc[type].push(category);
+              return acc;
+            },
+            { png: [], vector: [], image: [] }
+          );
+
+          return grouped;
+        } catch (error) {
+          console.error("Failed to fetch navbar categories:", error);
+          return { png: [], vector: [], image: [] };
+        }
       },
-      refetchInterval: 10000,
-      staleTime: 1000,
+      staleTime: 0,
       refetchOnMount: true,
       refetchOnWindowFocus: true,
+      refetchInterval: 5000,
     });
   const [searchQuery, setSearchQuery] = useState("");
 

@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { Category } from "@/lib/models/category";
 import { connectDB } from "@/lib/db";
 import { Types } from "mongoose";
+
+// Disable Next.js caching for this route
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface CategoryDocument {
   _id: Types.ObjectId;
   name: string;
@@ -31,12 +36,15 @@ export async function GET() {
       showInNavbar: Boolean(category.showInNavbar),
     }));
 
-    // Add cache control headers to prevent ALL caching
+    // Add stronger cache control headers to prevent ALL caching
     const response = NextResponse.json(serializedCategories, {
       headers: {
-        "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
+        "Cache-Control":
+          "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+        "Surrogate-Control": "no-store",
         Pragma: "no-cache",
         Expires: "0",
+        "X-Accel-Expires": "0",
       },
     });
 

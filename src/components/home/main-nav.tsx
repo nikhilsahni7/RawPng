@@ -42,7 +42,7 @@ export function MainNav() {
       queryFn: async () => {
         try {
           const response = await axios.get<Category[]>(
-            "/api/categories/navbar"
+            "/api/categories/navbar?timestamp=" + new Date().getTime()
           );
           const grouped = response.data.reduce<GroupedCategories>(
             (acc, category) => {
@@ -60,10 +60,10 @@ export function MainNav() {
           return { png: [], vector: [], image: [] };
         }
       },
-      staleTime: 1000,
+      staleTime: 0,
       refetchOnMount: true,
       refetchOnWindowFocus: true,
-      refetchInterval: 10000,
+      refetchInterval: 5000,
     });
 
   if (isLoading) {
