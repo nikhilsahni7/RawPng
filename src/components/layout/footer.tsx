@@ -201,7 +201,7 @@ export function Footer() {
               © {new Date().getFullYear()} rawpng. All rights reserved.
               {" | "}
               <Link
-                href="/https://rawpng.com/sitemap-0.xml"
+                href="/sitemap-0.xml"
                 className="hover:text-blue-600 transition-colors duration-200"
               >
                 Sitemap
