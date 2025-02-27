@@ -1,6 +1,7 @@
 // app/api/upload/route.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 import { NextRequest, NextResponse } from "next/server";
 import { uploadToS3 } from "@/lib/s3-upload";
 import { File as FileModel } from "@/lib/models/file";
@@ -25,8 +26,9 @@ async function getCategory(): Promise<string> {
   }
 }
 
-// Optimize batch processing->
-const BATCH_SIZE = 25; //
+// Optimize batch processing
+const BATCH_SIZE = 10; // Reduced batch size for better memory management
+const MAX_CONCURRENT_BATCHES = 3; // Limit concurrent processing
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,67 +40,42 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No files provided" }, { status: 400 });
     }
 
-    const uploadedFiles = [];
+    const uploadedFiles: any[] = [];
     const errors: any[] = [];
 
-    // Process files in smaller batches
-    for (let i = 0; i < files.length; i += BATCH_SIZE) {
-      const batch = files.slice(i, i + BATCH_SIZE);
-      const batchPromises = batch.map(async (file) => {
-        const f = file as unknown as UploadedFile;
+    // Process files in smaller batches with concurrency control
+    for (
+      let i = 0;
+      i < files.length;
+      i += BATCH_SIZE * MAX_CONCURRENT_BATCHES
+    ) {
+      const batchPromises = [];
 
-        if (!f.type.startsWith("image/")) {
-          return null;
-        }
+      // Create multiple batches but limit concurrent execution
+      for (
+        let j = 0;
+        j < MAX_CONCURRENT_BATCHES && i + j * BATCH_SIZE < files.length;
+        j++
+      ) {
+        const startIdx = i + j * BATCH_SIZE;
+        const batch = files.slice(startIdx, startIdx + BATCH_SIZE);
 
-        try {
-          const buffer = Buffer.from(await f.arrayBuffer());
-          const imageInfo = await sharp(buffer).metadata();
+        batchPromises.push(processBatch(batch, errors));
+      }
 
-          // Optimize image processing based on type
-          let processedBuffer;
-          if (f.type === "image/svg+xml") {
-            processedBuffer = buffer; // Don't process SVGs
-          } else {
-            processedBuffer = await sharp(buffer)
-              .resize(2000, 2000, { fit: "inside", withoutEnlargement: true })
-              .toBuffer();
-          }
-
-          const s3Result = await uploadToS3(processedBuffer, f.name, f.type);
-          const category = await getCategory();
-
-          // Enhanced metadata generation
-          const metadata = generateMetadata(f.name, imageInfo);
-
-          return await FileModel.create({
-            fileName: f.name,
-            fileType: getFileType(f),
-            fileSize: f.size,
-            dimensions: {
-              width: imageInfo?.width || 0,
-              height: imageInfo?.height || 0,
-            },
-            ...s3Result,
-            category,
-            ...metadata,
-            uploadDate: new Date(),
-          });
-        } catch (error) {
-          errors.push({
-            file: f.name,
-            error: error instanceof Error ? error.message : "Unknown error",
-          });
-          return null;
-        }
+      // Wait for current set of batches to complete before moving to next set
+      const batchResults = await Promise.all(batchPromises);
+      batchResults.forEach((result) => {
+        uploadedFiles.push(...result);
       });
 
-      const batchResults = await Promise.allSettled(batchPromises);
-      const successfulUploads = batchResults
-        .filter((result) => result.status === "fulfilled" && result.value)
-        .map((result) => (result as PromiseFulfilledResult<any>).value);
-
-      uploadedFiles.push(...successfulUploads);
+      // Add a small delay between large batch sets to prevent overwhelming the system
+      if (
+        files.length > 100 &&
+        i + BATCH_SIZE * MAX_CONCURRENT_BATCHES < files.length
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
     }
 
     return NextResponse.json({
@@ -116,6 +93,125 @@ export async function POST(req: NextRequest) {
       },
       { status: 500 }
     );
+  }
+}
+
+// Helper function to process a batch of files
+async function processBatch(batch: any[], errors: any[]) {
+  const batchPromises = batch.map(async (file) => {
+    const f = file as unknown as UploadedFile;
+
+    if (!f.type.startsWith("image/")) {
+      return null;
+    }
+
+    try {
+      // Add timeout protection for file processing
+      return await Promise.race([
+        processFile(f),
+        new Promise<null>((_, reject) =>
+          setTimeout(
+            () => reject(new Error(`Processing timeout for ${f.name}`)),
+            60000
+          )
+        ),
+      ]);
+    } catch (error) {
+      errors.push({
+        file: f.name,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+      return null;
+    }
+  });
+
+  const batchResults = await Promise.allSettled(batchPromises);
+  return batchResults
+    .filter((result) => result.status === "fulfilled" && result.value)
+    .map((result) => (result as PromiseFulfilledResult<any>).value);
+}
+
+// Process individual file with error handling and retries
+async function processFile(f: UploadedFile, retryCount = 0) {
+  try {
+    const buffer = Buffer.from(await f.arrayBuffer());
+
+    // Memory-efficient image processing
+    let imageInfo;
+    try {
+      imageInfo = await sharp(buffer, {
+        limitInputPixels: 268435456,
+      }).metadata(); // Increase pixel limit for large images
+    } catch (err) {
+      console.warn(`Warning: Could not process metadata for ${f.name}:`, err);
+      imageInfo = {}; // Continue with empty metadata if processing fails
+    }
+
+    // Optimize image processing based on type and size
+    let processedBuffer;
+    if (f.type === "image/svg+xml" || f.size < 10000) {
+      // Don't process small files or SVGs
+      processedBuffer = buffer;
+    } else {
+      try {
+        processedBuffer = await sharp(buffer, { limitInputPixels: 268435456 })
+          .resize(2000, 2000, { fit: "inside", withoutEnlargement: true })
+          .toBuffer();
+      } catch (err) {
+        console.warn(
+          `Warning: Could not resize ${f.name}, using original:`,
+          err
+        );
+        processedBuffer = buffer; // Fall back to original if processing fails
+      }
+    }
+
+    // Get category with error handling
+    let category;
+    try {
+      category = await getCategory();
+    } catch (err) {
+      console.warn("Error getting category, using default:", err);
+      category = "Uncategorized";
+    }
+
+    // Upload to S3 with retry logic
+    let s3Result;
+    try {
+      s3Result = await uploadToS3(processedBuffer, f.name, f.type);
+    } catch (err) {
+      if (retryCount < 3) {
+        console.warn(
+          `S3 upload failed for ${f.name}, retrying (${retryCount + 1}/3)...`
+        );
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1000 * (retryCount + 1))
+        );
+        return processFile(f, retryCount + 1);
+      }
+      throw err;
+    }
+
+    // Enhanced metadata generation with error handling
+    const metadata = generateMetadata(f.name, imageInfo);
+
+    // Create database record
+    return await FileModel.create({
+      fileName: f.name,
+      fileType: getFileType(f),
+      fileSize: f.size,
+      dimensions: {
+        width: imageInfo?.width || 0,
+        height: imageInfo?.height || 0,
+      },
+      ...s3Result,
+      category,
+      ...metadata,
+      uploadDate: new Date(),
+    });
+  } catch (error) {
+    console.error(`Error processing file ${f.name}:`, error);
+    throw error;
   }
 }
 
