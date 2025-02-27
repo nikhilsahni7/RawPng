@@ -52,7 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-  // Add static routes but exclude dashboard
+  // Add static routes but exclude dashboard routes
   const staticRoutes = [
     {
       url: process.env.NEXT_PUBLIC_APP_URL!,
@@ -60,8 +60,57 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily" as const,
       priority: 1,
     },
-    // Add other static routes here, but not dashboard routes
+    {
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/about`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/contact`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/faq`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/license`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/privacy-policy`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/terms-conditions`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    },
+    // Add other public routes as needed
   ];
 
-  return [...staticRoutes, ...imageUrls, ...categoryUrls];
+  // Filter out any API routes or admin/dashboard routes from the final sitemap
+  const allRoutes = [...staticRoutes, ...imageUrls, ...categoryUrls];
+  return allRoutes.filter((route) => {
+    const url = route.url.toLowerCase();
+    return (
+      !url.includes("/dashboard/") &&
+      !url.includes("/dashboard") &&
+      !url.includes("/api/") &&
+      !url.includes("/login") &&
+      !url.includes("/signin") &&
+      !url.includes("/signup") &&
+      !url.includes("/verify-email")
+    );
+  });
 }
