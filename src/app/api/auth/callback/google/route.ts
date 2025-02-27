@@ -34,7 +34,7 @@ export async function GET(request: Request) {
 
     const redirectUri =
       process.env.NODE_ENV === "production"
-        ? "https://rawpng.com/api/auth/callback/google" // Make sure this matches exactly what's in Google Console
+        ? "https://rawpng.com/api/auth/callback/google"
         : `${baseUrl}/api/auth/callback/google`;
     const oauth2Client = createOAuthClient(redirectUri);
 

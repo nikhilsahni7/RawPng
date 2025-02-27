@@ -115,10 +115,10 @@ export default function PrivacyPolicyPage() {
               If you have any questions about our Privacy Policy, please contact
               us at{" "}
               <a
-                href="mailto:info@rawpng.com"
+                href="mailto:contact@rawpng.com"
                 className="text-blue-600 hover:text-blue-800"
               >
-                info@rawpng.com
+                contact@rawpng.com
               </a>{" "}
               or through our{" "}
               <Link

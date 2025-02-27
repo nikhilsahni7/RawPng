@@ -76,10 +76,10 @@ export default function ContactPage() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-900">Email</p>
               <a
-                href="mailto:info@rawpng.com"
+                href="mailto:contact@rawpng.com"
                 className="text-blue-600 hover:text-blue-800"
               >
-                info@rawpng.com
+                contact@rawpng.com
               </a>
             </div>
           </div>

@@ -63,7 +63,7 @@ export default function FAQPage() {
     {
       question: "How do I contact Rawpng.com for licensing inquiries?",
       answer:
-        "For any questions or clarifications about licensing, you can contact us at info@rawpng.com or via our contact page.",
+        "For any questions or clarifications about licensing, you can contact us at contact@rawpng.com or via our contact page.",
     },
     {
       question:
@@ -106,7 +106,7 @@ export default function FAQPage() {
     {
       question: "What should I do if a download fails?",
       answer:
-        "Please try refreshing the page or using a different browser. If the issue persists, contact us via info@rawpng.com or the contact page.",
+        "Please try refreshing the page or using a different browser. If the issue persists, contact us via contact@rawpng.com or the contact page.",
     },
     {
       question: "Can I upload my own designs or photos to Rawpng.com?",
@@ -143,7 +143,7 @@ export default function FAQPage() {
     {
       question: "How do I report bugs or issues with the website?",
       answer:
-        "You can report any issues to info@rawpng.com or through the contact page.",
+        "You can report any issues to contact@rawpng.com or through the contact page.",
     },
     {
       question: "What browsers are supported by Rawpng.com?",
@@ -225,7 +225,7 @@ export default function FAQPage() {
               <span className="font-medium text-blue-900">Contact Support</span>
             </Link>
             <a
-              href="mailto:info@rawpng.com"
+              href="mailto:contact@rawpng.com"
               className="flex items-center justify-center gap-3 p-6 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors"
             >
               <Mail className="h-6 w-6 text-blue-600" />

@@ -20,36 +20,48 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Get all categories
   const categories = await Category.find({ active: true }).lean();
 
-  const imageUrls = images.map((image) => ({
-    url: `${process.env.NEXT_PUBLIC_APP_URL}/image-details/${image._id}`,
-    lastModified: image.updatedAt,
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-    images: [
-      {
-        loc: image.cloudFrontUrl,
-        title: image.title,
-        caption: `Free ${image.category} image on Rawpng`,
-        license: "https://creativecommons.org/licenses/by/4.0/",
-      },
-    ],
-  }));
+  // Filter out any images that might have dashboard routes
+  const imageUrls = images
+    .filter((image) => !String(image._id).includes("dashboard"))
+    .map((image) => ({
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/image-details/${image._id}`,
+      lastModified: image.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+      images: [
+        {
+          loc: image.cloudFrontUrl,
+          title: image.title,
+          caption: `Free ${image.category} image on Rawpng`,
+          license: "https://creativecommons.org/licenses/by/4.0/",
+        },
+      ],
+    }));
 
-  const categoryUrls = categories.map((category) => ({
-    url: `${process.env.NEXT_PUBLIC_APP_URL}/${category.type.toLowerCase()}/${category.name.toLowerCase().replace(/ /g, "-")}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.7,
-  }));
+  // Filter out any categories that might be dashboard related
+  const categoryUrls = categories
+    .filter(
+      (category) =>
+        category.name.toLowerCase() !== "dashboard" &&
+        !category.type.toLowerCase().includes("dashboard")
+    )
+    .map((category) => ({
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/${category.type.toLowerCase()}/${category.name.toLowerCase().replace(/ /g, "-")}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }));
 
-  return [
+  // Add static routes but exclude dashboard
+  const staticRoutes = [
     {
       url: process.env.NEXT_PUBLIC_APP_URL!,
       lastModified: new Date(),
-      changeFrequency: "daily",
+      changeFrequency: "daily" as const,
       priority: 1,
     },
-    ...imageUrls,
-    ...categoryUrls,
+    // Add other static routes here, but not dashboard routes
   ];
+
+  return [...staticRoutes, ...imageUrls, ...categoryUrls];
 }

@@ -117,10 +117,10 @@ export function Footer() {
               Quick Links
             </h3>
             <ul className="space-y-2 sm:space-y-3">
-              {["About Us", "Contact", "FAQ"].map((item) => (
+              {["About", "Contact", "FAQ"].map((item) => (
                 <li key={item}>
                   <Link
-                    href={`/${item.toLowerCase().replace(" ", "-")}`}
+                    href={`/${item.toLowerCase().replace(" ", "")}`}
                     className="text-sm sm:text-base text-gray-600 hover:text-blue-600 transition-colors duration-200 flex items-center gap-2"
                   >
                     {item}
