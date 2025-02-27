@@ -3,10 +3,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { generateImageUrl } from "@/lib/api/images";
 import { IFile } from "@/lib/models/file";
+import { ImageDetails } from "@/types/image";
 
 interface ImageGridProps {
-  images: IFile[];
+  images: IFile[] | ImageDetails[];
 }
 
 export function ImageGrid({ images }: ImageGridProps) {
@@ -19,7 +21,10 @@ export function ImageGrid({ images }: ImageGridProps) {
 
         return (
           <div key={image._id as string} className="masonry-item">
-            <Link href={`/image-details/${image._id}`} target="_blank">
+            <Link
+              href={generateImageUrl(image as ImageDetails)}
+              target="_blank"
+            >
               <div className="relative w-full">
                 <div style={{ paddingBottom: `${aspectRatio}%` }} />
                 <Image

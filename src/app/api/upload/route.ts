@@ -238,9 +238,10 @@ function generateEnhancedKeywords(
         // Add folder-specific compound keywords
         ...folderKeywords.map((word) => `${word} content`),
         ...folderKeywords.map((word) => `${word} image`),
-        // Add base word compound keywords
+
         ...baseWords.map((word) => `${word} background`),
         ...baseWords.map((word) => `${word} illustration`),
+        ...baseWords.map((word) => `${word} image`),
       ].filter(Boolean)
     ),
   ];

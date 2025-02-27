@@ -34,3 +34,17 @@ export async function getImageDetails(
     return null;
   }
 }
+
+export function generateImageUrl(image: ImageDetails): string {
+  if (!image || !image.title || !image._id) {
+    console.error("Invalid image data for URL generation", image);
+    return "/";
+  }
+
+  const titleSlug = image.title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+  return `/image-details/${titleSlug}-${image._id}`;
+}

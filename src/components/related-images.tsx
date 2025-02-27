@@ -5,9 +5,10 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Pagination from "@/components/home/pagination";
-
+import { generateImageUrl } from "@/lib/api/images";
 import { Footer } from "@/components/layout/footer";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ImageDetails } from "@/types/image";
 
 interface RelatedImage {
   _id: string;
@@ -78,7 +79,10 @@ export default function RelatedImages({ imageId }: { imageId: string }) {
         <div className="masonry">
           {images.map((image) => (
             <div key={image._id} className="masonry-item">
-              <Link href={`/image-details/${image._id}`} target="_blank">
+              <Link
+                href={generateImageUrl(image as ImageDetails)}
+                target="_blank"
+              >
                 <div className="relative w-full">
                   <div
                     style={{

@@ -12,6 +12,7 @@ import ExpandableKeywords from "@/components/ExpandableKeywords";
 import { Header } from "@/components/layout/header";
 import { getImageDetails } from "@/lib/api/images";
 import type { ImageDetails } from "@/types/image";
+import { generateImageUrl } from "@/lib/api/images";
 
 function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
   const formattedDate = new Date(imageDetails.uploadDate).toLocaleDateString(
@@ -128,9 +129,15 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: { slug: string };
 }): Promise<Metadata> {
-  const imageDetails = await getImageDetails(params.id);
+  // Extract the ID - it's the last part after the last hyphen
+  // If there's no hyphen, use the entire slug as the ID
+  const slugParts = params.slug.split("-");
+  const id =
+    slugParts.length > 1 ? slugParts[slugParts.length - 1] : params.slug;
+
+  const imageDetails = await getImageDetails(id);
 
   if (!imageDetails) {
     return {
@@ -189,7 +196,7 @@ export async function generateMetadata({
           "@type": "ListItem",
           position: 3,
           item: {
-            "@id": `${process.env.NEXT_PUBLIC_APP_URL}/image-details/${params.id}`,
+            "@id": generateImageUrl(imageDetails),
             name: imageDetails.title,
           },
         },
@@ -221,7 +228,7 @@ export async function generateMetadata({
       ],
     },
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_APP_URL}/image-details/${params.id}`,
+      canonical: `${process.env.NEXT_PUBLIC_APP_URL}/${generateImageUrl(imageDetails)}`,
     },
     other: {
       "json-ld": JSON.stringify(structuredData),
@@ -232,9 +239,15 @@ export async function generateMetadata({
 export default async function ImagePage({
   params,
 }: {
-  params: { id: string };
+  params: { slug: string };
 }) {
-  const imageDetails = await getImageDetails(params.id);
+  // Extract the ID - it's the last part after the last hyphen
+  // If there's no hyphen, use the entire slug as the ID
+  const slugParts = params.slug.split("-");
+  const id =
+    slugParts.length > 1 ? slugParts[slugParts.length - 1] : params.slug;
+
+  const imageDetails = await getImageDetails(id);
 
   if (!imageDetails) {
     notFound();
