@@ -74,6 +74,7 @@ export async function GET(
           cloudFrontUrl: 1,
           dimensions: 1,
           category: 1,
+          fileType: 1,
         },
       },
     ];

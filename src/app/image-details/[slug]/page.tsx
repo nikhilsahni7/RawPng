@@ -53,7 +53,19 @@ function ImageContent({ imageDetails }: { imageDetails: ImageDetails }) {
                     alt={imageDetails.title}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-contain p-2"
+                    className={`object-contain p-2 ${
+                      imageDetails.fileType.toLowerCase() === "png"
+                        ? "checkerboard-bg-subtle"
+                        : ""
+                    }`}
+                    style={{
+                      backgroundImage:
+                        imageDetails.fileType.toLowerCase() === "png"
+                          ? "url(https://static.vecteezy.com/system/resources/thumbnails/021/594/645/small/checkered-square-pattern-png.png)"
+                          : "none",
+                      backgroundSize: "200px 200px",
+                      backgroundPosition: "0 0, 4px 0, 4px -4px, 0px 4px",
+                    }}
                     priority
                   />
                 </div>

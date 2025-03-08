@@ -171,15 +171,22 @@ export function ImageDetails({
         </div>
         <div className="grid md:grid-cols-2 gap-6">
           <div className="relative aspect-square p-4">
-            <Image
-              src={image.cloudFrontUrl}
-              alt={image.title}
-              fill
-              className="object-cover rounded-lg"
-              onError={(e) => {
-                console.log("Error loading image", e);
-              }}
-            />
+            <div
+              className={`relative w-full h-full ${
+                image.fileType.toLowerCase() === "png"
+                  ? "checkerboard-bg-subtle"
+                  : ""
+              }`}
+            >
+              <Image
+                src={image.cloudFrontUrl}
+                alt={image.title}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                className="object-contain absolute top-0 left-0"
+                priority={false}
+              />
+            </div>
           </div>
           <div className="flex flex-col space-y-4">
             <div>

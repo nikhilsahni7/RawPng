@@ -32,9 +32,22 @@ export function ImageGrid({ images }: ImageGridProps) {
                   alt={image.title}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  className="object-cover absolute top-0 left-0"
+                  className={`object-cover absolute top-0 left-0 ${
+                    image.fileType.toLowerCase() === "png"
+                      ? "checkerboard-bg-subtle"
+                      : ""
+                  }`}
+                  style={{
+                    backgroundImage:
+                      image.fileType.toLowerCase() === "png"
+                        ? "url(https://static.vecteezy.com/system/resources/thumbnails/021/594/645/small/checkered-square-pattern-png.png)"
+                        : "none",
+                    backgroundSize: "200px 200px",
+                    backgroundPosition: "0 0, 4px 0, 4px -4px, 0px 4px",
+                  }}
                   priority={false}
                 />
+
                 <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity duration-300">
                   <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
                     <h3 className="text-xs font-medium text-white truncate">
